@@ -5,16 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2f4deee7-d5e8-4335-8eaa-7c55a94acef2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/FastLap.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FastLap.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/tournaments/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/race_tracks/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/team_stuff/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/races/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/settings/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/settings/base.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,6 +49,9 @@
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="39y3czwPjkRHPraK6vrQFNvrEI0" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
@@ -54,6 +71,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/apps" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -70,7 +92,7 @@
       <option name="presentableId" value="Default" />
       <updated>1771654566879</updated>
       <workItem from="1771654568023" duration="920000" />
-      <workItem from="1771655494578" duration="3272000" />
+      <workItem from="1771655494578" duration="7191000" />
     </task>
     <servers />
   </component>

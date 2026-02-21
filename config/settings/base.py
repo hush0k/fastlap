@@ -21,11 +21,13 @@ INSTALLED_APPS = [
 
     # Apps
     'apps.users',
-    'apps.races',
     'apps.drivers',
     'apps.teams',
     'apps.news',
     'apps.bloggers',
+    'apps.race_tracks',
+    'apps.tournaments',
+    'apps.team_stuff',
 ]
 
 MIDDLEWARE = [

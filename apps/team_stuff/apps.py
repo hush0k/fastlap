@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
-class RacesConfig(AppConfig):
+
+class TeamStuffConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.races'
+    name = 'apps.team_stuff'
