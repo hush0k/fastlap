@@ -10,34 +10,49 @@ from drf_spectacular.utils import extend_schema
 from .serializers import RegisterSerializer, LoginSerializer
 
 
-@extend_schema(request=RegisterSerializer)
+@extend_schema(
+    request={
+        'multipart/form-data': {
+            'type': 'object',
+            'properties': {
+                'email': {'type': 'string', 'format': 'email'},
+                'username': {'type': 'string'},
+                'password': {'type': 'string'},
+                'first_name': {'type': 'string'},
+                'last_name': {'type': 'string'},
+                'avatar': {'type': 'string', 'format': 'binary'},
+            },
+            'required': ['email', 'username', 'password', 'avatar']
+        }
+    }
+)
 class RegisterView(generics.CreateAPIView):
-  permission_classes = [AllowAny]
-  serializer_class = RegisterSerializer
-  parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
 
 @extend_schema(
-  request=LoginSerializer,
-  responses={
-    200: {
-      "type": "object",
-      "properties": {
-          "refresh": {"type": "string"},
-          "access": {"type": "string"},
-      },
-    }
-  },
+    request=LoginSerializer,
+    responses={
+        200: {
+            'type': 'object',
+            'properties': {
+                'refresh': {'type': 'string'},
+                'access': {'type': 'string'},
+            },
+        }
+    },
 )
 class LoginView(GenericAPIView):
-  permission_classes = [AllowAny]
-  serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
 
-  def post(self, request, *args, **kwargs):
-    serializer = self.get_serializer(data=request.data)  # includes request in context
-    serializer.is_valid(raise_exception=True)
-    return Response(serializer.validated_data, status=status.HTTP_200_OK)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class RefreshView(TokenRefreshView):
-  permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
