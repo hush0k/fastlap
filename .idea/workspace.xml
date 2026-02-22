@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2f4deee7-d5e8-4335-8eaa-7c55a94acef2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/apps/tournaments/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/race_tracks/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/apps.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/team_stuff/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/races/views.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/settings/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/settings/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/urls.py" afterDir="false" />
-    </list>
+    <list default="true" id="2f4deee7-d5e8-4335-8eaa-7c55a94acef2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,7 +48,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "fastlap-project",
+    "git-widget-placeholder": "feature/teams",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
