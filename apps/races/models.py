@@ -49,3 +49,6 @@ class Race(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
         max_length=20, choices=[(i.value, i.value) for i in WatchPlatformEnum]
     )
     laps_total = PositiveIntegerField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
