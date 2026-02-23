@@ -3,6 +3,7 @@ import re
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -12,6 +13,10 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
   password = serializers.CharField(write_only=True, min_length=8)
   avatar = serializers.ImageField(required=True, allow_empty_file=False)
+
+  @extend_schema_field({"type": "string", "format": "binary"})
+  def get_avatar(self, obj):
+      pass
 
   class Meta:
     model = User
