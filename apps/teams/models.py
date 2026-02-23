@@ -1,7 +1,9 @@
 from django.db import models
 
-class Team(models.Model):
-    name = models.CharField(max_length=255)
+from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
+
+
+class Team(models.Model, CreatedAtMixin, UpdatedAtMixin, NameMixin):
     short_name = models.CharField(max_length=3)
     logo = models.ImageField(upload_to='team_logo')
     country = models.CharField(max_length=100, blank=True)
@@ -13,10 +15,6 @@ class Team(models.Model):
     budget_currency = models.CharField(max_length=3, blank=True, default='USD')
     main_sponsor = models.CharField(max_length=255, blank=True)
     secondary_sponsor = models.CharField(max_length=255, blank=True)
-
-    # -- Meta fields --
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['name']
