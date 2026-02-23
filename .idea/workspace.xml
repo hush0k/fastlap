@@ -32,13 +32,6 @@
     &quot;assignee&quot;: &quot;hush0k&quot;
   }
 }</component>
-  <component name="GithubProjectSettings">
-    <option name="branchProtectionPatterns">
-      <list>
-        <option value="main" />
-      </list>
-    </option>
-  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;git@github.com:hush0k/fastlap.git&quot;,
@@ -69,6 +62,20 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;fastlap-project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -92,9 +99,26 @@
       <option name="presentableId" value="Default" />
       <updated>1771654566879</updated>
       <workItem from="1771654568023" duration="920000" />
-      <workItem from="1771655494578" duration="7191000" />
-      <workItem from="1771859406552" duration="480000" />
+      <workItem from="1771655494578" duration="9207000" />
+      <workItem from="1771744334258" duration="355000" />
     </task>
+    <task id="LOCAL-00001" summary="Changing apps remove race and add tournaments, race_tracks, and team_stuff">
+      <option name="closed" value="true" />
+      <created>1771664144793</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1771664144793</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: add initial URL configuration">
+      <option name="closed" value="true" />
+      <created>1771664154457</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1771664154457</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <task id="LOCAL-00001" summary="feat: enhance user registration and login serializers with schema definitions and add new dependencies">
       <option name="closed" value="true" />
       <created>1771752571928</created>
@@ -109,17 +133,25 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat: enhance user registration and login serializers with schema definitions and add new dependencies" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: enhance user registration and login serializers with schema definitions and add new dependencies" />
+    <MESSAGE value="Changing apps remove race and add tournaments, race_tracks, and team_stuff" />
+    <MESSAGE value="feat: add initial URL configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add initial URL configuration" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/config/settings/base.py</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/apps/users/models.py</url>
           <option name="timeStamp" value="2" />
