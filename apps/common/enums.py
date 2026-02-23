@@ -2,6 +2,6 @@ from enum import StrEnum
 
 
 class SeriesCategoryEnum(StrEnum):
-    CAR = "cat"
+    CAR = "car"
     MOTO = "moto"
     ENDURANCE = "endurance"
