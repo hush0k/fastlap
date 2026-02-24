@@ -18,7 +18,7 @@ class UpdatedAtMixin(Model):
 
 class NameMixin(Model):
     name = CharField(max_length=255)
-    slug = AutoSlugField(populate_from="name", unique=True)  # type: ignore
+    slug = AutoSlugField(populate_from="name", unique=True, null=True, blank=True)
 
     class Meta:
         abstract = True
