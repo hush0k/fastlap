@@ -135,3 +135,4 @@ AXES_LOCK_OUT_AT_FAILURE = True
 
 class MEDIA_LOCATION:
     SERIES_LOGO: Path = Path("series/logo/")
+    ARTICLE_COVERS: Path = Path("articles/covers/")
