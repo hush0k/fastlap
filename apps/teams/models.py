@@ -3,7 +3,7 @@ from django.db import models
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
 
 
-class Team(models.Model, CreatedAtMixin, UpdatedAtMixin, NameMixin):
+class Team(CreatedAtMixin, UpdatedAtMixin, NameMixin):
     short_name = models.CharField(max_length=3)
     logo = models.ImageField(upload_to='team_logo')
     country = models.CharField(max_length=100, blank=True)
