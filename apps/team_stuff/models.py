@@ -3,7 +3,7 @@ from django.db import models
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
 
 
-class TeamStuff(models.Model, CreatedAtMixin, UpdatedAtMixin, ):
+class TeamStuff(CreatedAtMixin, UpdatedAtMixin, ):
     fist_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     age = models.PositiveSmallIntegerField(null=True, blank=True)
