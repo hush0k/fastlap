@@ -40,6 +40,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
+    "middleware.requests.RequestIDMiddleware",
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -136,3 +137,46 @@ AXES_LOCK_OUT_AT_FAILURE = True
 class MEDIA_LOCATION:
     SERIES_LOGO: Path = Path("series/logo/")
     ARTICLE_COVERS: Path = Path("articles/covers/")
+
+
+LOG_LEVEL = config("LOG_LEVEL", default="INFO")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} |{name:36s}|:{lineno:<4d} "
+            "[{levelname:8s}] <{request_id:36s}> - {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "[{levelname:8s}] - {message}",
+            "style": "{",
+        },
+    },
+    "filters": {
+        "request_id": {
+            "()": "config.logger.RequestIDFilter",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+            "formatter": "simple",
+            "filters": ["request_id"],
+        },
+    },
+    "loggers": {
+        "root": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+        "apps": {
+            "handlers": ['console'],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        }
+    },
+}
