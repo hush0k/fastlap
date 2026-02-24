@@ -1,7 +1,7 @@
 from django.db.models import TextChoices
 
 
-class DriverResultsStatusEnum(TextChoices):
+class DriverResultStatusEnum(TextChoices):
     FINISHED = "finished", "Finished"
     DNF = "dnf", "DNF"
     DNS = "dns", "DNS"
