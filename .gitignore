@@ -27,6 +27,8 @@ share/python-wheels/
 MANIFEST
 media/
 media/avatars/
+**/.idea/
+.idea/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
