@@ -140,6 +140,7 @@ AXES_LOCK_OUT_AT_FAILURE = True
 class MEDIA_LOCATION:
     SERIES_LOGO: Path = Path("series/logo/")
     ARTICLE_COVERS: Path = Path("articles/covers/")
+    DRIVER_PROFILE_IMAGE: Path = Path("drivers/profile_images")
 
 
 LOG_LEVEL = config("LOG_LEVEL", default="INFO")
