@@ -80,6 +80,8 @@ class Article(BaseModel):
     is_published = BooleanField(default=False, verbose_name="Is Published")
     views_count = PositiveIntegerField(default=0, verbose_name="Views Count")
 
+    author_id: int
+
     class Meta:
         verbose_name = "Article"
         verbose_name_plural = "Articles"
