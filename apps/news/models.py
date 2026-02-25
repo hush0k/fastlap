@@ -2,6 +2,9 @@ from pathlib import Path
 
 from autoslug import AutoSlugField
 
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
     BooleanField,
@@ -16,7 +19,11 @@ from django.db.models import (
 
 from apps.common.mixins import NameMixin
 from apps.common.models import BaseModel
-from config.settings.base import MEDIA_LOCATION
+from config.settings.base import (
+    ARTICLE_IMAGE_MAX_SIZE_BYTES,
+    ARTICLE_IMAGE_MAX_SIZE_MB,
+    MEDIA_LOCATION,
+)
 
 
 def article_cover_path(instance: "Article", filename: str) -> str:
@@ -28,17 +35,24 @@ def article_cover_path(instance: "Article", filename: str) -> str:
     return str(result)
 
 
+def validate_image_size(value: UploadedFile):
+    """:raises raise ValidationError:"""
+    print("size:", value.size)
+    if value.size > (ARTICLE_IMAGE_MAX_SIZE_BYTES):
+        raise ValidationError(f"Max image size is {ARTICLE_IMAGE_MAX_SIZE_MB} MB")
+
+
 class Tag(NameMixin, BaseModel):
     class Meta:
         verbose_name = "Tag"
         verbose_name_plural = "Tags"
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.__class__.__name__}({self.id}, {self.name})"
 
 
 class Article(BaseModel):
-    name = CharField(max_length=255)
+    name = CharField(max_length=255, validators=[MinLengthValidator(5)])
     slug = AutoSlugField(populate_from="name", unique=True)  # type: ignore
 
     author = ForeignKey(
@@ -47,9 +61,16 @@ class Article(BaseModel):
         related_name="articles",
         verbose_name="Author",
     )
-    content = TextField(verbose_name="Content")
+    content = TextField(
+        verbose_name="Content",
+        validators=[MinLengthValidator(200), MaxLengthValidator(7500)],
+    )
     cover_image = ImageField(
-        upload_to=article_cover_path, blank=True, null=True, verbose_name="Cover Image"
+        upload_to=article_cover_path,
+        blank=True,
+        null=True,
+        verbose_name="Cover Image",
+        validators=[validate_image_size],
     )
     series = ManyToManyField(
         to="races.Series", blank=True, related_name="articles", verbose_name="Series"
