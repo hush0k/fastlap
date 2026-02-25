@@ -42,21 +42,42 @@ class ArticleCreateSerializer(ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> Article:
         user: User = self.context["request"].user
-        logger.info("user: %r", self.context["request"].user)
-        logger.debug("validated_data: %r", validated_data)
+        logger.debug("create user=%s, data=%r", user, validated_data)
 
         tags: list[Tag] = validated_data.pop("tags", [])
         series: list[Series] = validated_data.pop("series", [])
 
         if validated_data["is_published"] is True:
             validated_data["published_at"] = timezone.now()
+            logger.debug("published_at was set")
 
         article = Article.objects.create(author=user, **validated_data)
 
         article.tags.set(tags)
         article.series.set(series)
+        logger.debug("tags and series was assigned")
 
+        logger.info("created article: %s", article.id)
         return article
+
+
+class ArticleUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Article
+        fields = "__all__"
+        read_only_fields = ("id", "slug", "author", "views_count", "published_at")
+
+    def update(self, instance: Article, validated_data: Any) -> Article:
+        logger.debug("validated_data: %r", validated_data)
+
+        if validated_data.get("is_published") is True and instance.published_at is None:
+            validated_data["published_at"] = timezone.now()
+            logger.debug("article %s: published_at assigned", instance.id)
+
+        result = super().update(instance, validated_data)
+        logger.info("updated article: %s", result.id)
+
+        return result
 
 
 class ArticleDestroySerializer(ModelSerializer):
