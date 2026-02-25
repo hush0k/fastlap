@@ -1,18 +1,21 @@
-from apps.common.models import BaseModel
-from apps.common.mixins import NameMixin
-from django.db.models import (
-    CharField,
-    TextField,
-    ImageField,
-    ForeignKey,
-    CASCADE,
-    ManyToManyField,
-    DateTimeField,
-    BooleanField,
-    PositiveIntegerField,
-)
-from autoslug import AutoSlugField
 from pathlib import Path
+
+from autoslug import AutoSlugField
+
+from django.db.models import (
+    CASCADE,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    ImageField,
+    ManyToManyField,
+    PositiveIntegerField,
+    TextField,
+)
+
+from apps.common.mixins import NameMixin
+from apps.common.models import BaseModel
 from config.settings.base import MEDIA_LOCATION
 
 
