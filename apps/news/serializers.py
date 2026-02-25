@@ -57,3 +57,8 @@ class ArticleCreateSerializer(ModelSerializer):
         article.series.set(series)
 
         return article
+
+
+class ArticleDestroySerializer(ModelSerializer):
+    class Meta:
+        model = Article
