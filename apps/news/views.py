@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import Any
 
 from django_filters.rest_framework.backends import DjangoFilterBackend
@@ -19,8 +18,6 @@ from .serializers import (
     ArticleListSerializer,
     ArticleUpdateSerializer,
 )
-
-logger = getLogger(__name__)
 
 
 class ArticleListView(generics.ListAPIView):
