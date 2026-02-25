@@ -1,34 +1,44 @@
 from logging import getLogger
+from typing import Any
 
-from django.db.models import QuerySet
+from django_filters.rest_framework.backends import DjangoFilterBackend
+
+from django.http import HttpRequest, HttpResponse
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
 
 from apps.common.pagination import CustomPagination
 
+from .filters import ArticleFilter
 from .models import Article
-from .serializers import ArticleListSerializer
+from .permissions import IsAuthor
+from .serializers import ArticleCreateSerializer, ArticleListSerializer
 
 logger = getLogger(__name__)
 
 
 class ArticleListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     serializer_class = ArticleListSerializer
     queryset = Article.objects.all()
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ArticleFilter
 
-    def get_queryset(self) -> QuerySet[Article]:
-        q = Article.objects.all()
 
-        author_id: str | None = self.request.query_params.get("author_id")
-        logger.debug("author_id: %r", author_id)
-        if author_id is not None and author_id.isdigit():
-            q = q.filter(author_id=int(author_id))
+class ArticleCreateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated, IsAuthor]
+    serializer_class = ArticleCreateSerializer
 
-        series: list[str] = self.request.query_params.getlist("series")
-        logger.debug("series: %r", series)
-        if series:
-            q = q.filter(series__name__in=series)
 
-        return q
+class ArticleView(APIView):
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if request.method == "GET":
+            handler = ArticleListView.as_view()
+        elif request.method == "POST":
+            handler = ArticleCreateView.as_view()
+        else:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+        return handler(request, *args, **kwargs)

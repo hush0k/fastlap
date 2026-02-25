@@ -1,9 +1,59 @@
-from rest_framework.serializers import ModelSerializer
+from logging import getLogger
+from typing import Any
 
-from .models import Article
+from django.utils import timezone
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
+
+from apps.races.models import Series
+from apps.users.models import User
+
+from .models import Article, Tag
+
+logger = getLogger(__name__)
+
+
+class TagSerializer(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ["id", "name"]
 
 
 class ArticleListSerializer(ModelSerializer):
+    author = SerializerMethodField()
+    tags = TagSerializer(many=True)
+    series = SerializerMethodField()
+
+    def get_series(self, obj: Article) -> list[dict[str, int | str]]:
+        return [dict(id=i.id, name=i.name) for i in obj.series.all()]
+
+    def get_author(self, obj: Article) -> dict[str, int | str]:
+        return dict(id=obj.author.id, username=obj.author.username)
+
     class Meta:
         model = Article
         fields = "__all__"
+
+
+class ArticleCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Article
+        fields = "__all__"
+        read_only_fields = ("id", "slug", "author", "views_count", "published_at")
+
+    def create(self, validated_data: dict[str, Any]) -> Article:
+        user: User = self.context["request"].user
+        logger.info("user: %r", self.context["request"].user)
+        logger.debug("validated_data: %r", validated_data)
+
+        tags: list[Tag] = validated_data.pop("tags", [])
+        series: list[Series] = validated_data.pop("series", [])
+
+        if validated_data["is_published"] is True:
+            validated_data["published_at"] = timezone.now()
+
+        article = Article.objects.create(author=user, **validated_data)
+
+        article.tags.set(tags)
+        article.series.set(series)
+
+        return article

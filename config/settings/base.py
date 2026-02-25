@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
+    "django_filters",
     "corsheaders",
     "axes",
     # Apps
@@ -99,7 +100,6 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 20,
 }
@@ -143,6 +143,9 @@ class MEDIA_LOCATION:
     DRIVER_PROFILE_IMAGE: Path = Path("drivers/profile_images")
 
 
+ARTICLE_IMAGE_MAX_SIZE_MB = 10
+ARTICLE_IMAGE_MAX_SIZE_BYTES = ARTICLE_IMAGE_MAX_SIZE_MB * 1024 * 1024
+
 LOG_LEVEL = config("LOG_LEVEL", default="INFO")
 
 LOGGING = {
@@ -178,9 +181,9 @@ LOGGING = {
             "level": "WARNING",
         },
         "apps": {
-            "handlers": ['console'],
+            "handlers": ["console"],
             "level": LOG_LEVEL,
             "propagate": False,
-        }
+        },
     },
 }
