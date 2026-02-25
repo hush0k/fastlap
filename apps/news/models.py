@@ -89,4 +89,4 @@ class Article(BaseModel):
         ordering = ["-published_at"]
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.__class__.__name__}({self.id}, {self.name})"
