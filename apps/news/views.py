@@ -13,7 +13,12 @@ from apps.common.pagination import CustomPagination
 from .filters import ArticleFilter
 from .models import Article
 from .permissions import IsAuthor
-from .serializers import ArticleCreateSerializer, ArticleListSerializer
+from .serializers import (
+    ArticleCreateSerializer,
+    ArticleDestroySerializer,
+    ArticleListSerializer,
+    ArticleUpdateSerializer,
+)
 
 logger = getLogger(__name__)
 
@@ -32,12 +37,28 @@ class ArticleCreateView(generics.CreateAPIView):
     serializer_class = ArticleCreateSerializer
 
 
+class ArticleUpdateView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsAuthor]
+    serializer_class = ArticleUpdateSerializer
+    queryset = Article.objects.all()
+
+
+class ArticleDestroyView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated, IsAuthor]
+    serializer_class = ArticleDestroySerializer
+    queryset = Article.objects.all()
+
+
 class ArticleView(APIView):
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if request.method == "GET":
             handler = ArticleListView.as_view()
         elif request.method == "POST":
             handler = ArticleCreateView.as_view()
+        elif request.method == "PATCH":
+            handler = ArticleUpdateView.as_view()
+        elif request.method == "DELETE":
+            handler = ArticleDestroyView.as_view()
         else:
             return self.http_method_not_allowed(request, *args, **kwargs)
 
