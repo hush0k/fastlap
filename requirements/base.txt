@@ -12,3 +12,4 @@ django-debug-toolbar
 django-axes==8.3.1
 django-autoslug==1.9.9
 django-filter==25.2
+django_countries==8.2.0
