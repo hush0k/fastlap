@@ -25,15 +25,11 @@ def profile_image_upload_path(instance: "Driver", filename: str) -> str:
     return str(result)
 
 
-def driver_slug(instance):
-    return f"{instance.first_name}-{instance.last_name}"
-
-
 class Driver(CreatedAtMixin, UpdatedAtMixin, BaseModel):
     first_name = CharField(max_length=100, verbose_name="First Name")
     last_name = CharField(max_length=100, verbose_name="Last Name")
     slug = AutoSlugField(
-        populate_from=driver_slug,
+        populate_from=lambda instance: f"{instance.first_name}-{instance.last_name}",
         unique=True,
     ) # type: ignore
     nationality = CountryField(verbose_name="Nationality")
