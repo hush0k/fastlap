@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             model_name="driver",
             name="nationality",
             field=django_countries.fields.CountryField(
-                default="en", max_length=2, verbose_name="Nationality"
+                default="default-nationality", max_length=2, verbose_name="Nationality"
             ),
             preserve_default=False,
         ),
