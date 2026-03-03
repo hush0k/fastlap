@@ -66,3 +66,9 @@ class TeamStanding(BaseModel):
     position = PositiveSmallIntegerField()
     points = PositiveSmallIntegerField()
 
+
+class DriverStanding(BaseModel):
+    driver = ForeignKey(to="drivers.Driver", on_delete=CASCADE)
+    tournament = ForeignKey(to=Tournament, on_delete=CASCADE)
+    position = PositiveSmallIntegerField()
+    points = PositiveSmallIntegerField()
