@@ -58,3 +58,11 @@ class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class TeamStanding(BaseModel):
+    team = ForeignKey(to="teams.Team", on_delete=CASCADE)
+    tournament = ForeignKey(to=Tournament, on_delete=CASCADE)
+    position = PositiveSmallIntegerField()
+    points = PositiveSmallIntegerField()
+
