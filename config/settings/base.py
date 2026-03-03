@@ -140,7 +140,9 @@ AXES_LOCK_OUT_AT_FAILURE = True
 
 
 class MEDIA_LOCATION:
+    # TODO: move /series/logo to /series/logos
     SERIES_LOGO: Path = Path("series/logo/")
+    TOURNAMENTS_LOGO: Path = Path("tournaments/logos/")
     ARTICLE_COVERS: Path = Path("articles/covers/")
     DRIVER_PROFILE_IMAGE: Path = Path("drivers/profile_images")
 
