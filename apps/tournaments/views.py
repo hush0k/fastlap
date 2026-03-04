@@ -12,7 +12,11 @@ from apps.common.pagination import CustomPagination
 from .filters import TournamentFilter
 from .models import Tournament
 from .permissions import IsContentManager
-from .serializers import TournamentCreateSerializer, TournamentListSerializer
+from .serializers import (
+    TournamentCreateSerializer,
+    TournamentDestroySerializer,
+    TournamentListSerializer,
+)
 
 
 class TournamentListView(generics.ListAPIView):
@@ -29,6 +33,11 @@ class TournamentCreateView(generics.CreateAPIView):
     serializer_class = TournamentCreateSerializer
 
 
+class TournamentDestroyView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated, IsContentManager]
+    queryset = Tournament.objects.all()
+
+
 class TournamentView(APIView):
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         match request.method:
@@ -36,6 +45,8 @@ class TournamentView(APIView):
                 handler = TournamentListView.as_view()
             case "POST":
                 handler = TournamentCreateView.as_view()
+            case "DELETE":
+                handler = TournamentDestroyView.as_view()
             case _:
                 return self.http_method_not_allowed(request, *args, **kwargs)
 
