@@ -28,3 +28,21 @@ class TournamentCreateSerializer(ModelSerializer):
             "total_rounds",
             "logo",
         )
+
+
+class TournamentUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = (
+            "name",
+            "series",
+            "description",
+            "status",
+            "is_active",
+            "year",
+            "start_date",
+            "end_date",
+            "total_rounds",
+            "logo",
+        )
+        extra_kwargs = {field: {"required": False} for field in fields}

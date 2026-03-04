@@ -15,6 +15,7 @@ from .permissions import IsContentManager
 from .serializers import (
     TournamentCreateSerializer,
     TournamentListSerializer,
+    TournamentUpdateSerializer,
 )
 
 
@@ -32,6 +33,12 @@ class TournamentCreateView(generics.CreateAPIView):
     serializer_class = TournamentCreateSerializer
 
 
+class TournamentUpdateView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsContentManager]
+    serializer_class = TournamentUpdateSerializer
+    queryset = Tournament.objects.all()
+
+
 class TournamentDestroyView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsContentManager]
     queryset = Tournament.objects.all()
@@ -44,6 +51,8 @@ class TournamentView(APIView):
                 handler = TournamentListView.as_view()
             case "POST":
                 handler = TournamentCreateView.as_view()
+            case "PUT":
+                handler = TournamentUpdateView.as_view()
             case "DELETE":
                 handler = TournamentDestroyView.as_view()
             case _:
