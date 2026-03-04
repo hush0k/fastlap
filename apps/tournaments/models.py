@@ -1,5 +1,8 @@
+from logging import getLogger
 from pathlib import Path
 
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
 from django.db.models import (
     CASCADE,
     BooleanField,
@@ -16,16 +19,31 @@ from django.db.models import (
 from apps.common.enums import Currency, RaceStatusEnum
 from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 from apps.common.models import BaseModel
-from config.settings.base import MEDIA_LOCATION
+from config.settings.base import (
+    MEDIA_LOCATION,
+    TOURNAMENT_LOGO_MAX_SIZE_BYTES,
+    TOURNAMENT_LOGO_MAX_SIZE_MB,
+)
+
+logger = getLogger(__name__)
 
 
 def logo_upload_path(instance: "Tournament", filename: str) -> str:
     """Return upload path for tournament logo using slug and original extension."""
+    logger.debug("instance: %s, filename: %s", instance.slug, filename)
 
     extension = Path(filename).suffix
     result = MEDIA_LOCATION.TOURNAMENTS_LOGO / str(instance.slug + extension)
 
     return str(result)
+
+
+def validate_image_size(value: UploadedFile):
+    """:raises raise ValidationError:"""
+    logger.debug("image size: %s bytes", value.size)
+
+    if value.size > (TOURNAMENT_LOGO_MAX_SIZE_BYTES):
+        raise ValidationError(f"Max image size is {TOURNAMENT_LOGO_MAX_SIZE_MB} MB")
 
 
 class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
@@ -37,7 +55,12 @@ class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
         default=RaceStatusEnum.FINISHED,
     )
     is_active = BooleanField(default=True)
-    logo = ImageField(upload_to=logo_upload_path, blank=True, null=True)
+    logo = ImageField(
+        upload_to=logo_upload_path,
+        validators=[validate_image_size],
+        blank=True,
+        null=True,
+    )
     description = TextField(blank=True)
     start_date = DateField()
     end_date = DateField()

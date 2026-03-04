@@ -1,15 +1,16 @@
 from drf_spectacular.contrib.django_filters import DjangoFilterExtension
-from rest_framework import viewsets, filters
+
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 
 from apps.teams.models import Team
 from apps.teams.serializers import (
-    TeamWriteSerializer,
     TeamDetailSerializer,
     TeamListSerializer,
     TeamStandingsSerializer,
+    TeamWriteSerializer,
 )
 
 

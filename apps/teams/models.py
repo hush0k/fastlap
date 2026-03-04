@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
+from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 
 
 class Team(CreatedAtMixin, UpdatedAtMixin, NameMixin):

@@ -1,0 +1,15 @@
+from logging import getLogger
+
+from django.views import View
+from rest_framework.permissions import BasePermission
+from rest_framework.request import Request
+
+logger = getLogger(__name__)
+
+
+class IsContentManager(BasePermission):
+    def has_permission(self, request: Request, view: View) -> bool:
+        result: bool = request.user.groups.filter(name="ContentManager").exists()
+        logger.debug("user: %s, has_permission: %s", request.user, result)
+
+        return result

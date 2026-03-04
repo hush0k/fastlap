@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.teams.models import TeamStandings, Team
+from apps.teams.models import Team, TeamStandings
 
 
 class TeamStandingsSerializer(serializers.ModelSerializer):
