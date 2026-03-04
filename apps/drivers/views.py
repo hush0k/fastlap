@@ -1,21 +1,23 @@
 from logging import getLogger
 from typing import Any
 
-from django.http import HttpRequest, HttpResponse
 from django_filters.rest_framework.backends import DjangoFilterBackend
+
+from django.http import HttpRequest, HttpResponse
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
 from apps.common.pagination import CustomPagination
+
 from .filters import DriverFilter, DriverResultFilter
 from .models import Driver, DriverResult
 from .permissions import IsAdminOrReadOnly
-from .serializers import(
+from .serializers import (
     DriverDetailSerializer,
     DriverListSerializer,
     DriverResultCreateSerializer,
-    DriverResultSerializer
+    DriverResultSerializer,
 )
 
 logger = getLogger(__name__)
