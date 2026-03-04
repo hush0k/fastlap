@@ -14,7 +14,6 @@ from .models import Tournament
 from .permissions import IsContentManager
 from .serializers import (
     TournamentCreateSerializer,
-    TournamentDestroySerializer,
     TournamentListSerializer,
 )
 
