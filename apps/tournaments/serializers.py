@@ -11,3 +11,20 @@ class TournamentListSerializer(ModelSerializer):
     class Meta:
         model = Tournament
         fields = "__all__"
+
+
+class TournamentCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Tournament
+        fields = (
+            "name",
+            "series",
+            "description",
+            "status",
+            "is_active",
+            "year",
+            "start_date",
+            "end_date",
+            "total_rounds",
+            "logo",
+        )
