@@ -1,20 +1,22 @@
-from django.db.models import (
-    CharField,
-    DateField,
-    PositiveIntegerField,
-    ImageField,
-    TextField,
-    BooleanField,
-    DecimalField,
-    ForeignKey,
-    PROTECT,
-)
-from autoslug import AutoSlugField
-from django_countries.fields import CountryField
 from pathlib import Path
 
-from apps.common.models import BaseModel
+from autoslug import AutoSlugField
+from django_countries.fields import CountryField
+
+from django.db.models import (
+    PROTECT,
+    BooleanField,
+    CharField,
+    DateField,
+    DecimalField,
+    ForeignKey,
+    ImageField,
+    PositiveIntegerField,
+    TextField,
+)
+
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin
+from apps.common.models import BaseModel
 from apps.drivers.enums import DriverResultStatusEnum
 from config.settings.base import MEDIA_LOCATION
 
@@ -35,7 +37,7 @@ class Driver(CreatedAtMixin, UpdatedAtMixin, BaseModel):
     slug = AutoSlugField(
         populate_from=driver_slug,
         unique=True,
-    ) # type: ignore
+    )  # type: ignore
     nationality = CountryField(verbose_name="Nationality")
     date_of_birth = DateField(blank=True, null=True, verbose_name="Date of Birth")
     number = PositiveIntegerField(blank=True, null=True, verbose_name="Racing Number")
@@ -69,8 +71,12 @@ class DriverResult(CreatedAtMixin, UpdatedAtMixin, BaseModel):
         related_name="driver_results",
         verbose_name="Race",
     )
-    position = PositiveIntegerField(blank=True, null=True, verbose_name="Finish Position")
-    grid_position = PositiveIntegerField(blank=True, null=True, verbose_name="Grid Position")
+    position = PositiveIntegerField(
+        blank=True, null=True, verbose_name="Finish Position"
+    )
+    grid_position = PositiveIntegerField(
+        blank=True, null=True, verbose_name="Grid Position"
+    )
     points = DecimalField(max_digits=6, decimal_places=2, verbose_name="Points")
     status = CharField(
         max_length=10,
@@ -78,7 +84,9 @@ class DriverResult(CreatedAtMixin, UpdatedAtMixin, BaseModel):
         verbose_name="Status",
     )
     fastest_lap = BooleanField(default=False, verbose_name="Fastest Lap")
-    laps_completed = PositiveIntegerField(blank=True, null=True, verbose_name="Laps Completed")
+    laps_completed = PositiveIntegerField(
+        blank=True, null=True, verbose_name="Laps Completed"
+    )
 
     class Meta:
         verbose_name = "Driver Result"
