@@ -1,3 +1,4 @@
+from logging import getLogger
 from pathlib import Path
 
 from autoslug import AutoSlugField
@@ -25,19 +26,21 @@ from config.settings.base import (
     MEDIA_LOCATION,
 )
 
+logger = getLogger(__name__)
+
 
 def article_cover_path(instance: "Article", filename: str) -> str:
     """Return upload path for an article cover using id and original extension."""
-
+    logger.debug("article: %s, filename: %s", instance.slug, filename)
     extension = Path(filename).suffix
-    result = MEDIA_LOCATION.ARTICLE_COVERS / (str(instance.id) + extension)
+    result = MEDIA_LOCATION.ARTICLE_COVERS / (str(instance.slug) + extension)
 
     return str(result)
 
 
 def validate_image_size(value: UploadedFile):
     """:raises raise ValidationError:"""
-    print("size:", value.size)
+    logger.debug("image size: %s", value.size)
     if value.size > (ARTICLE_IMAGE_MAX_SIZE_BYTES):
         raise ValidationError(f"Max image size is {ARTICLE_IMAGE_MAX_SIZE_MB} MB")
 
