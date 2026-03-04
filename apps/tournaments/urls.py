@@ -4,4 +4,5 @@ from .views import TournamentView
 
 urlpatterns = [
     path("", TournamentView.as_view(), name="tournaments"),
+    path("<int:pk>/", TournamentView.as_view(), name="tournament"),
 ]

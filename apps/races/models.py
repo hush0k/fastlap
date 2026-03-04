@@ -1,17 +1,19 @@
-from django.db.models import (
-    CharField,
-    ImageField,
-    TextField,
-    ForeignKey,
-    PositiveIntegerField,
-    DateTimeField,
-    URLField,
-    PROTECT,
-)
-from apps.common.models import BaseModel
-from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
-from apps.common.enums import SeriesCategoryEnum, RaceStatusEnum, WatchPlatformEnum
 from pathlib import Path
+
+from django.db.models import (
+    PROTECT,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    ImageField,
+    PositiveIntegerField,
+    TextField,
+    URLField,
+)
+
+from apps.common.enums import RaceStatusEnum, SeriesCategoryEnum, WatchPlatformEnum
+from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
+from apps.common.models import BaseModel
 from config.settings.base import MEDIA_LOCATION
 
 

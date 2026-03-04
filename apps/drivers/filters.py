@@ -1,5 +1,12 @@
+from django_filters import (
+    BaseInFilter,
+    BooleanFilter,
+    CharFilter,
+    FilterSet,
+    NumberFilter,
+)
+
 from django.db.models import Q, QuerySet
-from django_filters import BaseInFilter, BooleanFilter, CharFilter, FilterSet, NumberFilter
 
 from .models import Driver, DriverResult
 
@@ -10,9 +17,13 @@ class DriverFilter(FilterSet):
     is_active = BooleanFilter(field_name="is_active")
     number = NumberFilter(field_name="number")
 
-    def filter_search(self, queryset: QuerySet[Driver], name: str, value: str) -> QuerySet[Driver]:
-        return queryset.filter(Q(first_name__icontains=value) | Q(last_name__icontains=value))
-    
+    def filter_search(
+        self, queryset: QuerySet[Driver], name: str, value: str
+    ) -> QuerySet[Driver]:
+        return queryset.filter(
+            Q(first_name__icontains=value) | Q(last_name__icontains=value)
+        )
+
     class Meta:
         model = Driver
         fields = ["slug", "nationality", "is_active", "number"]
