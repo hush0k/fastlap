@@ -1,10 +1,10 @@
 from django.db import models
 from django_countries.fields import CountryField
 
-from apps.common.models import BaseModel
+from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 
 
-class Team(BaseModel):
+class Team(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
     short_name = models.CharField(max_length=10)
     logo = models.ImageField(upload_to="teams/logos/", null=True, blank=True)
     country = CountryField(blank=True)
@@ -29,7 +29,7 @@ class Team(BaseModel):
         return f"{self.name} ({self.short_name})"
 
 
-class TeamStandings(BaseModel):
+class TeamStandings(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
     team = models.ForeignKey(
         Team,
         on_delete=models.CASCADE,
