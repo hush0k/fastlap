@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("teams", "0003_alter_team_budget"),
+        ("teams", "0001_initial"),
         ("tournaments", "0003_rename_prize_pool_tournament_prize_fund_and_more"),
     ]
 
