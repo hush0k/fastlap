@@ -29,7 +29,7 @@ class StaffMember(UpdatedAtMixin, CreatedAtMixin, NameMixin, models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-class TeamRoster(BaseModel):
+class TeamRoster(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
     team = models.ForeignKey(
         "teams.Team",
         on_delete=models.CASCADE,
