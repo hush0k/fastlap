@@ -1,55 +1,70 @@
 from rest_framework import serializers
-
-from apps.team_stuff.models import TeamStuff
-from apps.teams.serializers import TeamListSerializer
+from apps.team_stuff.models import StaffMember, TeamRoster
 
 
-class TeamStuffListSerializer(serializers.ModelSerializer):
+
+class TeamRosterSerializer(serializers.ModelSerializer):
+    team_name = serializers.CharField(source="team.name", read_only=True)
+    team_short = serializers.CharField(source="team.short_name", read_only=True)
+
     class Meta:
-        model = TeamStuff
-        fields = ("id", "fist_name", "last_name", "age", "country", "role")
+        model = TeamRoster
+        fields = ["id", "team_name", "team_short", "start_date", "end_date", "is_active"]
 
 
-class TeamStuffDetailSerializer(serializers.ModelSerializer):
+class StaffMemberListSerializer(serializers.ModelSerializer):
+    country = serializers.CharField(source="country.name")
+    current_team = serializers.SerializerMethodField()
+
     class Meta:
-        model = TeamStuff
-        fields = (
+        model = StaffMember
+        fields = ["id", "full_name", "role", "country", "photo", "current_team"]
+
+    def get_current_team(self, obj):
+        roster = obj.rosters.filter(is_active=True).select_related("team").first()
+        if roster:
+            return roster.team.short_name
+        return None
+
+
+class StaffMemberDetailSerializer(serializers.ModelSerializer):
+    country = serializers.CharField(source="country.name")
+    country_code = serializers.CharField(source="country.code")
+    rosters = TeamRosterSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = StaffMember
+        fields = [
             "id",
-            "name",
-            "slug",
-            "fist_name",
+            "first_name",
             "last_name",
+            "full_name",
             "age",
             "country",
+            "country_code",
             "role",
             "description",
-            "in_team_sincAe",
+            "photo",
+            "rosters",
             "created_at",
             "updated_at",
-        )
+        ]
 
 
-class TeamStuffCreateSerializer(serializers.ModelSerializer):
+class StaffMemberWriteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TeamStuff
-        fields = (
-            "fist_name",
+        model = StaffMember
+        fields = [
+            "first_name",
             "last_name",
             "age",
             "country",
             "role",
             "description",
-            "in_team_sincAe",
-        )
+            "photo",
+        ]
 
-
-class TeamRosterDetailSerializer(serializers.Serializer):
-    team = TeamListSerializer()
-    stuff = TeamStuffListSerializer()
-
-    class Meta:
-        fields = (
-            "team",
-            "stuff",
-            "start_date",
-        )
+    def validate_age(self, value):
+        if value is not None and not (16 <= value <= 80):
+            raise serializers.ValidationError("Возраст должен быть от 16 до 80.")
+        return value
