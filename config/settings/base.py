@@ -208,3 +208,12 @@ LOGGING = {
         },
     },
 }
+
+
+FIREBASE_PROJECT_ID = config('FIREBASE_PROJECT_ID', default='')
+FIREBASE_COLLECTION_USERS = 'users'
+FIREBASE_COLLECTION_AVATARS = 'avatars'
+
+AVATAR_MAX_SIZE_MB = 2
+AVATAR_MAX_SIZE_BYTES = AVATAR_MAX_SIZE_MB * 1024 * 1024
+ALLOWED_AVATAR_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']

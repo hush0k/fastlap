@@ -28,6 +28,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    firestore_avatar_id = models.CharField(max_length=255, blank=True, null=True)
+    use_firestore_avatar = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -44,3 +46,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+    def get_avatar_url(self):
+        if self.use_firestore_avatar and self.firestore_avatar_id:
+            return None
+        elif self.avatar:
+            return self.get_avatar_url
+        return None
