@@ -8,6 +8,9 @@ from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
+from .utils.avatar_utils import AvatarProcessor
+from .services.firestore_service import FirestoreUserService
+
 User = get_user_model()
 
 
@@ -51,19 +54,36 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError(_("Avatar is required."))
 
-        max_size = 2 * 1024 * 1024  # 2MB
-        if getattr(value, "size", 0) > max_size:
-            raise serializers.ValidationError(_("Avatar size must be <= 2MB."))
-
-        content_type = getattr(value, "content_type", "")
-        if not content_type.startswith("image/"):
-            raise serializers.ValidationError(_("Avatar must be an image file."))
+        is_valid, error = AvatarProcessor.validate_image(value)
+        if not is_valid:
+            raise serializers.ValidationError(_(error))
 
         return value
 
     def create(self, validated_data):
         password = validated_data.pop("password")
+        avatar_file = validated_data.pop("avatar")
         user = User.objects.create_user(password=password, **validated_data)
+
+        firestore_service = FirestoreUserService()
+
+        base64_avatar, error = AvatarProcessor.process_avatar(avatar_file)
+        if error:
+            user.delete()
+            raise serializers.ValidationError({"avatar": error})
+        
+        avatar_id = firestore_service.create_user_avatar(user.id, base64_avatar)
+
+        if avatar_id:
+            user.firestore_avatar_id = avatar_id
+            user.use_firestore_avatar = True
+            user.save(update_fields=['firestore_avatar_id', 'use_firestore_avatar'])
+        else:
+            user.delete()
+            raise serializers.ValidationError(
+                {"avatar": "Failed to store avatar. Please try again."}
+            )
+
         return user
 
 
