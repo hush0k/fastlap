@@ -48,8 +48,8 @@ class DriverView(APIView):
         return handler(request, *args, **kwargs)
 
 
-class DriverDetailView(generics.RetrieveAPIView):
-    permission_classes = (AllowAny,)
+class DriverDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
     serializer_class = DriverDetailSerializer
     queryset = Driver.objects.all()
     lookup_field = "slug"

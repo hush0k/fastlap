@@ -4,6 +4,7 @@ from django_filters.rest_framework.backends import DjangoFilterBackend
 
 from django.http import HttpRequest, HttpResponse
 from rest_framework import generics
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
@@ -14,6 +15,7 @@ from .models import Tournament
 from .permissions import IsContentManager
 from .serializers import (
     TournamentCreateSerializer,
+    TournamentDetailSerializer,
     TournamentListSerializer,
     TournamentUpdateSerializer,
 )
@@ -22,10 +24,17 @@ from .serializers import (
 class TournamentListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = TournamentListSerializer
-    queryset = Tournament.objects.filter(is_active=True)
-    filter_backends = [DjangoFilterBackend]
+    queryset = Tournament.objects.filter(is_active=True).select_related("series")
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = TournamentFilter
+    search_fields = ["name", "series__name"]
     pagination_class = CustomPagination
+
+
+class TournamentDetailView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = TournamentDetailSerializer
+    queryset = Tournament.objects.filter(is_active=True).select_related("series")
 
 
 class TournamentCreateView(generics.CreateAPIView):
@@ -51,7 +60,7 @@ class TournamentView(APIView):
                 handler = TournamentListView.as_view()
             case "POST":
                 handler = TournamentCreateView.as_view()
-            case "PUT":
+            case "PUT" | "PATCH":
                 handler = TournamentUpdateView.as_view()
             case "DELETE":
                 handler = TournamentDestroyView.as_view()

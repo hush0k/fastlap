@@ -10,7 +10,47 @@ class TournamentListSerializer(ModelSerializer):
 
     class Meta:
         model = Tournament
-        fields = "__all__"
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "series",
+            "year",
+            "status",
+            "is_active",
+            "logo",
+            "start_date",
+            "end_date",
+            "total_rounds",
+            "prize_fund",
+            "currency",
+        ]
+
+
+class TournamentDetailSerializer(ModelSerializer):
+    series = SeriesSerializer()
+
+    class Meta:
+        model = Tournament
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "series",
+            "year",
+            "status",
+            "is_active",
+            "logo",
+            "description",
+            "start_date",
+            "end_date",
+            "total_rounds",
+            "prize_fund",
+            "currency",
+            "regulations_url",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class TournamentCreateSerializer(ModelSerializer):

@@ -8,6 +8,11 @@ logger = getLogger(__name__)
 
 
 class DriverListSerializer(ModelSerializer):
+    nationality_name = SerializerMethodField()
+
+    def get_nationality_name(self, obj: Driver) -> str:
+        return obj.nationality.name if obj.nationality else ""
+
     class Meta:
         model = Driver
         fields = [
@@ -16,6 +21,7 @@ class DriverListSerializer(ModelSerializer):
             "last_name",
             "slug",
             "nationality",
+            "nationality_name",
             "number",
             "profile_image",
             "is_active",
@@ -23,6 +29,11 @@ class DriverListSerializer(ModelSerializer):
 
 
 class DriverDetailSerializer(ModelSerializer):
+    nationality_name = SerializerMethodField()
+
+    def get_nationality_name(self, obj: Driver) -> str:
+        return obj.nationality.name if obj.nationality else ""
+
     class Meta:
         model = Driver
         fields = "__all__"

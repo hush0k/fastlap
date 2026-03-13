@@ -1,8 +1,9 @@
-from drf_spectacular.contrib.django_filters import DjangoFilterExtension
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from apps.teams.models import Team
@@ -17,21 +18,24 @@ from apps.teams.serializers import (
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all().prefetch_related("standings__tournament")
     lookup_field = "slug"
-    filter_backends = (OrderingFilter, SearchFilter, DjangoFilterExtension)
-    ordering_fields = "standings__position", "name", "founded_year"
-    search_fields = "name", "short_name", "country"
-    filterset_fields = "country", "founded_year"
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    ordering_fields = ["name", "founded_year"]
+    ordering = ["name"]
+    search_fields = ["name", "short_name", "country"]
+    filterset_fields = ["country", "founded_year"]
 
     def get_serializer_class(self):
         if self.action == "list":
             return TeamListSerializer
-        elif self.action == ["create", "update", "partial_update"]:
+        if self.action in ["create", "update", "partial_update"]:
             return TeamWriteSerializer
         return TeamDetailSerializer
 
     @action(methods=["get"], detail=True, url_path="standings")
     def standings(self, request, slug=None):
         team = self.get_object()
-        standings = team.standings.filter(team=team).select_related("tournament")
+        standings = team.standings.select_related("tournament").all()
         serializer = TeamStandingsSerializer(standings, many=True)
         return Response(serializer.data)

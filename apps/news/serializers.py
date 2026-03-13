@@ -15,7 +15,7 @@ logger = getLogger(__name__)
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
-        fields = ["id", "name"]
+        fields = ["id", "name", "slug"]
 
 
 class ArticleListSerializer(ModelSerializer):
@@ -32,6 +32,39 @@ class ArticleListSerializer(ModelSerializer):
     class Meta:
         model = Article
         fields = "__all__"
+
+
+class ArticleDetailSerializer(ModelSerializer):
+    author = SerializerMethodField()
+    tags = TagSerializer(many=True)
+    series = SerializerMethodField()
+
+    def get_series(self, obj: Article) -> list[dict[str, int | str]]:
+        return [dict(id=i.id, name=i.name) for i in obj.series.all()]
+
+    def get_author(self, obj: Article) -> dict[str, int | str]:
+        return dict(
+            id=obj.author.id,
+            username=obj.author.username,
+            first_name=obj.author.first_name,
+            last_name=obj.author.last_name,
+        )
+
+    class Meta:
+        model = Article
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "author",
+            "content",
+            "cover_image",
+            "series",
+            "tags",
+            "published_at",
+            "is_published",
+            "views_count",
+        ]
 
 
 class ArticleCreateSerializer(ModelSerializer):
