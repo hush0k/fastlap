@@ -7,11 +7,11 @@ from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 class Team(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
     short_name = models.CharField(max_length=10)
     logo = models.ImageField(upload_to="teams/logos/", null=True, blank=True)
+    banner = models.ImageField(upload_to="teams/banners/", null=True, blank=True)
     country = CountryField(blank=True)
     founded_year = models.PositiveSmallIntegerField(null=True, blank=True)
     description = models.TextField(blank=True)
 
-    # Finance
     budget = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     budget_currency = models.CharField(max_length=3, blank=True, default="USD")
     main_sponsor = models.CharField(max_length=255, blank=True)
@@ -29,7 +29,7 @@ class Team(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
         return f"{self.name} ({self.short_name})"
 
 
-class TeamStandings(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
+class TeamStandings(CreatedAtMixin, UpdatedAtMixin, models.Model):
     team = models.ForeignKey(
         Team,
         on_delete=models.CASCADE,
