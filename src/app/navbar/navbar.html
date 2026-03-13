@@ -1,0 +1,94 @@
+<header class="nav animate-slide-down">
+  <a class="brand" routerLink="/" (click)="closeAllMenus()">
+    <div class="logo-wrapper">
+      <span class="logo">FL</span>
+      <div class="logo-glow"></div>
+    </div>
+    <span class="brand-text">FastLap</span>
+  </a>
+
+  <nav class="links" [class.mobile-open]="isMobileMenuOpen">
+    <a routerLink="/teams" routerLinkActive="active" (click)="closeAllMenus()">
+      <fa-icon [icon]="faFlag"></fa-icon>
+      <span>Teams</span>
+    </a>
+
+    <a routerLink="/drivers" routerLinkActive="active" (click)="closeAllMenus()">
+      <fa-icon [icon]="faHelmetSafety"></fa-icon>
+      <span>Drivers</span>
+    </a>
+
+    <a routerLink="/news" routerLinkActive="active" (click)="closeAllMenus()">
+      <fa-icon [icon]="faNewspaper"></fa-icon>
+      <span>News</span>
+    </a>
+
+    <a routerLink="/tournaments" routerLinkActive="active" (click)="closeAllMenus()">
+      <fa-icon [icon]="faTrophy"></fa-icon>
+      <span>Tournaments</span>
+    </a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <div class="nav-actions">
+    <button
+      class="theme-toggle"
+      type="button"
+      (click)="toggleTheme()"
+      [attr.aria-label]="themeText"
+    >
+      <fa-icon [icon]="themeIcon"></fa-icon>
+      <span class="theme-tooltip">{{ themeText }}</span>
+    </button>
+
+    <div class="user-menu" *ngIf="isAuthenticated">
+      <button class="user-button" type="button" (click)="toggleUserMenu()" aria-label="User menu">
+        <div class="user-avatar">
+          <span class="initials">{{ userInitials }}</span>
+        </div>
+      </button>
+
+      <div class="dropdown-menu" [class.show]="isUserDropdownOpen">
+        <div class="user-info" *ngIf="userData as user">
+          <div class="user-name" *ngIf="user.first_name">
+            {{ user.first_name }} {{ user.last_name }}
+          </div>
+          <div class="user-email">{{ user.email }}</div>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <a class="dropdown-item" routerLink="/profile" (click)="closeAllMenus()">
+          <fa-icon [icon]="faUser"></fa-icon>
+          <span>Profile</span>
+        </a>
+
+        <a class="dropdown-item" routerLink="/settings" (click)="closeAllMenus()">
+          <fa-icon [icon]="faGear"></fa-icon>
+          <span>Settings</span>
+        </a>
+
+        <div class="dropdown-divider"></div>
+
+        <button class="dropdown-item logout" type="button" (click)="logout()">
+          <fa-icon [icon]="faSignOutAlt"></fa-icon>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <a class="auth-btn" routerLink="/auth" routerLinkActive="active" *ngIf="!isAuthenticated">
+      <span>Sign In</span>
+      <div class="avatar">
+        <fa-icon [icon]="faUser"></fa-icon>
+      </div>
+    </a>
+  </div>
+
+  <button class="mobile-menu-btn" type="button" (click)="toggleMobileMenu()" aria-label="Menu">
+    <fa-icon [icon]="isMobileMenuOpen ? faTimes : faBars"></fa-icon>
+  </button>
+</header>
+
+<div class="mobile-overlay" *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"></div>

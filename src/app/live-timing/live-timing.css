@@ -1,0 +1,248 @@
+.live-timing-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 59, 48, 0.1);
+  padding: 6px 12px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 59, 48, 0.3);
+}
+
+.live-indicator.active .pulse-dot {
+  background: #ff3b30;
+  animation: pulse 1.5s infinite;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3b30;
+}
+
+.live-text {
+  color: #ff3b30;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.session-name {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.current-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: monospace;
+}
+
+.current-time i {
+  color: var(--accent-secondary);
+  font-size: 12px;
+}
+
+.timing-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 20px;
+}
+
+.timing-feed::-webkit-scrollbar {
+  width: 4px;
+}
+
+.timing-feed::-webkit-scrollbar-track {
+  background: var(--bg-elevated);
+}
+
+.timing-feed::-webkit-scrollbar-thumb {
+  background: var(--accent-secondary);
+  border-radius: 4px;
+}
+
+.feed-item {
+  display: flex;
+  gap: 15px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.feed-item:hover {
+  transform: translateX(5px);
+  border-color: var(--border-hover);
+  background: var(--accent-soft);
+}
+
+.event-time {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 13px;
+  min-width: 45px;
+}
+
+.event-content {
+  flex: 1;
+}
+
+.driver-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.driver-number {
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.driver-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.team-name {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.event-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.event-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.event-badge i {
+  font-size: 10px;
+}
+
+.event-description {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.feed-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.full-feed-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.full-feed-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--border-hover);
+  color: var(--accent-secondary);
+  gap: 12px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@media (max-width: 600px) {
+  .feed-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .event-time {
+    min-width: auto;
+  }
+  
+  .driver-info {
+    margin-bottom: 4px;
+  }
+  
+  .event-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

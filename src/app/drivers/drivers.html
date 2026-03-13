@@ -1,0 +1,180 @@
+<section class="drivers-page">
+  <!-- ── Hero ───────────────────────────────────────────────── -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <span class="season-badge">F1 2026 SEASON</span>
+      <h1 class="hero-title">
+        <span class="title-outline">FORMULA 1</span>
+        <span class="title-bold">DRIVERS</span>
+      </h1>
+      <p class="hero-subtitle">
+        Meet the 2026 Formula 1 drivers competing for the World Championship
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ drivers.length }}</span>
+        <span class="stat-label">LOADED</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ total }}</span>
+        <span class="stat-label">TOTAL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filter bar ─────────────────────────────────────────── -->
+  <div class="filter-section">
+    <!-- Search by name -->
+    <div class="filter-search">
+      <i class="fa-solid fa-magnifying-glass filter-icon"></i>
+      <input
+        type="text"
+        class="filter-input"
+        placeholder="Search by driver name…"
+        [value]="searchTerm"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <!-- Nationality -->
+      <div class="filter-select-wrapper">
+        <i class="fa-solid fa-globe filter-icon"></i>
+        <select class="filter-select" [(ngModel)]="selectedNationality" (change)="onFilterChange()">
+          <option value="">All Nationalities</option>
+          <option *ngFor="let n of availableNationalities" [value]="n.code">
+            {{ n.name }}
+          </option>
+        </select>
+        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+      </div>
+
+      <!-- Active / Retired -->
+      <div class="filter-select-wrapper">
+        <i class="fa-solid fa-circle-dot filter-icon"></i>
+        <select class="filter-select" [(ngModel)]="selectedActive" (change)="onFilterChange()">
+          <option *ngFor="let opt of activeOptions" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+      </div>
+
+      <!-- Racing number -->
+      <div class="filter-number">
+        <i class="fa-solid fa-hashtag filter-icon"></i>
+        <input
+          type="number"
+          class="filter-input number-input"
+          placeholder="Number"
+          min="1"
+          max="99"
+          [value]="numberInput"
+          (input)="onNumberInput($any($event.target).value)"
+        />
+      </div>
+
+      <!-- Clear -->
+      <button *ngIf="hasActiveFilters" class="clear-btn" type="button" (click)="clearFilters()">
+        <i class="fa-solid fa-xmark"></i>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Result meta ────────────────────────────────────────── -->
+  <div class="results-info" *ngIf="!loading && total > 0">
+    <span class="results-count">
+      Showing {{ showingFrom }}–{{ showingTo }} of {{ total }} drivers
+    </span>
+    <span class="results-divider"></span>
+  </div>
+
+  <!-- ── States ─────────────────────────────────────────────── -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>LOADING DRIVERS...</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-state">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && drivers.length === 0" class="empty-state">
+    <i class="fa-solid fa-helmet-safety"></i>
+    <p>No drivers found</p>
+    <span *ngIf="!hasActiveFilters" class="empty-hint">
+      Add drivers via the Django admin panel to see them here.
+    </span>
+    <button *ngIf="hasActiveFilters" class="empty-clear" type="button" (click)="clearFilters()">
+      Clear filters
+    </button>
+  </div>
+
+  <!-- ── Drivers grid ───────────────────────────────────────── -->
+  <div *ngIf="drivers.length" class="drivers-grid">
+    <a class="driver-card" *ngFor="let driver of drivers" [routerLink]="['/drivers', driver.slug]">
+      <!-- Racing number watermark -->
+      <span class="card-number-bg" *ngIf="driver.number">
+        {{ driver.number }}
+      </span>
+
+      <!-- Profile image or initials fallback -->
+      <div class="card-image-wrap">
+        <img
+          *ngIf="driver.profile_image"
+          [src]="getProfileImage(driver.profile_image)"
+          [alt]="driver.first_name + ' ' + driver.last_name"
+          class="card-image"
+        />
+        <div *ngIf="!driver.profile_image" class="card-initials">
+          {{ getInitials(driver) }}
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="card-info">
+        <div class="card-meta">
+          <span class="card-number" *ngIf="driver.number">#{{ driver.number }}</span>
+          <span class="card-status" [class.active]="driver.is_active">
+            <span class="status-dot"></span>
+            {{ driver.is_active ? 'Active' : 'Retired' }}
+          </span>
+        </div>
+
+        <h3 class="card-name">
+          <span class="card-first">{{ driver.first_name }}</span>
+          <span class="card-last">{{ driver.last_name }}</span>
+        </h3>
+
+        <div class="card-nationality">
+          <i class="fa-solid fa-earth-europe"></i>
+          <span>{{ driver.nationality_name }}</span>
+        </div>
+      </div>
+
+      <!-- Hover CTA -->
+      <div class="card-cta">
+        <span>View Profile</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+    </a>
+  </div>
+
+  <!-- ── Pagination ──────────────────────────────────────────── -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="page-nav" type="button" [disabled]="!hasPrev" (click)="prevPage()">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <div class="page-numbers">
+      <span class="current-page">{{ currentPage }}</span>
+      <span class="page-separator">/</span>
+      <span class="total-pages-label">{{ totalPages }}</span>
+    </div>
+    <button class="page-nav" type="button" [disabled]="!hasNext" (click)="nextPage()">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</section>

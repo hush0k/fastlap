@@ -1,0 +1,197 @@
+<div class="news-page">
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="page-title-row">
+        <div class="page-icon">
+          <i class="fa-regular fa-newspaper"></i>
+        </div>
+        <div>
+          <h1 class="page-title">News</h1>
+          <p class="page-subtitle">Latest from the motorsport world</p>
+        </div>
+      </div>
+      <div class="page-meta" *ngIf="!loading && !error">
+        <span class="total-badge">{{ totalCount }} articles</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="skeleton-grid">
+      <div class="skeleton-card" *ngFor="let i of [1, 2, 3, 4, 5, 6]">
+        <div class="skeleton-image shimmer"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-tag shimmer"></div>
+          <div class="skeleton-title shimmer"></div>
+          <div class="skeleton-title short shimmer"></div>
+          <div class="skeleton-meta shimmer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-state" *ngIf="error && !loading">
+    <div class="error-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadArticles()">
+      <i class="fa-solid fa-rotate-right"></i> Retry
+    </button>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && !error && articles.length === 0">
+    <div class="empty-icon"><i class="fa-regular fa-newspaper"></i></div>
+    <h3>No articles yet</h3>
+    <p>Check back soon for the latest motorsport news.</p>
+  </div>
+
+  <div class="articles-grid" *ngIf="!loading && !error && articles.length > 0">
+    <article
+      class="article-card"
+      *ngFor="let article of articles; let i = index"
+      [style.animationDelay]="i * 0.07 + 's'"
+      (click)="openArticle(article.slug)"
+    >
+      <div class="card-image-wrap">
+        <img
+          class="card-image"
+          [src]="resolveImage(article.cover_image)"
+          [alt]="article.name"
+          loading="lazy"
+        />
+        <div class="card-image-overlay"></div>
+        <div class="card-tags" *ngIf="article.tags.length > 0">
+          <span class="tag-badge" *ngFor="let tag of article.tags.slice(0, 2)">
+            {{ tag.name }}
+          </span>
+        </div>
+        <div class="card-views">
+          <i class="fa-regular fa-eye"></i>
+          {{ article.views_count }}
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-date">
+            <i class="fa-regular fa-calendar"></i>
+            {{ formatDate(article.published_at) }}
+          </span>
+          <span class="card-author">
+            <i class="fa-regular fa-user"></i>
+            {{ getAuthorName(article) }}
+          </span>
+        </div>
+
+        <h2 class="card-title">{{ article.name }}</h2>
+
+        <p class="card-excerpt">
+          {{ article.content | slice: 0 : 120 }}{{ article.content.length > 120 ? '…' : '' }}
+        </p>
+
+        <div class="card-series" *ngIf="article.series.length > 0">
+          <span class="series-chip" *ngFor="let s of article.series.slice(0, 2)">
+            <i class="fa-solid fa-flag-checkered"></i>
+            {{ s.name }}
+          </span>
+        </div>
+
+        <div class="card-read-more">
+          <span>Read article</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button
+      class="page-btn nav-btn"
+      [disabled]="!hasPrev"
+      (click)="goToPage(currentOffset - pageSize)"
+    >
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <button
+      class="page-btn"
+      *ngFor="let page of pageNumbers"
+      [class.active]="page === currentPage"
+      (click)="goToPage((page - 1) * pageSize)"
+    >
+      {{ page }}
+    </button>
+
+    <button
+      class="page-btn nav-btn"
+      [disabled]="!hasNext"
+      (click)="goToPage(currentOffset + pageSize)"
+    >
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="onModalBackdropClick($event)">
+  <div class="modal-panel">
+    <div class="modal-loading" *ngIf="modalLoading">
+      <div class="modal-spinner"></div>
+      <p>Loading article…</p>
+    </div>
+
+    <div class="modal-error" *ngIf="modalError && !modalLoading">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <p>{{ modalError }}</p>
+      <button class="retry-btn" (click)="closeModal()">Close</button>
+    </div>
+
+    <ng-container *ngIf="selectedArticle && !modalLoading">
+      <div class="modal-hero">
+        <img
+          class="modal-cover"
+          [src]="resolveImage(selectedArticle.cover_image)"
+          [alt]="selectedArticle.name"
+        />
+        <div class="modal-hero-overlay"></div>
+
+        <button class="modal-close" (click)="closeModal()" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-hero-content">
+          <div class="modal-tags" *ngIf="selectedArticle.tags.length > 0">
+            <span class="tag-badge" *ngFor="let tag of selectedArticle.tags">
+              {{ tag.name }}
+            </span>
+          </div>
+          <h2 class="modal-title">{{ selectedArticle.name }}</h2>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-meta">
+          <span>
+            <i class="fa-regular fa-user"></i>
+            {{ getAuthorName(selectedArticle) }}
+          </span>
+          <span>
+            <i class="fa-regular fa-calendar"></i>
+            {{ formatDate(selectedArticle.published_at) }}
+          </span>
+          <span>
+            <i class="fa-regular fa-eye"></i>
+            {{ selectedArticle.views_count }} views
+          </span>
+        </div>
+
+        <div class="modal-series" *ngIf="selectedArticle.series.length > 0">
+          <span class="series-chip" *ngFor="let s of selectedArticle.series">
+            <i class="fa-solid fa-flag-checkered"></i>
+            {{ s.name }}
+          </span>
+        </div>
+
+        <div class="modal-content-text">{{ selectedArticle.content }}</div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,223 @@
+<div class="main">
+  <div class="animated-background">
+    <div class="gradient-sphere sphere-1"></div>
+    <div class="gradient-sphere sphere-2"></div>
+    <div class="gradient-sphere sphere-3"></div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+  <div class="login-container" [class.signup-mode]="isSignupMode">
+    <div class="login-header">
+      <h1>{{ isSignupMode ? 'Create Account' : 'Welcome Back' }}</h1>
+      <p>
+        {{
+          isSignupMode ? 'Join the FastLap community today!' : 'Log in to continue your F1 journey'
+        }}
+      </p>
+    </div>
+
+    <form *ngIf="!isSignupMode" (ngSubmit)="onSubmit()" class="form-slide">
+      <div class="form-group">
+        <input
+          type="email"
+          class="form-input"
+          [class.error]="validationErrors['email']"
+          placeholder="Email"
+          required
+          [(ngModel)]="email"
+          name="email"
+          (input)="clearLoginFieldError('email')"
+        />
+        <i class="wrap fa-solid fa-envelope"></i>
+        <div class="field-error" *ngIf="validationErrors['email']">
+          {{ validationErrors['email'] }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          class="form-input"
+          [class.error]="validationErrors['password']"
+          placeholder="Password"
+          required
+          [(ngModel)]="password"
+          name="password"
+          (input)="clearLoginFieldError('password')"
+        />
+        <i class="wrap fa-solid fa-lock"></i>
+        <div class="field-error" *ngIf="validationErrors['password']">
+          {{ validationErrors['password'] }}
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="loading">
+        {{ loading ? 'Logging in...' : 'Log In' }}
+      </button>
+
+      <div *ngIf="loginErrorMessage" class="error-message">
+        {{ loginErrorMessage }}
+      </div>
+
+      <div class="divider"><span>or continue with</span></div>
+
+      <div class="social-login">
+        <button class="social-button" type="button" disabled aria-label="Continue with Google">
+          <i class="fa-brands fa-google"></i>
+        </button>
+        <button class="social-button" type="button" disabled aria-label="Continue with Apple">
+          <i class="fa-brands fa-apple"></i>
+        </button>
+        <button class="social-button" type="button" disabled aria-label="Continue with GitHub">
+          <i class="fa-brands fa-github"></i>
+        </button>
+      </div>
+
+      <div class="additional-options">
+        <a href="#">Forgot password?</a>
+        <p>
+          Don't have an account?
+          <a (click)="toggleMode()">Sign up</a>
+        </p>
+      </div>
+    </form>
+
+    <form *ngIf="isSignupMode" (ngSubmit)="onRegister()" class="form-slide">
+      <div class="form-group">
+        <input
+          type="email"
+          class="form-input"
+          [class.error]="validationErrors['email']"
+          placeholder="Email"
+          required
+          [(ngModel)]="email"
+          name="email"
+          (input)="clearRegisterFieldError('email')"
+        />
+        <i class="wrap fa-solid fa-envelope"></i>
+        <div class="field-error" *ngIf="validationErrors['email']">
+          {{ validationErrors['email'] }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-input"
+          [class.error]="validationErrors['username']"
+          placeholder="Username"
+          required
+          [(ngModel)]="username"
+          name="username"
+          (input)="clearRegisterFieldError('username')"
+        />
+        <i class="wrap fa-solid fa-user"></i>
+        <div class="field-error" *ngIf="validationErrors['username']">
+          {{ validationErrors['username'] }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-input"
+          [class.error]="validationErrors['full_name']"
+          placeholder="Full Name"
+          required
+          [(ngModel)]="full_name"
+          name="full_name"
+          (input)="clearRegisterFieldError('full_name')"
+        />
+        <i class="wrap fa-solid fa-user"></i>
+        <div class="field-error" *ngIf="validationErrors['full_name']">
+          {{ validationErrors['full_name'] }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          class="form-input"
+          [class.error]="validationErrors['password']"
+          placeholder="Password"
+          required
+          [(ngModel)]="password"
+          name="password"
+          (input)="clearRegisterFieldError('password')"
+        />
+        <i class="wrap fa-solid fa-lock"></i>
+        <div class="field-error" *ngIf="validationErrors['password']">
+          {{ validationErrors['password'] }}
+        </div>
+        <div class="password-requirements" *ngIf="isSignupMode && password">
+          <div class="requirements-title">Password requirements</div>
+
+          <div class="requirement-item" [class.valid]="passwordChecks.length">
+            <span class="requirement-dot">{{ passwordChecks.length ? '✓' : '•' }}</span>
+            <span>At least 8 characters</span>
+          </div>
+
+          <div class="requirement-item" [class.valid]="passwordChecks.letter">
+            <span class="requirement-dot">{{ passwordChecks.letter ? '✓' : '•' }}</span>
+            <span>At least one letter</span>
+          </div>
+
+          <div class="requirement-item" [class.valid]="passwordChecks.number">
+            <span class="requirement-dot">{{ passwordChecks.number ? '✓' : '•' }}</span>
+            <span>At least one number</span>
+          </div>
+
+          <div class="requirement-item" [class.valid]="passwordChecks.special">
+            <span class="requirement-dot">{{ passwordChecks.special ? '✓' : '•' }}</span>
+            <span>At least one special character</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          class="form-input"
+          [class.error]="validationErrors['password2']"
+          placeholder="Confirm Password"
+          required
+          [(ngModel)]="password2"
+          name="password2"
+          (input)="clearRegisterFieldError('password2')"
+        />
+        <i class="wrap fa-solid fa-lock"></i>
+        <div class="field-error" *ngIf="validationErrors['password2']">
+          {{ validationErrors['password2'] }}
+        </div>
+      </div>
+
+      <div class="form-group file-input-group">
+        <label for="avatar" class="file-label" [class.error]="validationErrors['avatar']">
+          <i class="fa-solid fa-camera"></i>
+          <span>{{ selectedAvatar ? selectedAvatar.name : 'Choose Avatar (required)' }}</span>
+        </label>
+        <input type="file" id="avatar" accept="image/*" (change)="onFileSelected($event)" hidden />
+        <div class="field-error" *ngIf="validationErrors['avatar']">
+          {{ validationErrors['avatar'] }}
+        </div>
+      </div>
+
+      <div class="avatar-preview" *ngIf="avatarPreview">
+        <img [src]="avatarPreview" alt="Avatar preview" />
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="loading">
+        {{ loading ? 'Creating account...' : 'Sign Up' }}
+      </button>
+
+      <div *ngIf="registerErrorMessage" class="error-message">
+        {{ registerErrorMessage }}
+      </div>
+
+      <p class="r-text">
+        Already have an account?
+        <a (click)="toggleMode()">Login</a>
+      </p>
+    </form>
+  </div>
+</div>

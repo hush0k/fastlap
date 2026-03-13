@@ -1,0 +1,51 @@
+<div class="weather-widget">
+  <div class="widget-header">
+    <div class="header-left">
+      <i class="fa-solid fa-cloud-sun"></i>
+      <h3>Race Weekend Weather</h3>
+    </div>
+    <span class="location">
+      <i class="fa-solid fa-location-dot"></i>
+      {{ location }}
+    </span>
+  </div>
+
+  <div class="current-weather">
+    <div class="weather-main">
+      <i class="fa-solid" [ngClass]="getWeatherIcon(currentConditions.condition)" 
+         [style.color]="getWeatherColor(currentConditions.condition)"></i>
+      <div class="current-temp">{{ currentConditions.temperature }}°C</div>
+    </div>
+    <div class="weather-details">
+      <div class="detail-item">
+        <i class="fa-solid fa-droplet"></i>
+        <span>Humidity: {{ currentConditions.humidity }}%</span>
+      </div>
+      <div class="detail-item">
+        <i class="fa-solid fa-wind"></i>
+        <span>Wind: {{ currentConditions.windSpeed }} km/h</span>
+      </div>
+      <div class="track-condition">
+        <i class="fa-solid fa-flag-checkered"></i>
+        <span>{{ getTrackCondition() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="forecast-grid">
+    <div class="forecast-day" *ngFor="let day of forecasts">
+      <span class="day-name">{{ day.day }}</span>
+      <i class="fa-solid" [ngClass]="getWeatherIcon(day.condition)"
+         [style.color]="getWeatherColor(day.condition)"></i>
+      <span class="day-temp">{{ day.temperature }}°C</span>
+      <span class="condition-text">{{ day.condition | titlecase }}</span>
+    </div>
+  </div>
+
+  <div class="weather-impact">
+    <div class="impact-badge" [class.rain-risk]="isRainy()">
+      <i class="fa-solid" [ngClass]="isRainy() ? 'fa-umbrella' : 'fa-circle-check'"></i>
+      <span>{{ isRainy() ? 'Rain likely during race' : 'Dry race expected' }}</span>
+    </div>
+  </div>
+</div>

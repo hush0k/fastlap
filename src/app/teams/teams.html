@@ -1,0 +1,130 @@
+<section class="teams-page">
+  <div class="hero-section">
+    <div class="hero-content">
+      <span class="season-badge">F1 2026 SEASON</span>
+      <h1 class="hero-title">
+        <span class="title-outline">FORMULA 1</span>
+        <span class="title-bold">TEAMS</span>
+      </h1>
+      <p class="hero-subtitle">
+        Discover the 2026 Formula 1 teams competing for the World Championship
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ teams.length }}</span>
+        <span class="stat-label">LOADED</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ total }}</span>
+        <span class="stat-label">TOTAL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-search">
+      <i class="fa-solid fa-magnifying-glass filter-icon"></i>
+      <input
+        type="text"
+        class="filter-input"
+        placeholder="Search teams by name or country..."
+        [value]="searchTerm"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <div class="filter-select-wrapper">
+        <i class="fa-solid fa-globe filter-icon"></i>
+        <select class="filter-select" [(ngModel)]="selectedCountry" (change)="onFilterChange()">
+          <option value="">All Countries</option>
+          <option *ngFor="let c of availableCountries" [value]="c.code">{{ c.name }}</option>
+        </select>
+        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+      </div>
+
+      <div class="filter-select-wrapper">
+        <i class="fa-solid fa-arrow-down-wide-short filter-icon"></i>
+        <select class="filter-select" [(ngModel)]="selectedOrdering" (change)="onFilterChange()">
+          <option *ngFor="let opt of orderingOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+      </div>
+
+      <button *ngIf="hasActiveFilters" class="clear-btn" type="button" (click)="clearFilters()">
+        <i class="fa-solid fa-xmark"></i>
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <div class="results-info" *ngIf="!loading && total > 0">
+    <span class="results-count"
+      >Showing {{ showingFrom }}–{{ showingTo }} of {{ total }} teams</span
+    >
+    <span class="results-divider"></span>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>LOADING TEAMS...</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-state">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && teams.length === 0" class="empty-state">
+    <i class="fa-solid fa-flag"></i>
+    <p>No teams found</p>
+    <button *ngIf="hasActiveFilters" class="empty-clear" type="button" (click)="clearFilters()">
+      Clear filters
+    </button>
+  </div>
+
+  <div *ngIf="teams.length" class="teams-grid">
+    <a class="team-card" *ngFor="let team of teams" [routerLink]="['/teams', team.slug]">
+      <div
+        class="card-banner"
+        [style.backgroundImage]="team.banner ? 'url(' + getBanner(team.banner) + ')' : 'none'"
+        [class.card-banner--no-image]="!team.banner"
+      ></div>
+
+      <div class="card-overlay"></div>
+
+      <div class="card-content">
+        <div class="card-top">
+          <div class="card-logo-wrap">
+            <img [src]="getLogo(team.logo)" [alt]="team.name" class="card-logo" />
+          </div>
+          <span class="card-short">{{ team.short_name }}</span>
+        </div>
+
+        <div class="card-bottom">
+          <h2 class="card-name">{{ team.name }}</h2>
+          <div class="card-country">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>{{ team.country_name }}</span>
+          </div>
+          <span class="card-cta"> View Details <i class="fa-solid fa-arrow-right"></i> </span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="page-nav" type="button" [disabled]="!hasPrev" (click)="prevPage()">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <div class="page-numbers">
+      <span class="current-page">{{ currentPage }}</span>
+      <span class="page-separator">/</span>
+      <span class="total-pages-label">{{ totalPages }}</span>
+    </div>
+    <button class="page-nav" type="button" [disabled]="!hasNext" (click)="nextPage()">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</section>

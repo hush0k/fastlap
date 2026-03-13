@@ -1,0 +1,251 @@
+<div class="tournaments-page">
+  <div class="page-header">
+    <div class="page-header-top">
+      <div class="page-title-row">
+        <div class="page-icon">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div>
+          <h1 class="page-title">Tournaments</h1>
+          <p class="page-subtitle">Championships & series from around the world</p>
+        </div>
+      </div>
+      <div class="page-meta" *ngIf="!loading && !error">
+        <span class="total-badge">{{ totalCount }} tournaments</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Search tournaments…"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput()"
+        />
+        <button
+          class="search-clear"
+          *ngIf="searchQuery"
+          (click)="searchQuery = ''; onSearchInput()"
+          aria-label="Clear search"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="status-filters">
+        <button
+          class="status-btn"
+          *ngFor="let f of statusFilters"
+          [class.active]="activeStatus === f.value"
+          (click)="setStatus(f.value)"
+        >
+          <i class="fa-solid" [ngClass]="f.icon"></i>
+          {{ f.label }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="skeleton-grid" *ngIf="loading">
+    <div class="skeleton-card" *ngFor="let i of [1, 2, 3, 4, 5, 6]">
+      <div class="skeleton-logo shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-badge shimmer"></div>
+        <div class="skeleton-title shimmer"></div>
+        <div class="skeleton-title short shimmer"></div>
+        <div class="skeleton-row shimmer"></div>
+        <div class="skeleton-row short shimmer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-state" *ngIf="error && !loading">
+    <div class="error-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadTournaments()">
+      <i class="fa-solid fa-rotate-right"></i> Retry
+    </button>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && !error && tournaments.length === 0">
+    <div class="empty-icon"><i class="fa-solid fa-trophy"></i></div>
+    <h3>No tournaments found</h3>
+    <p>Try adjusting your search or filter.</p>
+  </div>
+
+  <div class="tournaments-grid" *ngIf="!loading && !error && tournaments.length > 0">
+    <div
+      class="tournament-card"
+      *ngFor="let t of tournaments; let i = index"
+      [style.animationDelay]="i * 0.07 + 's'"
+      (click)="openTournament(t.id)"
+    >
+      <div class="card-banner" [style.backgroundImage]="'url(' + resolveImage(t.logo) + ')'">
+        <div class="card-banner-overlay"></div>
+        <div class="card-banner-chips">
+          <span class="status-badge" [ngClass]="'status-' + t.status">
+            <i class="fa-solid" [ngClass]="getStatusIcon(t.status)"></i>
+            {{ t.status }}
+          </span>
+          <span class="year-chip">{{ t.year }}</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h2 class="card-title">{{ t.name }}</h2>
+
+        <div class="card-series">
+          <i class="fa-solid fa-flag-checkered"></i>
+          {{ t.series.name }}
+        </div>
+
+        <div class="card-info-row">
+          <span class="info-item">
+            <i class="fa-regular fa-calendar"></i>
+            {{ formatDate(t.start_date) }} — {{ formatDate(t.end_date) }}
+          </span>
+          <span class="info-item">
+            <i class="fa-solid fa-road"></i>
+            {{ t.total_rounds }} rounds
+          </span>
+        </div>
+
+        <div class="card-prize" *ngIf="t.prize_fund">
+          <i class="fa-solid fa-sack-dollar"></i>
+          {{ formatPrize(t.prize_fund, t.currency) }}
+        </div>
+
+        <div class="card-footer">
+          <span>View details</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button
+      class="page-btn nav-btn"
+      [disabled]="!hasPrev"
+      (click)="goToPage(currentOffset - pageSize)"
+    >
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button
+      class="page-btn"
+      *ngFor="let page of pageNumbers"
+      [class.active]="page === currentPage"
+      (click)="goToPage((page - 1) * pageSize)"
+    >
+      {{ page }}
+    </button>
+    <button
+      class="page-btn nav-btn"
+      [disabled]="!hasNext"
+      (click)="goToPage(currentOffset + pageSize)"
+    >
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="onModalBackdropClick($event)">
+  <div class="modal-panel">
+    <div class="modal-loading" *ngIf="modalLoading">
+      <div class="modal-spinner"></div>
+      <p>Loading tournament…</p>
+    </div>
+
+    <div class="modal-error" *ngIf="modalError && !modalLoading">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <p>{{ modalError }}</p>
+      <button class="retry-btn" (click)="closeModal()">Close</button>
+    </div>
+
+    <ng-container *ngIf="selectedTournament && !modalLoading">
+      <div class="modal-header">
+        <div class="modal-logo-wrap">
+          <img
+            class="modal-logo"
+            [src]="resolveImage(selectedTournament.logo)"
+            [alt]="selectedTournament.name"
+          />
+        </div>
+        <div class="modal-header-info">
+          <div class="modal-badges">
+            <span class="status-badge" [ngClass]="'status-' + selectedTournament.status">
+              <i class="fa-solid" [ngClass]="getStatusIcon(selectedTournament.status)"></i>
+              {{ selectedTournament.status }}
+            </span>
+            <span class="year-chip">{{ selectedTournament.year }}</span>
+          </div>
+          <h2 class="modal-title">{{ selectedTournament.name }}</h2>
+          <div class="modal-series">
+            <i class="fa-solid fa-flag-checkered"></i>
+            {{ selectedTournament.series.name }}
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeModal()" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-stats">
+        <div class="stat-block">
+          <span class="stat-icon"><i class="fa-regular fa-calendar"></i></span>
+          <div class="stat-content">
+            <span class="stat-label">Start Date</span>
+            <span class="stat-value">{{ formatDate(selectedTournament.start_date) }}</span>
+          </div>
+        </div>
+        <div class="stat-block">
+          <span class="stat-icon"><i class="fa-regular fa-calendar-check"></i></span>
+          <div class="stat-content">
+            <span class="stat-label">End Date</span>
+            <span class="stat-value">{{ formatDate(selectedTournament.end_date) }}</span>
+          </div>
+        </div>
+        <div class="stat-block">
+          <span class="stat-icon"><i class="fa-solid fa-road"></i></span>
+          <div class="stat-content">
+            <span class="stat-label">Rounds</span>
+            <span class="stat-value">{{ selectedTournament.total_rounds }}</span>
+          </div>
+        </div>
+        <div class="stat-block" *ngIf="selectedTournament.prize_fund">
+          <span class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></span>
+          <div class="stat-content">
+            <span class="stat-label">Prize Fund</span>
+            <span class="stat-value">{{
+              formatPrize(selectedTournament.prize_fund, selectedTournament.currency)
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedTournament.description">
+        <h3 class="modal-section-title">
+          <i class="fa-regular fa-file-lines"></i>
+          About
+        </h3>
+        <p class="modal-description">{{ selectedTournament.description }}</p>
+      </div>
+
+      <div class="modal-regulations" *ngIf="selectedTournament.regulations_url">
+        <a
+          [href]="selectedTournament.regulations_url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="regulations-link"
+        >
+          <i class="fa-solid fa-file-pdf"></i>
+          View Regulations
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+    </ng-container>
+  </div>
+</div>

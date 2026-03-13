@@ -1,0 +1,52 @@
+<div class="next-race-card" *ngIf="nextRace">
+  <div class="card-header">
+    <div class="header-left">
+      <span class="next-race-badge">NEXT RACE</span>
+      <span class="race-round">Round {{ nextRace.round }}</span>
+    </div>
+    <i class="fa-solid fa-flag-checkered"></i>
+  </div>
+
+  <div class="race-main">
+    <div class="race-flag">{{ nextRace.flag }}</div>
+    <div class="race-info">
+      <h3>{{ nextRace.name }}</h3>
+      <p class="circuit">{{ nextRace.circuit }}</p>
+      <div class="race-datetime">
+        <i class="fa-regular fa-calendar"></i>
+        <span>{{ nextRace.date | date:'fullDate' }}</span>
+        <i class="fa-regular fa-clock"></i>
+        <span>{{ nextRace.time }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="countdown-container">
+    <div class="countdown-item">
+      <span class="countdown-value">{{ countdown.days }}</span>
+      <span class="countdown-label">Days</span>
+    </div>
+    <div class="countdown-item">
+      <span class="countdown-value">{{ countdown.hours }}</span>
+      <span class="countdown-label">Hours</span>
+    </div>
+    <div class="countdown-item">
+      <span class="countdown-value">{{ countdown.minutes }}</span>
+      <span class="countdown-label">Mins</span>
+    </div>
+    <div class="countdown-item">
+      <span class="countdown-value">{{ countdown.seconds }}</span>
+      <span class="countdown-label">Secs</span>
+    </div>
+  </div>
+
+  <div class="race-actions">
+    <button class="reminder-btn" (click)="setReminder()">
+      <i class="fa-regular fa-bell"></i>
+      Set Reminder
+    </button>
+    <a routerLink="/races/{{ nextRace.id }}" class="details-link">
+      Race Details <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+</div>

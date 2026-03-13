@@ -1,0 +1,320 @@
+<section class="hero">
+  <div class="hero-left animate-slide-in">
+    <div class="hero-badge">
+      <i class="fa-solid fa-flag-checkered"></i>
+      <span>F1 2026 Season</span>
+    </div>
+    <h1>FastLap</h1>
+    <p class="hero-description">
+      <i class="fa-solid fa-microchip"></i>
+      F1 fan platform: news, bloggers, teams, drivers, tournaments — clean UI now, backend later.
+    </p>
+
+    <div class="actions">
+      <a class="btn" routerLink="/news">
+        <i class="fa-regular fa-newspaper"></i>
+        Browse News
+      </a>
+      <a class="btn ghost" routerLink="/teams">
+        <i class="fa-solid fa-flag"></i>
+        Explore Teams
+      </a>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-value">10+</span>
+        <span class="stat-label">Teams</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">20+</span>
+        <span class="stat-label">Drivers</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">24</span>
+        <span class="stat-label">Races</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right animate-fade-in">
+    <div class="box-title">
+      <i class="fa-regular fa-compass"></i>
+      Quick access
+    </div>
+    <div class="quick-grid">
+      <a routerLink="/teams" class="quick-link">
+        <i class="fa-solid fa-flag"></i>
+        <span>Teams</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a routerLink="/drivers" class="quick-link">
+        <i class="fa-solid fa-helmet-safety"></i>
+        <span>Drivers</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a routerLink="/tournaments" class="quick-link">
+        <i class="fa-solid fa-trophy"></i>
+        <span>Tournaments</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a routerLink="/auth" class="quick-link highlight">
+        <i class="fa-regular fa-user"></i>
+        <span>Login</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="live-indicator">
+      <span class="pulse-dot"></span>
+      <span>Live timing available</span>
+    </div>
+  </div>
+</section>
+
+<section class="section animate-fade-in-up">
+  <div class="section-head">
+    <h2>
+      <i class="fa-regular fa-newspaper"></i>
+      Latest News
+    </h2>
+    <a class="see-all" routerLink="/news">
+      <span>See all</span>
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="news-grid">
+    <article
+      class="news-card"
+      *ngFor="let n of topNews; let i = index"
+      [style.animationDelay]="i * 0.1 + 's'"
+    >
+      <div class="poster" [style.backgroundImage]="'url(' + n.posterUrl + ')'">
+        <div class="poster-overlay"></div>
+        <span class="category-badge" *ngIf="n.tag">
+          <i class="fa-solid" [ngClass]="getTagIcon(n.tag)"></i>
+          {{ n.tag }}
+        </span>
+      </div>
+
+      <div class="content">
+        <div class="meta">
+          <span class="date">
+            <i class="fa-regular fa-calendar"></i>
+            {{ formatDate(n.publishedAt) }}
+          </span>
+          <span class="author">
+            <i class="fa-regular fa-user"></i>
+            {{ n.author }}
+          </span>
+        </div>
+
+        <h3>{{ n.title }}</h3>
+        <p class="summary">{{ n.summary }}</p>
+
+        <a class="read" routerLink="/news">
+          <span>Read article</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="section features animate-fade-in-up">
+  <div class="section-head">
+    <h2>
+      <i class="fa-regular fa-star"></i>
+      Features
+    </h2>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-chart-simple"></i>
+      </div>
+      <h3>Live Timing</h3>
+      <p>Real-time sector times, tire strategies, and gap analysis</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-radio"></i>
+      </div>
+      <h3>Team Radio</h3>
+      <p>Listen to team communications and strategic calls</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-microphone"></i>
+      </div>
+      <h3>Expert Analysis</h3>
+      <p>Post-race breakdowns and technical insights</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-ranking-star"></i>
+      </div>
+      <h3>Driver Rankings</h3>
+      <p>Historical data and championship standings</p>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-section">
+  <div class="section-header">
+    <div class="header-left">
+      <div class="section-icon">
+        <i class="fa-solid fa-flag-checkered"></i>
+      </div>
+      <div class="header-text">
+        <h2>Next Race</h2>
+        <p class="section-subtitle">Countdown to the next Grand Prix</p>
+      </div>
+    </div>
+    <a routerLink="/races" class="section-link">
+      Full Calendar <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="grid-col">
+      <app-next-race></app-next-race>
+    </div>
+    <div class="grid-col">
+      <app-standings-widget></app-standings-widget>
+    </div>
+  </div>
+</section>
+
+<!-- Live Timing Section -->
+<section class="dashboard-section live-section">
+  <div class="section-header">
+    <div class="header-left">
+      <div class="section-icon live-icon">
+        <span class="pulse-dot-small"></span>
+        <i class="fa-solid fa-tower-broadcast"></i>
+      </div>
+      <div class="header-text">
+        <h2>Live Timing</h2>
+        <p class="section-subtitle">Real-time session coverage</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="session-badge">Qualifying - Q3</span>
+      <a routerLink="/live" class="section-link">
+        Full Timing <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="grid-col full-width">
+      <app-live-timing></app-live-timing>
+    </div>
+  </div>
+</section>
+
+<!-- Fan Engagement Section -->
+<section class="dashboard-section">
+  <div class="section-header">
+    <div class="header-left">
+      <div class="section-icon">
+        <i class="fa-solid fa-heart"></i>
+      </div>
+      <div class="header-text">
+        <h2>Fan Engagement</h2>
+        <p class="section-subtitle">Vote and track race conditions</p>
+      </div>
+    </div>
+    <a routerLink="/community" class="section-link">
+      Community Hub <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="grid-col">
+      <app-driver-vote></app-driver-vote>
+    </div>
+    <div class="grid-col">
+      <app-weather-widget></app-weather-widget>
+    </div>
+  </div>
+</section>
+
+<!-- Track Spotlight Section -->
+<section class="dashboard-section">
+  <div class="section-header">
+    <div class="header-left">
+      <div class="section-icon">
+        <i class="fa-solid fa-road"></i>
+      </div>
+      <div class="header-text">
+        <h2>Track Spotlight</h2>
+        <p class="section-subtitle">Explore this week's circuit</p>
+      </div>
+    </div>
+    <a routerLink="/circuits" class="section-link">
+      All Circuits <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="grid-col full-width">
+      <app-track-spotlight></app-track-spotlight>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Stats Bar -->
+<div class="quick-stats-bar">
+  <div class="stat-block">
+    <span class="stat-block-icon">
+      <i class="fa-solid fa-calendar-check"></i>
+    </span>
+    <div class="stat-block-content">
+      <span class="stat-block-value">24</span>
+      <span class="stat-block-label">Races in 2026</span>
+    </div>
+  </div>
+  <div class="stat-block">
+    <span class="stat-block-icon">
+      <i class="fa-solid fa-flag"></i>
+    </span>
+    <div class="stat-block-content">
+      <span class="stat-block-value">10</span>
+      <span class="stat-block-label">Teams</span>
+    </div>
+  </div>
+  <div class="stat-block">
+    <span class="stat-block-icon">
+      <i class="fa-solid fa-helmet-safety"></i>
+    </span>
+    <div class="stat-block-content">
+      <span class="stat-block-value">20</span>
+      <span class="stat-block-label">Drivers</span>
+    </div>
+  </div>
+  <div class="stat-block">
+    <span class="stat-block-icon">
+      <i class="fa-solid fa-trophy"></i>
+    </span>
+    <div class="stat-block-content">
+      <span class="stat-block-value">5</span>
+      <span class="stat-block-label">Champions</span>
+    </div>
+  </div>
+  <div class="stat-block">
+    <span class="stat-block-icon">
+      <i class="fa-solid fa-earth-europe"></i>
+    </span>
+    <div class="stat-block-content">
+      <span class="stat-block-value">21</span>
+      <span class="stat-block-label">Countries</span>
+    </div>
+  </div>
+</div>

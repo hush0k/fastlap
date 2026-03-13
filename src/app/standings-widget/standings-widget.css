@@ -1,0 +1,215 @@
+.standings-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-left i {
+  color: var(--accent-secondary);
+  font-size: 24px;
+}
+
+.header-left h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.view-all-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.view-all-link:hover {
+  color: var(--accent-secondary);
+  background: var(--accent-soft);
+  gap: 12px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: var(--bg-elevated);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn i {
+  font-size: 16px;
+}
+
+.tab-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent-secondary);
+}
+
+.tab-btn.active i {
+  color: var(--accent-secondary);
+}
+
+.tab-btn:hover:not(.active) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.standings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.standing-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.standing-item:hover {
+  transform: translateX(5px);
+  border-color: var(--border-hover);
+  background: var(--accent-soft);
+}
+
+.position-badge {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.position-badge.top-3 {
+  background: var(--accent-primary);
+  color: white;
+  border-color: transparent;
+}
+
+.driver-info, .team-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.driver-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.team-name {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.points-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.points {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.wins {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wins i {
+  font-size: 12px;
+}
+
+.standings-footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.next-race-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.next-race-info i {
+  color: var(--accent-secondary);
+}
+
+@media (max-width: 600px) {
+  .standing-item {
+    padding: 10px 12px;
+  }
+  
+  .points-stats {
+    gap: 8px;
+  }
+  
+  .wins span {
+    display: none;
+  }
+}

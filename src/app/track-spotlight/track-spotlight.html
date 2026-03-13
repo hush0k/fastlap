@@ -1,0 +1,122 @@
+<div class="track-spotlight">
+  <div class="spotlight-header">
+    <h3><i class="fa-solid fa-road"></i> Track Spotlight</h3>
+    <a routerLink="/circuits" class="view-all">
+      All Circuits <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="track-hero">
+    <div class="track-image" [style.backgroundImage]="'url(' + currentTrack.imageUrl + ')'">
+      <div class="track-overlay"></div>
+      <div class="track-flag">{{ currentTrack.flag }}</div>
+      <div class="track-name-large">{{ currentTrack.name }}</div>
+    </div>
+
+    <div class="track-quick-stats">
+      <div class="quick-stat">
+        <i class="fa-solid fa-ruler"></i>
+        <span class="stat-value">{{ currentTrack.length }}</span>
+        <span class="stat-label">Length</span>
+      </div>
+      <div class="quick-stat">
+        <i class="fa-solid fa-flag"></i>
+        <span class="stat-value">{{ currentTrack.laps }}</span>
+        <span class="stat-label">Laps</span>
+      </div>
+      <div class="quick-stat">
+        <i class="fa-solid fa-clock"></i>
+        <span class="stat-value">{{ currentTrack.lapRecord }}</span>
+        <span class="stat-label">Lap Record</span>
+      </div>
+      <div class="quick-stat">
+        <i class="fa-solid fa-turn-down"></i>
+        <span class="stat-value">{{ currentTrack.turns }}</span>
+        <span class="stat-label">Turns</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="track-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')">
+      <i class="fa-solid fa-circle-info"></i>
+      Info
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'stats'" (click)="setActiveTab('stats')">
+      <i class="fa-solid fa-chart-bar"></i>
+      Stats
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'history'" (click)="setActiveTab('history')">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      History
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <div class="info-tab" *ngIf="activeTab === 'info'">
+      <p class="track-description">{{ currentTrack.description }}</p>
+      <div class="location-info">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>{{ currentTrack.location }}, {{ currentTrack.country }} {{ currentTrack.flag }}</span>
+      </div>
+      <div class="drs-info">
+        <i class="fa-solid fa-wings"></i>
+        <span>{{ currentTrack.drsZones }} DRS Zones</span>
+      </div>
+    </div>
+
+    <div class="stats-tab" *ngIf="activeTab === 'stats'">
+      <div class="stat-grid">
+        <div class="stat-row">
+          <span class="stat-name">Circuit Length</span>
+          <span class="stat-number">{{ currentTrack.length }} / {{ getTrackLengthInMiles() }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Race Distance</span>
+          <span class="stat-number">{{ getRaceDistance() }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Turns</span>
+          <span class="stat-number">{{ currentTrack.turns }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">DRS Zones</span>
+          <span class="stat-number">{{ currentTrack.drsZones }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-name">Lap Record</span>
+          <span class="stat-number">{{ currentTrack.lapRecord }} ({{ currentTrack.recordHolder }})</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-tab" *ngIf="activeTab === 'history'">
+      <div class="history-item">
+        <span class="year">2025</span>
+        <span class="winner">Max Storm</span>
+        <span class="team">Red Velocity</span>
+      </div>
+      <div class="history-item">
+        <span class="year">2024</span>
+        <span class="winner">Lewis Knight</span>
+        <span class="team">Silver Arrow</span>
+      </div>
+      <div class="history-item">
+        <span class="year">2023</span>
+        <span class="winner">Max Storm</span>
+        <span class="team">Red Velocity</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="upcoming-tracks">
+    <h4>Upcoming Circuits</h4>
+    <div class="track-list">
+      <button class="track-item" *ngFor="let track of upcomingTracks" (click)="selectTrack(track)">
+        <span class="track-flag">{{ track.flag }}</span>
+        <span class="track-name">{{ track.name }}</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

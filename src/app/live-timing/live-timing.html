@@ -1,0 +1,46 @@
+<div class="live-timing-widget">
+  <div class="widget-header">
+    <div class="header-left">
+      <div class="live-indicator" [class.active]="isLive">
+        <span class="pulse-dot"></span>
+        <span class="live-text">LIVE</span>
+      </div>
+      <span class="session-name">{{ sessionName }}</span>
+    </div>
+    <span class="current-time">
+      <i class="fa-regular fa-clock"></i>
+      {{ currentTime }}
+    </span>
+  </div>
+
+  <div class="timing-feed">
+    <div class="feed-item" *ngFor="let event of events; let i = index" 
+         [style.animationDelay]="i * 0.1 + 's'">
+      <div class="event-time">{{ event.time }}</div>
+      
+      <div class="event-content">
+        <div class="driver-info">
+          <span class="driver-number" [style.background]="getTeamColor(event.team)">
+            #{{ event.driverNumber }}
+          </span>
+          <span class="driver-name">{{ event.driverName }}</span>
+          <span class="team-name">{{ event.team }}</span>
+        </div>
+
+        <div class="event-details">
+          <div class="event-badge" [style.background]="getEventColor(event.type)">
+            <i class="fa-solid" [ngClass]="getEventIcon(event.type)"></i>
+            <span>{{ event.event }}</span>
+          </div>
+          <span class="event-description">{{ event.detail }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feed-footer">
+    <button class="full-feed-btn">
+      View Full Timing <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+</div>

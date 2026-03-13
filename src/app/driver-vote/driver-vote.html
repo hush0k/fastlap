@@ -1,0 +1,67 @@
+<div class="driver-vote-widget">
+  <div class="widget-header">
+    <div class="header-left">
+      <i class="fa-solid fa-medal"></i>
+      <h3>Driver of the Day</h3>
+    </div>
+    <div class="voting-timer">
+      <i class="fa-regular fa-clock"></i>
+      <span>{{ votingEndsIn }}</span>
+    </div>
+  </div>
+
+  <div class="voting-stats">
+    <div class="total-votes">
+      <span class="votes-count">{{ totalVotes | number }}</span>
+      <span class="votes-label">Total Votes</span>
+    </div>
+    <div class="user-vote-status" *ngIf="userVoted">
+      <i class="fa-solid fa-check-circle"></i>
+      <span>You voted!</span>
+    </div>
+  </div>
+
+  <div class="drivers-list">
+    <div class="driver-card" *ngFor="let driver of drivers; let i = index" 
+         [class.voted]="driver.hasVoted"
+         [class.top-3]="i < 3">
+      
+      <div class="driver-position">
+        <span class="position-badge" [class.gold]="i === 0" [class.silver]="i === 1" [class.bronze]="i === 2">
+          {{ i + 1 }}
+        </span>
+      </div>
+
+      <div class="driver-avatar" [style.backgroundImage]="'url(' + driver.photoUrl + ')'">
+        <span class="avatar-fallback" *ngIf="!driver.photoUrl">{{ getDriverInitials(driver) }}</span>
+      </div>
+
+      <div class="driver-info">
+        <h4>{{ driver.firstName }} {{ driver.lastName }}</h4>
+        <span class="driver-number">#{{ driver.number }}</span>
+        <span class="driver-team">{{ driver.teamId === 't1' ? 'Red Velocity' : driver.teamId === 't2' ? 'Silver Arrow' : 'Ferrari' }}</span>
+      </div>
+
+      <div class="vote-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getVotePercentage(driver.votes)"></div>
+        </div>
+        <span class="vote-count">{{ driver.votes | number }}</span>
+      </div>
+
+      <button class="vote-btn" 
+              [disabled]="driver.hasVoted || userVoted"
+              (click)="voteForDriver(driver)">
+        <i class="fa-regular" [ngClass]="driver.hasVoted ? 'fa-check-circle' : 'fa-heart'"></i>
+        <span>{{ driver.hasVoted ? 'Voted' : 'Vote' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="voting-footer">
+    <p class="vote-info">
+      <i class="fa-regular fa-circle-info"></i>
+      Vote once per day. Results reset at race start.
+    </p>
+  </div>
+</div>
