@@ -10,6 +10,7 @@ from ..utils.avatar_utils import AvatarProcessor
 
 
 @extend_schema(
+    tags=["Auth"],
     methods=["POST"],
     request={
         "multipart/form-data": {
@@ -49,7 +50,6 @@ def upload_avatar(request: Request) -> Response:
     if success:
         request.user.use_firestore_avatar = True
         request.user.save(update_fields=["use_firestore_avatar"])
-
         return Response({
             "message": "Avatar uploaded successfully",
             "avatar": base64_avatar,
@@ -62,6 +62,7 @@ def upload_avatar(request: Request) -> Response:
 
 
 @extend_schema(
+    tags=["Auth"],
     methods=["GET"],
     responses={200: {"type": "object", "properties": {"avatar": {"type": "string"}}}},
 )
@@ -82,6 +83,7 @@ def get_avatar(request: Request) -> Response:
 
 
 @extend_schema(
+    tags=["Auth"],
     methods=["DELETE"],
     responses={200: {"type": "object", "properties": {"message": {"type": "string"}}}},
 )
@@ -96,7 +98,6 @@ def delete_avatar(request: Request) -> Response:
         request.user.use_firestore_avatar = False
         request.user.firestore_avatar_id = None
         request.user.save(update_fields=["use_firestore_avatar", "firestore_avatar_id"])
-
         return Response({"message": "Avatar deleted successfully"})
 
     return Response(

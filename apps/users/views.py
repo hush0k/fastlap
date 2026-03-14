@@ -14,6 +14,7 @@ from .serializers import LoginSerializer, RegisterSerializer
 
 
 @extend_schema(
+    tags=["Auth"],
     request={
         "multipart/form-data": {
             "type": "object",
@@ -27,7 +28,7 @@ from .serializers import LoginSerializer, RegisterSerializer
             },
             "required": ["email", "username", "password", "avatar"],
         }
-    }
+    },
 )
 class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
@@ -36,6 +37,7 @@ class RegisterView(generics.CreateAPIView):
 
 
 @extend_schema(
+    tags=["Auth"],
     request=LoginSerializer,
     responses={
         200: {
@@ -57,5 +59,6 @@ class LoginView(GenericAPIView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=["Auth"])
 class RefreshView(TokenRefreshView):
     permission_classes = [AllowAny]

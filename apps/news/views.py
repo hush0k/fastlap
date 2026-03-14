@@ -1,6 +1,7 @@
 from typing import Any
 
 from django_filters.rest_framework.backends import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 
 from django.http import HttpRequest, HttpResponse
 from rest_framework import generics
@@ -21,6 +22,7 @@ from .serializers import (
 )
 
 
+@extend_schema(tags=["News"])
 class ArticleListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ArticleListSerializer
@@ -34,23 +36,27 @@ class ArticleListView(generics.ListAPIView):
     filterset_class = ArticleFilter
 
 
+@extend_schema(tags=["News"])
 class ArticleCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, IsAuthor]
     serializer_class = ArticleCreateSerializer
 
 
+@extend_schema(tags=["News"])
 class ArticleUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsAuthor]
     serializer_class = ArticleUpdateSerializer
     queryset = Article.objects.all()
 
 
+@extend_schema(tags=["News"])
 class ArticleDestroyView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsAuthor]
     serializer_class = ArticleDestroySerializer
     queryset = Article.objects.all()
 
 
+@extend_schema(tags=["News"])
 class ArticleDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     serializer_class = ArticleDetailSerializer
@@ -74,5 +80,4 @@ class ArticleView(APIView):
             handler = ArticleDestroyView.as_view()
         else:
             return self.http_method_not_allowed(request, *args, **kwargs)
-
         return handler(request, *args, **kwargs)
