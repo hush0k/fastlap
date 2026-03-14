@@ -24,7 +24,11 @@ from .serializers import (
 class ArticleListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ArticleListSerializer
-    queryset = Article.objects.filter(is_published=True).prefetch_related("tags", "series").select_related("author")
+    queryset = (
+        Article.objects.filter(is_published=True)
+        .prefetch_related("tags", "series")
+        .select_related("author")
+    )
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = ArticleFilter
@@ -50,7 +54,11 @@ class ArticleDestroyView(generics.DestroyAPIView):
 class ArticleDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     serializer_class = ArticleDetailSerializer
-    queryset = Article.objects.filter(is_published=True).prefetch_related("tags", "series").select_related("author")
+    queryset = (
+        Article.objects.filter(is_published=True)
+        .prefetch_related("tags", "series")
+        .select_related("author")
+    )
     lookup_field = "slug"
 
 

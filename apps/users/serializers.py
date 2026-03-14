@@ -71,13 +71,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         if error:
             user.delete()
             raise serializers.ValidationError({"avatar": error})
-        
+
         avatar_id = firestore_service.create_user_avatar(user.id, base64_avatar)
 
         if avatar_id:
             user.firestore_avatar_id = avatar_id
             user.use_firestore_avatar = True
-            user.save(update_fields=['firestore_avatar_id', 'use_firestore_avatar'])
+            user.save(update_fields=["firestore_avatar_id", "use_firestore_avatar"])
         else:
             user.delete()
             raise serializers.ValidationError(

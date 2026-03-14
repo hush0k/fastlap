@@ -2,14 +2,20 @@ from rest_framework import serializers
 from apps.team_stuff.models import StaffMember, TeamRoster
 
 
-
 class TeamRosterSerializer(serializers.ModelSerializer):
     team_name = serializers.CharField(source="team.name", read_only=True)
     team_short = serializers.CharField(source="team.short_name", read_only=True)
 
     class Meta:
         model = TeamRoster
-        fields = ["id", "team_name", "team_short", "start_date", "end_date", "is_active"]
+        fields = [
+            "id",
+            "team_name",
+            "team_short",
+            "start_date",
+            "end_date",
+            "is_active",
+        ]
 
 
 class StaffMemberListSerializer(serializers.ModelSerializer):

@@ -9,7 +9,16 @@ class RaceTrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Track
-        fields = ["id", "name", "slug", "country", "city", "timezone", "length_km", "lap_record"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "country",
+            "city",
+            "timezone",
+            "length_km",
+            "lap_record",
+        ]
 
 
 class RaceTrackDetailSerializer(serializers.ModelSerializer):
@@ -34,7 +43,7 @@ class RaceTracksCreateSerializer(serializers.ModelSerializer):
             "lap_record",
             "lap_record_holder",
             "number_of_turns",
-            "map_image"
+            "map_image",
         ]
 
     def validate_length_km(self, value):

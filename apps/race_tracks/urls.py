@@ -1,4 +1,3 @@
-
 from rest_framework.routers import DefaultRouter
 from apps.race_tracks.views import RaceTrackViewSet
 
