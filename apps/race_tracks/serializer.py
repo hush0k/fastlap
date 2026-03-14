@@ -8,25 +8,18 @@ from apps.race_tracks.models import Track
 
 class RaceTrackSerializer(serializers.ModelSerializer):
     country: serializers.CharField = serializers.CharField(source="country.name")
+    timezone: serializers.CharField = serializers.CharField()
 
     class Meta:
         model = Track
-        fields = [
-            "id",
-            "name",
-            "slug",
-            "country",
-            "city",
-            "timezone",
-            "length_km",
-            "lap_record",
-        ]
+        fields = ["id", "name", "slug", "country", "city", "timezone", "length_km", "lap_record"]
 
 
 class RaceTrackDetailSerializer(serializers.ModelSerializer):
     country: serializers.CharField = serializers.CharField(source="country.name")
     country_code: serializers.CharField = serializers.CharField(source="country.code")
-    lap_record_holder = DriverDetailSerializer(read_only=True)  # fixed typo: lap_record_hodlers
+    lap_record_holder = DriverDetailSerializer(read_only=True)
+    timezone: serializers.CharField = serializers.CharField()
 
     class Meta:
         model = Track
@@ -34,6 +27,8 @@ class RaceTrackDetailSerializer(serializers.ModelSerializer):
 
 
 class RaceTracksCreateSerializer(serializers.ModelSerializer):
+    timezone: serializers.CharField = serializers.CharField()
+
     class Meta:
         model = Track
         fields = [
