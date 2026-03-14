@@ -81,7 +81,7 @@ class TeamWriteSerializer(serializers.ModelSerializer):
             "secondary_sponsor",
         ]
 
-    def validate_budget_currency(self, value):
+    def validate_budget_currency(self, value: str) -> str:
         if value and len(value) != 3:
             raise serializers.ValidationError(
                 "budget_currency must be a 3-letter currency code like USD, EUR, or KZT."

@@ -25,7 +25,7 @@ class Team(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
             models.Index(fields=["short_name"]),
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ({self.short_name})"
 
 
@@ -49,5 +49,5 @@ class TeamStandings(CreatedAtMixin, UpdatedAtMixin, models.Model):
         verbose_name = "Team Standing"
         verbose_name_plural = "Team Standings"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.team.short_name} - {self.tournament.name}: {self.points} pts"

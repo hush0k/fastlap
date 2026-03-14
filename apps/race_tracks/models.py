@@ -22,5 +22,5 @@ class Track(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
     class Meta:
         ordering = ["name", "country"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} - {self.country}"

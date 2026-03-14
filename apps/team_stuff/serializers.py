@@ -1,3 +1,5 @@
+from typing import Optional
+
 from rest_framework import serializers
 from apps.team_stuff.models import StaffMember, TeamRoster
 
@@ -26,7 +28,7 @@ class StaffMemberListSerializer(serializers.ModelSerializer):
         model = StaffMember
         fields = ["id", "full_name", "role", "country", "photo", "current_team"]
 
-    def get_current_team(self, obj):
+    def get_current_team(self, obj: StaffMember) -> Optional[str]:
         roster = obj.rosters.filter(is_active=True).select_related("team").first()
         if roster:
             return roster.team.short_name
@@ -70,7 +72,7 @@ class StaffMemberWriteSerializer(serializers.ModelSerializer):
             "photo",
         ]
 
-    def validate_age(self, value):
+    def validate_age(self, value: Optional[int]) -> Optional[int]:
         if value is not None and not (16 <= value <= 80):
             raise serializers.ValidationError("Возраст должен быть от 16 до 80.")
         return value

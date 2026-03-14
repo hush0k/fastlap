@@ -1,7 +1,10 @@
+from typing import Optional
+
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
+from rest_framework import filters, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.team_stuff.models import StaffMember
@@ -28,7 +31,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
     ordering_fields = ["last_name", "role", "country"]
     ordering = ["last_name"]
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[serializers.ModelSerializer]:
         if self.action == "list":
             return StaffMemberListSerializer
         if self.action in ["create", "update", "partial_update"]:
@@ -36,7 +39,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         return StaffMemberDetailSerializer
 
     @action(detail=True, methods=["get"], url_path="history")
-    def history(self, request, slug=None):
+    def history(self, request: Request, slug: Optional[str] = None) -> Response:
         """История команд сотрудника"""
         member = self.get_object()
         rosters = member.rosters.select_related("team").order_by("-start_date")
@@ -44,7 +47,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=["get"], url_path="current-team")
-    def current_team(self, request, slug=None):
+    def current_team(self, request: Request, slug: Optional[str] = None) -> Response:
         """Текущая активная команда"""
         member = self.get_object()
         roster = member.rosters.filter(is_active=True).select_related("team").first()

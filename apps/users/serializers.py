@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from drf_spectacular.utils import extend_schema_field
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -19,7 +20,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(required=True, allow_empty_file=False)
 
     @extend_schema_field({"type": "string", "format": "binary"})
-    def get_avatar(self, obj):
+    def get_avatar(self, obj: Any) -> None:
         pass
 
     class Meta:
@@ -45,7 +46,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return value
 
-    def validate_avatar(self, value):
+    def validate_avatar(self, value: Any) -> Any:
         if isinstance(value, str):
             raise serializers.ValidationError(
                 _("Avatar must be uploaded as a file (multipart/form-data).")
@@ -60,7 +61,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return value
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, Any]) -> Any:
         password = validated_data.pop("password")
         avatar_file = validated_data.pop("avatar")
         user = User.objects.create_user(password=password, **validated_data)
@@ -91,7 +92,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, trim_whitespace=False)
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         email = attrs.get("email")
         password = attrs.get("password")
 

@@ -2,12 +2,13 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from decouple import config
 from pathlib import Path
+from typing import Any, Optional
 
-_app = None
-_db = None
+_app: Optional[firebase_admin.App] = None
+_db: Optional[Any] = None
 
 
-def get_firestore_client():
+def get_firestore_client() -> Any:
     """Get or create Firestore client singleton"""
     global _app, _db
 

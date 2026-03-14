@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -7,7 +9,7 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email: str, password: Optional[str] = None, **extra_fields: Any) -> "User":
         if not email:
             raise ValueError("Email is required")
         email = self.normalize_email(email)
@@ -16,7 +18,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, email: str, password: Optional[str] = None, **extra_fields: Any) -> "User":
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
@@ -44,10 +46,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
 
-    def get_avatar_url(self):
+    def get_avatar_url(self) -> Optional[str]:
         if self.use_firestore_avatar and self.firestore_avatar_id:
             return None
         elif self.avatar:

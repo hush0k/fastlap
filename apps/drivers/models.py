@@ -27,7 +27,7 @@ def profile_image_upload_path(instance: "Driver", filename: str) -> str:
     return str(result)
 
 
-def driver_slug(instance):
+def driver_slug(instance: "Driver") -> str:
     return f"{instance.first_name}-{instance.last_name}"
 
 

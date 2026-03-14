@@ -38,7 +38,7 @@ def article_cover_path(instance: "Article", filename: str) -> str:
     return str(result)
 
 
-def validate_image_size(value: UploadedFile):
+def validate_image_size(value: UploadedFile) -> None:
     """:raises raise ValidationError:"""
     logger.debug("image size: %s", value.size)
     if value.size > (ARTICLE_IMAGE_MAX_SIZE_BYTES):

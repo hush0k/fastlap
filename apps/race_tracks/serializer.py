@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from rest_framework import serializers
 
 from apps.drivers.serializers import DriverDetailSerializer
@@ -46,7 +48,7 @@ class RaceTracksCreateSerializer(serializers.ModelSerializer):
             "map_image",
         ]
 
-    def validate_length_km(self, value):
+    def validate_length_km(self, value: Decimal) -> Decimal:
         if value <= 0:
             raise serializers.ValidationError("Length km must be greater than 0")
         return value

@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 
@@ -27,7 +28,7 @@ from ..utils.avatar_utils import AvatarProcessor
 )
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def upload_avatar(request):
+def upload_avatar(request: Request) -> Response:
     """Upload user avatar to Firestore"""
     avatar_file = request.FILES.get("avatar")
 
@@ -64,7 +65,7 @@ def upload_avatar(request):
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_avatar(request):
+def get_avatar(request: Request) -> Response:
     """Get user's current avatar from Firestore"""
     firestore_service = FirestoreUserService()
     avatar_base64 = firestore_service.get_user_avatar(request.user.id)
@@ -81,7 +82,7 @@ def get_avatar(request):
 )
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
-def delete_avatar(request):
+def delete_avatar(request: Request) -> Response:
     """Delete user's avatar from Firestore"""
     firestore_service = FirestoreUserService()
     success = firestore_service.delete_user_avatar(request.user.id)

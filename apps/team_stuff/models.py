@@ -21,11 +21,11 @@ class StaffMember(UpdatedAtMixin, CreatedAtMixin, NameMixin, models.Model):
         verbose_name = "Staff Member"
         verbose_name_plural = "Staff Members"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
 
@@ -50,5 +50,5 @@ class TeamRoster(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
         verbose_name = "Team Roster"
         verbose_name_plural = "Team Rosters"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.team.short_name} — {self.staff_member.full_name}"
