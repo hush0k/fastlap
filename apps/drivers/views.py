@@ -2,6 +2,7 @@ from logging import getLogger, Logger
 from typing import Any
 
 from django_filters.rest_framework.backends import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 
 from django.http import HttpRequest, HttpResponse
 from rest_framework import generics
@@ -23,6 +24,7 @@ from .serializers import (
 logger: Logger = getLogger(__name__)
 
 
+@extend_schema(tags=["Drivers"])
 class DriverListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = DriverListSerializer
@@ -32,9 +34,34 @@ class DriverListView(generics.ListAPIView):
     filterset_class = DriverFilter
 
 
+@extend_schema(tags=["Drivers"])
 class DriverCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
     serializer_class = DriverDetailSerializer
+
+
+@extend_schema(tags=["Drivers"])
+class DriverDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
+    serializer_class = DriverDetailSerializer
+    queryset = Driver.objects.all()
+    lookup_field = "slug"
+
+
+@extend_schema(tags=["Driver Results"])
+class DriverResultListView(generics.ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = DriverResultSerializer
+    queryset = DriverResult.objects.select_related("driver", "race")
+    pagination_class = CustomPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = DriverResultFilter
+
+
+@extend_schema(tags=["Driver Results"])
+class DriverResultCreateView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
+    serializer_class = DriverResultCreateSerializer
 
 
 class DriverView(APIView):
@@ -46,27 +73,6 @@ class DriverView(APIView):
         else:
             return self.http_method_not_allowed(request, *args, **kwargs)
         return handler(request, *args, **kwargs)
-
-
-class DriverDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
-    serializer_class = DriverDetailSerializer
-    queryset = Driver.objects.all()
-    lookup_field = "slug"
-
-
-class DriverResultListView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = DriverResultSerializer
-    queryset = DriverResult.objects.select_related("driver", "race")
-    pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = DriverResultFilter
-
-
-class DriverResultCreateView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
-    serializer_class = DriverResultCreateSerializer
 
 
 class DriverResultView(APIView):

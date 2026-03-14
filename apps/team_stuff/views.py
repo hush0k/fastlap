@@ -1,6 +1,5 @@
-from typing import Any
-
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -17,6 +16,7 @@ from apps.team_stuff.serializers import (
 )
 
 
+@extend_schema(tags=["Team Staff"])
 class StaffMemberViewSet(viewsets.ModelViewSet):
     queryset = StaffMember.objects.prefetch_related("rosters__team").all()
     permission_classes = [IsAuthenticatedOrReadOnly]

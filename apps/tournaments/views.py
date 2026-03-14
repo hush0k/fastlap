@@ -1,6 +1,7 @@
 from typing import Any
 
 from django_filters.rest_framework.backends import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 
 from django.http import HttpRequest, HttpResponse
 from rest_framework import generics
@@ -21,6 +22,7 @@ from .serializers import (
 )
 
 
+@extend_schema(tags=["Tournaments"])
 class TournamentListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = TournamentListSerializer
@@ -31,23 +33,27 @@ class TournamentListView(generics.ListAPIView):
     pagination_class = CustomPagination
 
 
+@extend_schema(tags=["Tournaments"])
 class TournamentDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     serializer_class = TournamentDetailSerializer
     queryset = Tournament.objects.filter(is_active=True).select_related("series")
 
 
+@extend_schema(tags=["Tournaments"])
 class TournamentCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, IsContentManager]
     serializer_class = TournamentCreateSerializer
 
 
+@extend_schema(tags=["Tournaments"])
 class TournamentUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsContentManager]
     serializer_class = TournamentUpdateSerializer
     queryset = Tournament.objects.all()
 
 
+@extend_schema(tags=["Tournaments"])
 class TournamentDestroyView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsContentManager]
     queryset = Tournament.objects.all()
@@ -66,5 +72,4 @@ class TournamentView(APIView):
                 handler = TournamentDestroyView.as_view()
             case _:
                 return self.http_method_not_allowed(request, *args, **kwargs)
-
         return handler(request, *args, **kwargs)
