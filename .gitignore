@@ -25,6 +25,11 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+media/
+media/avatars/
+**/.idea/
+.idea/
+Makefile
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -205,3 +210,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+!/Makefile
+/Makefile
+
+# Firebase credentials
+config/firebase-credentials.json
