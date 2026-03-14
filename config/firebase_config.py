@@ -1,23 +1,25 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
-from decouple import config
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
+
+import firebase_admin
+from decouple import config
+from firebase_admin import credentials, firestore
+from google.cloud.firestore import Client
 
 _app: Optional[firebase_admin.App] = None
-_db: Optional[Any] = None
+_db: Optional[Client] = None
 
 
-def get_firestore_client() -> Any:
-    """Get or create Firestore client singleton"""
+def get_firestore_client() -> Client:
+    """Get or create Firestore client singleton."""
     global _app, _db
 
     if _db is None:
         try:
             _app = firebase_admin.get_app()
         except ValueError:
-            cred_path = Path(__file__).parent / "firebase-credentials.json"
-            cred = credentials.Certificate(str(cred_path))
+            cred_path: Path = Path(__file__).parent / "firebase-credentials.json"
+            cred: credentials.Certificate = credentials.Certificate(str(cred_path))
 
             _app = firebase_admin.initialize_app(
                 cred,
