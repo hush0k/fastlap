@@ -14,7 +14,11 @@ from apps.race_tracks.serializer import (
 class RaceTrackViewSet(viewsets.ModelViewSet):
     queryset = Track.objects.select_related("lap_record_holder").all()
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_fields = ["country"]
     search_fields = ["name", "city"]
     ordering_fields = ["name", "length_km", "number_of_turns"]

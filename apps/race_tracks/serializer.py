@@ -11,7 +11,16 @@ class RaceTrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Track
-        fields = ["id", "name", "slug", "country", "city", "timezone", "length_km", "lap_record"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "country",
+            "city",
+            "timezone",
+            "length_km",
+            "lap_record",
+        ]
 
 
 class RaceTrackDetailSerializer(serializers.ModelSerializer):

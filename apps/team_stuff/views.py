@@ -22,7 +22,11 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "slug"
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_fields = ["country", "role"]
     search_fields = ["first_name", "last_name", "role"]
     ordering_fields = ["last_name", "role", "country"]

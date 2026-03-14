@@ -15,7 +15,14 @@ class TeamRosterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamRoster
-        fields = ["id", "team_name", "team_short", "start_date", "end_date", "is_active"]
+        fields = [
+            "id",
+            "team_name",
+            "team_short",
+            "start_date",
+            "end_date",
+            "is_active",
+        ]
 
 
 class StaffMemberListSerializer(serializers.ModelSerializer):

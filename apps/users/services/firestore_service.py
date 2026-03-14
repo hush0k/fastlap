@@ -10,6 +10,7 @@ from config.firebase_config import get_firestore_client
 logger = logging.getLogger(__name__)
 
 
+
 class FirestoreUserService:
     def __init__(self) -> None:
         self.db: Client = get_firestore_client()
@@ -27,6 +28,8 @@ class FirestoreUserService:
                 "is_active": True,
             }
 
+            doc_ref = self.db.collection(self.avatars_collection).document()
+            doc_ref.set(avatar_data)
             doc_ref = self.db.collection(self.avatars_collection).document()
             doc_ref.set(avatar_data)
 
