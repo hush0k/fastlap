@@ -1,4 +1,4 @@
-from logging import getLogger
+from logging import getLogger, Logger
 from typing import Any
 
 from django_filters.rest_framework.backends import DjangoFilterBackend
@@ -20,7 +20,7 @@ from .serializers import (
     DriverResultSerializer,
 )
 
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class DriverListView(generics.ListAPIView):

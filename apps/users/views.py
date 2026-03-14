@@ -1,3 +1,5 @@
+from typing import Any
+
 from drf_spectacular.utils import extend_schema
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -5,6 +7,7 @@ from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from .serializers import LoginSerializer, RegisterSerializer
@@ -48,7 +51,7 @@ class LoginView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_200_OK)

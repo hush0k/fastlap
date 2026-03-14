@@ -1,26 +1,33 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
-from decouple import config
 from pathlib import Path
+from typing import Optional
 
-_app = None
-_db = None
+import firebase_admin
+from decouple import config
+from firebase_admin import credentials, firestore
+from google.cloud.firestore import Client
 
-def get_firestore_client():
-  """Get or create Firestore client singleton"""
-  global _app, _db
-    
-  if _db is None:
-    try:
-      _app = firebase_admin.get_app()
-    except ValueError:
-      cred_path = Path(__file__).parent / 'firebase-credentials.json'
-      cred = credentials.Certificate(str(cred_path))
-            
-      _app = firebase_admin.initialize_app(cred, {
-        'projectId': config('FIREBASE_PROJECT_ID', 'fastlap-155b6'),
-      })
+_app: Optional[firebase_admin.App] = None
+_db: Optional[Client] = None
 
-    _db = firestore.client()
-    
-  return _db
+
+def get_firestore_client() -> Client:
+    """Get or create Firestore client singleton."""
+    global _app, _db
+
+    if _db is None:
+        try:
+            _app = firebase_admin.get_app()
+        except ValueError:
+            cred_path: Path = Path(__file__).parent / "firebase-credentials.json"
+            cred: credentials.Certificate = credentials.Certificate(str(cred_path))
+
+            _app = firebase_admin.initialize_app(
+                cred,
+                {
+                    "projectId": config("FIREBASE_PROJECT_ID", "fastlap-155b6"),
+                },
+            )
+
+        _db = firestore.client()
+
+    return _db

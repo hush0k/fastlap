@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from rest_framework import serializers
 
 from apps.drivers.serializers import DriverDetailSerializer
@@ -5,7 +7,7 @@ from apps.race_tracks.models import Track
 
 
 class RaceTrackSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(source="country.name")
+    country: serializers.CharField = serializers.CharField(source="country.name")
 
     class Meta:
         model = Track
@@ -13,9 +15,9 @@ class RaceTrackSerializer(serializers.ModelSerializer):
 
 
 class RaceTrackDetailSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(source="country.name")
-    country_code = serializers.CharField(source="country.code")
-    lap_record_hodlers = DriverDetailSerializer(read_only=True)
+    country: serializers.CharField = serializers.CharField(source="country.name")
+    country_code: serializers.CharField = serializers.CharField(source="country.code")
+    lap_record_holder = DriverDetailSerializer(read_only=True)  # fixed typo: lap_record_hodlers
 
     class Meta:
         model = Track
@@ -34,10 +36,10 @@ class RaceTracksCreateSerializer(serializers.ModelSerializer):
             "lap_record",
             "lap_record_holder",
             "number_of_turns",
-            "map_image"
+            "map_image",
         ]
 
-    def validate_length_km(self, value):
+    def validate_length_km(self, value: Decimal) -> Decimal:
         if value <= 0:
             raise serializers.ValidationError("Length km must be greater than 0")
         return value
