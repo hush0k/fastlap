@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
+
     def get_avatar_url(self):
         if self.use_firestore_avatar and self.firestore_avatar_id:
             return None

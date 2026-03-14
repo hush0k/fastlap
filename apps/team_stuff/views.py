@@ -14,15 +14,15 @@ from apps.team_stuff.serializers import (
 
 
 class StaffMemberViewSet(viewsets.ModelViewSet):
-    queryset = (
-        StaffMember.objects
-        .prefetch_related("rosters__team")
-        .all()
-    )
+    queryset = StaffMember.objects.prefetch_related("rosters__team").all()
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "slug"
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_fields = ["country", "role"]
     search_fields = ["first_name", "last_name", "role"]
     ordering_fields = ["last_name", "role", "country"]
