@@ -218,3 +218,4 @@ __marimo__/
 
 # Firebase credentials
 config/firebase-credentials.json.DS_Store
+config/firebase-credentials.json
