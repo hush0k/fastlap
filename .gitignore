@@ -214,4 +214,4 @@ __marimo__/
 /Makefile
 
 # Firebase credentials
-config/firebase-credentials.json
+config/firebase-credentials.json.DS_Store
