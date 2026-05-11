@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     "apps.drivers",
     "apps.teams",
     "apps.news",
-    "apps.bloggers",
     "apps.race_tracks",
     "apps.tournaments",
     "apps.team_stuff",
