@@ -1,9 +1,14 @@
-from django.urls import path
+"""
+URL configuration for the tournaments app.
+"""
 
-from .views import TournamentView, TournamentDetailView
+# Django REST Framework
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    path("", TournamentView.as_view(), name="tournaments"),
-    path("<int:pk>/", TournamentView.as_view(), name="tournament"),
-    path("<int:pk>/detail/", TournamentDetailView.as_view(), name="tournament-detail"),
-]
+# Project modules
+from apps.tournaments.views import TournamentViewSet
+
+router = DefaultRouter()
+router.register("", TournamentViewSet, basename="tournaments")
+
+urlpatterns = router.urls
