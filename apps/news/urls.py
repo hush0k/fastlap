@@ -3,12 +3,12 @@ URL configuration for the news app.
 """
 
 # Django REST Framework
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 
 # Project modules
 from apps.news.views import ArticleViewSet
 
-router = DefaultRouter()
+router = SimpleRouter()
 router.register("", ArticleViewSet, basename="articles")
 
 urlpatterns = router.urls
