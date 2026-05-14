@@ -15,7 +15,7 @@ class Track(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
     lap_record = models.DurationField(null=True, blank=True)
     lap_record_holder = models.ForeignKey(
         Driver, on_delete=models.SET_NULL, null=True, related_name="track_record"
-    )git status
+    )
     number_of_turns = models.PositiveIntegerField(default=0)
     map_image = models.ImageField(upload_to="tracks/maps/", null=True, blank=True)
 
