@@ -1,4 +1,4 @@
-from logging import getLogger
+from logging import getLogger, Logger
 from pathlib import Path
 
 from autoslug import AutoSlugField
@@ -26,22 +26,21 @@ from config.settings.base import (
     MEDIA_LOCATION,
 )
 
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 def article_cover_path(instance: "Article", filename: str) -> str:
-    """Return upload path for an article cover using id and original extension."""
+    """Return upload path for an article cover using slug and original extension."""
     logger.debug("article: %s, filename: %s", instance.slug, filename)
-    extension = Path(filename).suffix
-    result = MEDIA_LOCATION.ARTICLE_COVERS / (str(instance.slug) + extension)
-
+    extension: str = Path(filename).suffix
+    result: Path = MEDIA_LOCATION.ARTICLE_COVERS / (str(instance.slug) + extension)
     return str(result)
 
 
-def validate_image_size(value: UploadedFile):
-    """:raises raise ValidationError:"""
+def validate_image_size(value: UploadedFile) -> None:
+    """:raises ValidationError: if file exceeds the max allowed size."""
     logger.debug("image size: %s", value.size)
-    if value.size > (ARTICLE_IMAGE_MAX_SIZE_BYTES):
+    if value.size > ARTICLE_IMAGE_MAX_SIZE_BYTES:
         raise ValidationError(f"Max image size is {ARTICLE_IMAGE_MAX_SIZE_MB} MB")
 
 
@@ -55,40 +54,41 @@ class Tag(NameMixin, BaseModel):
 
 
 class Article(BaseModel):
-    name = CharField(max_length=255, validators=[MinLengthValidator(5)])
-    slug = AutoSlugField(populate_from="name", unique=True)  # type: ignore
+    name: CharField = CharField(max_length=255, validators=[MinLengthValidator(5)])
+    slug: AutoSlugField = AutoSlugField(populate_from="name", unique=True)  # type: ignore[assignment]
 
-    author = ForeignKey(
+    author: ForeignKey = ForeignKey(
         to="users.User",
         on_delete=CASCADE,
         related_name="articles",
         verbose_name="Author",
     )
-    content = TextField(
+    content: TextField = TextField(
         verbose_name="Content",
         validators=[MinLengthValidator(200), MaxLengthValidator(7500)],
     )
-    cover_image = ImageField(
+    cover_image: ImageField = ImageField(
         upload_to=article_cover_path,
         blank=True,
         null=True,
         verbose_name="Cover Image",
         validators=[validate_image_size],
     )
-    series = ManyToManyField(
+    series: ManyToManyField = ManyToManyField(
         to="races.Series", blank=True, related_name="articles", verbose_name="Series"
     )
-    tags = ManyToManyField(to="news.Tag", related_name="articles", verbose_name="Tags")
-    published_at = DateTimeField(blank=True, null=True, verbose_name="Published At")
-    is_published = BooleanField(default=False, verbose_name="Is Published")
-    views_count = PositiveIntegerField(default=0, verbose_name="Views Count")
+    tags: ManyToManyField = ManyToManyField(
+        to="news.Tag", related_name="articles", verbose_name="Tags"
+    )
+    published_at: DateTimeField = DateTimeField(blank=True, null=True, verbose_name="Published At")
+    is_published: BooleanField = BooleanField(default=False, verbose_name="Is Published")
+    views_count: PositiveIntegerField = PositiveIntegerField(default=0, verbose_name="Views Count")
 
     author_id: int
 
     class Meta:
         verbose_name = "Article"
         verbose_name_plural = "Articles"
-
         ordering = ["-published_at"]
 
     def __str__(self) -> str:
