@@ -30,7 +30,7 @@ media/avatars/
 **/.idea/
 .idea/
 Makefile
-.env.prod
+
 
 
 # PyInstaller
