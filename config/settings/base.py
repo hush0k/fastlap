@@ -33,10 +33,10 @@ INSTALLED_APPS = [
     "axes",
     # Apps
     "apps.users",
+    "apps.common",
     "apps.drivers",
     "apps.teams",
     "apps.news",
-    "apps.bloggers",
     "apps.race_tracks",
     "apps.tournaments",
     "apps.team_stuff",
@@ -215,6 +215,11 @@ LOGGING = {
         "django.request": {
             "handlers": ["console"],
             "level": "WARNING",
+            "propagate": False,
+        },
+        "test": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
     },

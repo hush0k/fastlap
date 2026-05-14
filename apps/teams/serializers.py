@@ -25,7 +25,16 @@ class TeamListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ["id", "name", "short_name", "logo", "banner", "slug", "country", "country_name"]
+        fields = [
+            "id",
+            "name",
+            "short_name",
+            "logo",
+            "banner",
+            "slug",
+            "country",
+            "country_name",
+        ]
 
 
 class TeamDetailSerializer(serializers.ModelSerializer):

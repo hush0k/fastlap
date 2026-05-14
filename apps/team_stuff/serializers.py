@@ -1,26 +1,39 @@
+from typing import Optional
+
 from rest_framework import serializers
+
 from apps.team_stuff.models import StaffMember, TeamRoster
 
 
-
 class TeamRosterSerializer(serializers.ModelSerializer):
-    team_name = serializers.CharField(source="team.name", read_only=True)
-    team_short = serializers.CharField(source="team.short_name", read_only=True)
+    team_name: serializers.CharField = serializers.CharField(
+        source="team.name", read_only=True
+    )
+    team_short: serializers.CharField = serializers.CharField(
+        source="team.short_name", read_only=True
+    )
 
     class Meta:
         model = TeamRoster
-        fields = ["id", "team_name", "team_short", "start_date", "end_date", "is_active"]
+        fields = [
+            "id",
+            "team_name",
+            "team_short",
+            "start_date",
+            "end_date",
+            "is_active",
+        ]
 
 
 class StaffMemberListSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(source="country.name")
-    current_team = serializers.SerializerMethodField()
+    country: serializers.CharField = serializers.CharField(source="country.name")
+    current_team: serializers.SerializerMethodField = serializers.SerializerMethodField()
 
     class Meta:
         model = StaffMember
         fields = ["id", "full_name", "role", "country", "photo", "current_team"]
 
-    def get_current_team(self, obj):
+    def get_current_team(self, obj: StaffMember) -> Optional[str]:
         roster = obj.rosters.filter(is_active=True).select_related("team").first()
         if roster:
             return roster.team.short_name
@@ -28,8 +41,8 @@ class StaffMemberListSerializer(serializers.ModelSerializer):
 
 
 class StaffMemberDetailSerializer(serializers.ModelSerializer):
-    country = serializers.CharField(source="country.name")
-    country_code = serializers.CharField(source="country.code")
+    country: serializers.CharField = serializers.CharField(source="country.name")
+    country_code: serializers.CharField = serializers.CharField(source="country.code")
     rosters = TeamRosterSerializer(many=True, read_only=True)
 
     class Meta:
@@ -64,7 +77,7 @@ class StaffMemberWriteSerializer(serializers.ModelSerializer):
             "photo",
         ]
 
-    def validate_age(self, value):
+    def validate_age(self, value: Optional[int]) -> Optional[int]:
         if value is not None and not (16 <= value <= 80):
-            raise serializers.ValidationError("Возраст должен быть от 16 до 80.")
+            raise serializers.ValidationError("Age must be between 16 and 80.")
         return value

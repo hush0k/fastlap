@@ -1,9 +1,8 @@
-# apps/team_stuff/urls.py
+from rest_framework.routers import SimpleRouter
 
-from rest_framework.routers import DefaultRouter
 from apps.team_stuff.views import StaffMemberViewSet
 
-router = DefaultRouter()
+router = SimpleRouter()
 router.register("staff", StaffMemberViewSet, basename="staff")
 
 urlpatterns = router.urls
