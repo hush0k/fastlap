@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 from decouple import config
-from pathlib import Path
+from config.settings.base import FIREBASE_CREDENTIALS_PATH
 
 _app = None
 _db = None
@@ -14,8 +14,7 @@ def get_firestore_client():
     try:
       _app = firebase_admin.get_app()
     except ValueError:
-      cred_path = Path(__file__).parent / 'firebase-credentials.json'
-      cred = credentials.Certificate(str(cred_path))
+      cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
             
       _app = firebase_admin.initialize_app(cred, {
         'projectId': config('FIREBASE_PROJECT_ID', 'fastlap-155b6'),
