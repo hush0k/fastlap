@@ -1,47 +1,34 @@
-from decimal import Decimal
 from rest_framework import serializers
-from apps.drivers.serializers import DriverDetailSerializer
+
 from apps.race_tracks.models import Track
 
 
 class RaceTrackSerializer(serializers.ModelSerializer):
-    country: serializers.CharField = serializers.CharField(source="country.name")
-    timezone: serializers.CharField = serializers.CharField()
-
+    country_name = serializers.CharField(source='country.name', read_only=True)
+    
     class Meta:
         model = Track
-        fields = ["id", "name", "slug", "country", "city", "timezone", "length_km", "lap_record"]
+        fields = ['id', 'name', 'slug', 'country_name', 'city', 'length_km', 'number_of_turns']
 
 
 class RaceTrackDetailSerializer(serializers.ModelSerializer):
-    country: serializers.CharField = serializers.CharField(source="country.name")
-    country_code: serializers.CharField = serializers.CharField(source="country.code")
-    lap_record_holder = DriverDetailSerializer(read_only=True)
-    timezone: serializers.CharField = serializers.CharField()
-
+    country_name = serializers.CharField(source='country.name', read_only=True)
+    country_code = serializers.CharField(source='country.code', read_only=True)
+    
     class Meta:
         model = Track
-        fields = "__all__"
+        fields = ['id', 'name', 'slug', 'country_name', 'country_code', 'city', 
+                 'length_km', 'lap_record', 'number_of_turns', 'map_image', 
+                 'created_at', 'updated_at']
 
 
 class RaceTracksCreateSerializer(serializers.ModelSerializer):
-    timezone: serializers.CharField = serializers.CharField()
-
     class Meta:
         model = Track
-        fields = [
-            "name",
-            "country",
-            "city",
-            "timezone",
-            "length_km",
-            "lap_record",
-            "lap_record_holder",
-            "number_of_turns",
-            "map_image",
-        ]
+        fields = ['name', 'country', 'city', 'length_km', 'lap_record', 
+                 'number_of_turns', 'map_image']
 
-    def validate_length_km(self, value: Decimal) -> Decimal:
+    def validate_length_km(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Length km must be greater than 0")
+            raise serializers.ValidationError('Length km must be greater than 0')
         return value
