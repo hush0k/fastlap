@@ -1,13 +1,12 @@
+from logging import getLogger
 from pathlib import Path
 
 from decouple import config
 from dotenv import load_dotenv
 
-from logging import getLogger
-
 logger = getLogger(__name__)
 
-ENV_FILE = config("ENV_FILE", default='.env')
+ENV_FILE = config("ENV_FILE", default=".env")
 logger.warning(f"Using ENV_FILE={ENV_FILE}")
 
 load_dotenv(ENV_FILE)
@@ -169,7 +168,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "{asctime} |{name:36s}|:{lineno:<4d} "
-                      "[{levelname:8s}] <{request_id:36s}> - {message}",
+            "[{levelname:8s}] <{request_id:36s}> - {message}",
             "style": "{",
         },
         "simple": {
@@ -215,19 +214,23 @@ LOGGING = {
             "level": "WARNING",
             "propagate": False,
         },
+        "test": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
     },
 }
 
-FIREBASE_PROJECT_ID = config('FIREBASE_PROJECT_ID', default='')
-FIREBASE_COLLECTION_USERS = 'users'
-FIREBASE_COLLECTION_AVATARS = 'avatars'
+FIREBASE_PROJECT_ID = config("FIREBASE_PROJECT_ID", default="")
+FIREBASE_COLLECTION_USERS = "users"
+FIREBASE_COLLECTION_AVATARS = "avatars"
 FIREBASE_CREDENTIALS_PATH = Path(config("FIREBASE_CREDENTIALS_PATH"))
 
 if not FIREBASE_CREDENTIALS_PATH.is_absolute():
     FIREBASE_CREDENTIALS_PATH = BASE_DIR / FIREBASE_CREDENTIALS_PATH
 
 
-
 AVATAR_MAX_SIZE_MB = 2
 AVATAR_MAX_SIZE_BYTES = AVATAR_MAX_SIZE_MB * 1024 * 1024
-ALLOWED_AVATAR_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+ALLOWED_AVATAR_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
