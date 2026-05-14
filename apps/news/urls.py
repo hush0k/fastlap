@@ -1,9 +1,14 @@
-from django.urls import path
+"""
+URL configuration for the news app.
+"""
 
-from .views import ArticleView, ArticleDetailView
+# Django REST Framework
+from rest_framework.routers import SimpleRouter
 
-urlpatterns = [
-    path("", ArticleView.as_view(), name="articles"),
-    path("<int:pk>/", ArticleView.as_view(), name="article"),
-    path("<slug:slug>/", ArticleDetailView.as_view(), name="article-detail"),
-]
+# Project modules
+from apps.news.views import ArticleViewSet
+
+router = SimpleRouter()
+router.register("", ArticleViewSet, basename="articles")
+
+urlpatterns = router.urls

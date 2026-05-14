@@ -1,6 +1,15 @@
+from logging import getLogger
 from pathlib import Path
 
 from decouple import config
+from dotenv import load_dotenv
+
+logger = getLogger(__name__)
+
+ENV_FILE = config("ENV_FILE", default=".env")
+logger.warning(f"Using ENV_FILE={ENV_FILE}")
+
+load_dotenv(ENV_FILE)
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -26,7 +35,6 @@ INSTALLED_APPS = [
     "apps.drivers",
     "apps.teams",
     "apps.news",
-    "apps.bloggers",
     "apps.race_tracks",
     "apps.tournaments",
     "apps.team_stuff",
@@ -87,11 +95,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": config("POSTGRES_HOST"),
-        "PORT": config("POSTGRES_PORT", default="5432"),
+        "NAME": config("DATABASE_NAME"),
+        "USER": config("DATABASE_USER"),
+        "PASSWORD": config("DATABASE_PASSWORD"),
+        "HOST": config("DATABASE_HOST"),
+        "PORT": config("DATABASE_PORT"),
     }
 }
 
@@ -207,14 +215,23 @@ LOGGING = {
             "level": "WARNING",
             "propagate": False,
         },
+        "test": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
     },
 }
 
+FIREBASE_PROJECT_ID = config("FIREBASE_PROJECT_ID", default="")
+FIREBASE_COLLECTION_USERS = "users"
+FIREBASE_COLLECTION_AVATARS = "avatars"
+FIREBASE_CREDENTIALS_PATH = Path(config("FIREBASE_CREDENTIALS_PATH"))
 
-FIREBASE_PROJECT_ID = config('FIREBASE_PROJECT_ID', default='')
-FIREBASE_COLLECTION_USERS = 'users'
-FIREBASE_COLLECTION_AVATARS = 'avatars'
+if not FIREBASE_CREDENTIALS_PATH.is_absolute():
+    FIREBASE_CREDENTIALS_PATH = BASE_DIR / FIREBASE_CREDENTIALS_PATH
+
 
 AVATAR_MAX_SIZE_MB = 2
 AVATAR_MAX_SIZE_BYTES = AVATAR_MAX_SIZE_MB * 1024 * 1024
-ALLOWED_AVATAR_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+ALLOWED_AVATAR_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]

@@ -1,86 +1,126 @@
-from logging import getLogger, Logger
+"""
+ViewSet for the drivers app.
+"""
+
+# Python modules
 from typing import Any
 
-from django_filters.rest_framework.backends import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema
+# Django modules
+from django_filters.rest_framework import DjangoFilterBackend
 
-from django.http import HttpRequest, HttpResponse
-from rest_framework import generics
+# Django REST Framework
+from rest_framework import filters, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.views import APIView
+from rest_framework.request import Request as DRFRequest
+from rest_framework.response import Response as DRFResponse
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 
+# Project modules
 from apps.common.pagination import CustomPagination
-
-from .filters import DriverFilter, DriverResultFilter
-from .models import Driver, DriverResult
-from .permissions import IsAdminOrReadOnly
-from .serializers import (
+from apps.drivers.filters import DriverFilter, DriverResultFilter
+from apps.drivers.models import Driver, DriverResult
+from apps.drivers.permissions import IsAdminOrReadOnly
+from apps.drivers.serializers import (
     DriverDetailSerializer,
     DriverListSerializer,
     DriverResultCreateSerializer,
     DriverResultSerializer,
 )
 
-logger: Logger = getLogger(__name__)
 
+class DriverViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing Driver resources.
+    """
 
-@extend_schema(tags=["Drivers"])
-class DriverListView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = DriverListSerializer
     queryset = Driver.objects.all()
-    pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = DriverFilter
-
-
-@extend_schema(tags=["Drivers"])
-class DriverCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
-    serializer_class = DriverDetailSerializer
-
-
-@extend_schema(tags=["Drivers"])
-class DriverDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
-    serializer_class = DriverDetailSerializer
-    queryset = Driver.objects.all()
     lookup_field = "slug"
-
-
-@extend_schema(tags=["Driver Results"])
-class DriverResultListView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = DriverResultSerializer
-    queryset = DriverResult.objects.select_related("driver", "race")
     pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = DriverResultFilter
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filterset_class = DriverFilter
+    search_fields = ("first_name", "last_name")
+    ordering_fields = ("first_name", "last_name", "number")
+    ordering = ("last_name", "first_name")
+
+    def get_serializer_class(self):
+        """
+        Return appropriate serializer based on action.
+        """
+        if self.action == "list":
+            return DriverListSerializer
+        return DriverDetailSerializer
+
+    @extend_schema(
+        summary="List Drivers",
+        description="Retrieve a paginated list of all drivers with optional filtering.",
+        responses={
+            200: OpenApiResponse(
+                description="Successful response with paginated driver list.",
+                response=DriverListSerializer,
+            ),
+        },
+    )
+    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle GET requests to list all drivers.
+        """
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Retrieve Driver Details",
+        description="Retrieve detailed information about a specific driver by slug.",
+        responses={
+            200: OpenApiResponse(
+                description="Successful response with driver details.",
+                response=DriverDetailSerializer,
+            ),
+            404: OpenApiResponse(
+                description="Driver not found with the provided slug.",
+            ),
+        },
+    )
+    def retrieve(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle GET requests to retrieve a specific driver.
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    @action(
+        methods=("GET",),
+        detail=True,
+        url_path="results",
+        url_name="results",
+        permission_classes=(AllowAny,),
+    )
+    def results(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Retrieve race results for a specific driver.
+        """
+        driver: Driver = self.get_object()
+        results = DriverResult.objects.filter(driver=driver).select_related("race")
+        serializer = DriverResultSerializer(results, many=True)
+        return DRFResponse(serializer.data)
 
 
-@extend_schema(tags=["Driver Results"])
-class DriverResultCreateView(generics.CreateAPIView):
+class DriverResultViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing DriverResult resources.
+    """
+
+    queryset = DriverResult.objects.select_related("driver", "race")
     permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
-    serializer_class = DriverResultCreateSerializer
+    pagination_class = CustomPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    filterset_class = DriverResultFilter
+    ordering_fields = ("position", "points", "race__scheduled_at")
+    ordering = ("race__scheduled_at", "position")
 
-
-class DriverView(APIView):
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if request.method == "GET":
-            handler = DriverListView.as_view()
-        elif request.method == "POST":
-            handler = DriverCreateView.as_view()
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
-        return handler(request, *args, **kwargs)
-
-
-class DriverResultView(APIView):
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if request.method == "GET":
-            handler = DriverResultListView.as_view()
-        elif request.method == "POST":
-            handler = DriverResultCreateView.as_view()
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
-        return handler(request, *args, **kwargs)
+    def get_serializer_class(self):
+        """
+        Return appropriate serializer based on action.
+        """
+        if self.action in ("create", "update", "partial_update"):
+            return DriverResultCreateSerializer
+        return DriverResultSerializer

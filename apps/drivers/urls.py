@@ -1,9 +1,15 @@
-from django.urls import path
+"""
+URL configuration for the drivers app.
+"""
 
-from .views import DriverDetailView, DriverResultView, DriverView
+# Django REST Framework
+from rest_framework.routers import SimpleRouter
 
-urlpatterns = [
-    path("", DriverView.as_view(), name="driver-list-create"),
-    path("results/", DriverResultView.as_view(), name="driver-result-list-create"),
-    path("<slug:slug>/", DriverDetailView.as_view(), name="driver-detail"),
-]
+# Project modules
+from apps.drivers.views import DriverResultViewSet, DriverViewSet
+
+router = SimpleRouter()
+router.register("", DriverViewSet, basename="drivers")
+router.register("results", DriverResultViewSet, basename="driver-results")
+
+urlpatterns = router.urls
