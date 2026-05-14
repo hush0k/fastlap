@@ -1,7 +1,5 @@
 from decimal import Decimal
-
 from rest_framework import serializers
-
 from apps.drivers.serializers import DriverDetailSerializer
 from apps.race_tracks.models import Track
 
