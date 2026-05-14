@@ -1,5 +1,10 @@
 from .base import *
 
+from logging import getLogger
+logger = getLogger(__name__)
+logger.warning("Loading prod.py")
+
+
 DEBUG = False
 
 ALLOWED_HOSTS = config(

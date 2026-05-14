@@ -1,5 +1,9 @@
 from .base import *
 
+from logging import getLogger
+logger = getLogger(__name__)
+logger.warning("Loading local.py")
+
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
