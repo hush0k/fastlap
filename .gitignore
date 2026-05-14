@@ -216,3 +216,6 @@ __marimo__/
 
 # Firebase credentials
 config/firebase-credentials.json
+
+# secrets
+*/secrets/*
