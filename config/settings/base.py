@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "axes",
     # Apps
     "apps.users",
+    "apps.common",
     "apps.drivers",
     "apps.teams",
     "apps.news",
