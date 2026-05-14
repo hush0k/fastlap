@@ -30,6 +30,13 @@ services:
     environment:
       - ENV_FILE=.env.prod
       - DJANGO_SETTINGS_MODULE=config.settings.prod
+    secrets:
+      - fastlap_firebase_credentials
 
 volumes:
   postgres_data:
+
+secrets:
+  fastlap_firebase_credentials:
+    file: secrets/firebase-credentials.json
+
