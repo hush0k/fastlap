@@ -1,13 +1,13 @@
+from datetime import timedelta
+from logging import getLogger
 from pathlib import Path
 
 from decouple import config
 from dotenv import load_dotenv
 
-from logging import getLogger
-
 logger = getLogger(__name__)
 
-ENV_FILE = config("ENV_FILE", default='.env')
+ENV_FILE = config("ENV_FILE", default=".env")
 logger.warning(f"Using ENV_FILE={ENV_FILE}")
 
 load_dotenv(ENV_FILE)
@@ -17,6 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -58,7 +59,7 @@ MIDDLEWARE = [
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"  # noqa: E501
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -92,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {
     "default": {
@@ -122,7 +124,6 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
-from datetime import timedelta
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -170,7 +171,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "{asctime} |{name:36s}|:{lineno:<4d} "
-                      "[{levelname:8s}] <{request_id:36s}> - {message}",
+            "[{levelname:8s}] <{request_id:36s}> - {message}",
             "style": "{",
         },
         "simple": {
@@ -219,16 +220,15 @@ LOGGING = {
     },
 }
 
-FIREBASE_PROJECT_ID = config('FIREBASE_PROJECT_ID', default='')
-FIREBASE_COLLECTION_USERS = 'users'
-FIREBASE_COLLECTION_AVATARS = 'avatars'
+FIREBASE_PROJECT_ID = config("FIREBASE_PROJECT_ID", default="")
+FIREBASE_COLLECTION_USERS = "users"
+FIREBASE_COLLECTION_AVATARS = "avatars"
 FIREBASE_CREDENTIALS_PATH = Path(config("FIREBASE_CREDENTIALS_PATH"))
 
 if not FIREBASE_CREDENTIALS_PATH.is_absolute():
     FIREBASE_CREDENTIALS_PATH = BASE_DIR / FIREBASE_CREDENTIALS_PATH
 
 
-
 AVATAR_MAX_SIZE_MB = 2
 AVATAR_MAX_SIZE_BYTES = AVATAR_MAX_SIZE_MB * 1024 * 1024
-ALLOWED_AVATAR_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+ALLOWED_AVATAR_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
