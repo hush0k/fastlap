@@ -18,6 +18,7 @@ from django.db.models import (
     TextField,
 )
 
+from apps.common.utils import get_image_size_validator
 from apps.common.mixins import NameMixin
 from apps.common.models import BaseModel
 from config.settings.base import (
@@ -36,14 +37,6 @@ def article_cover_path(instance: "Article", filename: str) -> str:
     result: Path = MEDIA_LOCATION.ARTICLE_COVERS / (str(instance.slug) + extension)
     return str(result)
 
-
-def validate_image_size(value: UploadedFile) -> None:
-    """:raises ValidationError: if file exceeds the max allowed size."""
-    logger.debug("image size: %s", value.size)
-    if value.size > ARTICLE_IMAGE_MAX_SIZE_BYTES:
-        raise ValidationError(f"Max image size is {ARTICLE_IMAGE_MAX_SIZE_MB} MB")
-
-
 class Tag(NameMixin, BaseModel):
     class Meta:
         verbose_name = "Tag"
@@ -52,7 +45,7 @@ class Tag(NameMixin, BaseModel):
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.id}, {self.name})"
 
-
+validate_image_size = get_image_size_validator(ARTICLE_IMAGE_MAX_SIZE_BYTES)
 class Article(BaseModel):
     name: CharField = CharField(max_length=255, validators=[MinLengthValidator(5)])
     slug: AutoSlugField = AutoSlugField(populate_from="name", unique=True)  # type: ignore[assignment]
