@@ -21,7 +21,10 @@ class TestRaceCreate(TestCase):
     def setUpTestData(cls) -> None:
         cls.api_client = APIClient()
         cls.user = get_user()
+        cls.staff = get_user(email="staff@example.com", username="staff", is_staff=True)
         cls.user_token = AccessToken.for_user(cls.user)
+        cls.staff_token = AccessToken.for_user(cls.staff)
+
         cls.series = Series.objects.create(name="Formula 1", category="car")
 
     def setUp(self) -> None:
@@ -38,7 +41,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 201)
@@ -55,6 +58,15 @@ class TestRaceCreate(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 401)
 
+    def test_create_by_ordinary_user_not_allowed(self) -> None:
+        response = self.api_client.post(
+            self.races_url,
+            self.valid_data,
+            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+        )
+        logger.debug("%s: %s", self._testMethodName, response.text)
+        self.assertEqual(response.status_code, 403)
+
     def test_create_without_required_fields(self) -> None:
         required_fields = [
             "name",
@@ -69,7 +81,7 @@ class TestRaceCreate(TestCase):
             response = self.api_client.post(
                 self.races_url,
                 data,
-                HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+                HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
             )
             logger.debug("%s [%s]: %s", self._testMethodName, field, response.text)
             self.assertEqual(response.status_code, 400)
@@ -80,7 +92,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -91,7 +103,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -102,7 +114,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -113,7 +125,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -124,7 +136,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -135,7 +147,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -146,7 +158,7 @@ class TestRaceCreate(TestCase):
         response = self.api_client.post(
             self.races_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
