@@ -1,16 +1,14 @@
+from datetime import timedelta
 from json import loads
 from logging import getLogger
+
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.users.models import User
 from tests.config import TEST_LOGGER_NAME
-from unittest.mock import patch
-from datetime import timedelta
-from django.utils import timezone
-from rest_framework_simplejwt.tokens import RefreshToken
-from datetime import datetime
 
 logger = getLogger(TEST_LOGGER_NAME)
 
@@ -27,10 +25,13 @@ class TestRefresh(TestCase):
             first_name="smile",
             last_name="kun",
         )
-        login_response = self.client.post(self.login_url, {
-            "email": "smile@example.com",
-            "password": "MyPassword1234!",
-        })
+        login_response = self.client.post(
+            self.login_url,
+            {
+                "email": "smile@example.com",
+                "password": "MyPassword1234!",
+            },
+        )
         self.refresh_token = loads(login_response.text)["refresh"]
 
     def test_success_refresh(self) -> None:
@@ -67,8 +68,3 @@ class TestRefresh(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
 
         self.assertEqual(response.status_code, 401)
-
-
-
-
-
