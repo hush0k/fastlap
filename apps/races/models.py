@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.core.validators import MaxLengthValidator
 from django.db.models import (
     PROTECT,
     CharField,
@@ -14,7 +15,8 @@ from django.db.models import (
 from apps.common.enums import RaceStatusEnum, SeriesCategoryEnum, WatchPlatformEnum
 from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 from apps.common.models import BaseModel
-from config.settings.base import MEDIA_LOCATION
+from apps.common.utils import get_image_size_validator
+from config.settings.base import MEDIA_LOCATION, SERIES_LOGO_MAX_SIZE_BYTES
 
 
 def logo_upload_path(instance: "Series", filename: str) -> str:
@@ -23,14 +25,15 @@ def logo_upload_path(instance: "Series", filename: str) -> str:
     result: Path = MEDIA_LOCATION.SERIES_LOGO / str(instance.slug + extension)
     return str(result)
 
+series_logo_validator = get_image_size_validator(SERIES_LOGO_MAX_SIZE_BYTES)
 
 class Series(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
     category: CharField = CharField(
         max_length=10,
         choices=[(i.value, i.value) for i in SeriesCategoryEnum],
     )
-    description: TextField = TextField(blank=True, null=True)
-    logo: ImageField = ImageField(upload_to=logo_upload_path, blank=True, null=True)
+    description: TextField = TextField(blank=True, null=True, validators=[MaxLengthValidator(5_000)])
+    logo: ImageField = ImageField(upload_to=logo_upload_path, blank=True, null=True, validators=[series_logo_validator])
 
     def __str__(self) -> str:
         return self.name
