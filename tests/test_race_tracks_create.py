@@ -21,7 +21,7 @@ class TestRaceTrackCreate(TestCase):
         cls.api_client = APIClient()
         cls.ordinary_user = get_user()
         cls.staff = get_user(email="staff@example.com", username="staff", is_staff=True)
-        cls.ordinary_user_token = AccessToken.for_user(cls.ordinary_user)
+        cls.ordinary_token = AccessToken.for_user(cls.ordinary_user)
         cls.staff_token = AccessToken.for_user(cls.staff)
 
     def setUp(self) -> None:
@@ -41,7 +41,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data_with_map_image,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 201)
@@ -52,6 +52,15 @@ class TestRaceTrackCreate(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 401)
 
+    def test_create_by_ordinary_user_not_allowed(self) -> None:
+        response = self.api_client.post(
+            self.tracks_url,
+            self.valid_data,
+            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_token}",
+        )
+        logger.debug("%s: %s", self._testMethodName, response.text)
+        self.assertEqual(response.status_code, 403)
+
     def test_create_without_required_fields(self) -> None:
         required_fields = ["name", "country", "city", "length_km"]
         for field in required_fields:
@@ -59,7 +68,7 @@ class TestRaceTrackCreate(TestCase):
             response = self.api_client.post(
                 self.tracks_url,
                 data,
-                HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+                HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
             )
             logger.debug("%s [%s]: %s", self._testMethodName, field, response.text)
             self.assertEqual(response.status_code, 400)
@@ -71,7 +80,7 @@ class TestRaceTrackCreate(TestCase):
             response = self.api_client.post(
                 self.tracks_url,
                 self.valid_data,
-                HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+                HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
             )
             logger.debug("%s: %s", self._testMethodName, response.text)
             self.assertEqual(response.status_code, 400)
@@ -82,7 +91,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -93,7 +102,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -105,7 +114,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -117,7 +126,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -129,7 +138,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -141,7 +150,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -153,7 +162,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
@@ -164,7 +173,7 @@ class TestRaceTrackCreate(TestCase):
         response = self.api_client.post(
             self.tracks_url,
             self.valid_data,
-            HTTP_AUTHORIZATION=f"Bearer {self.ordinary_user_token}",
+            HTTP_AUTHORIZATION=f"Bearer {self.staff_token}",
         )
         logger.debug("%s: %s", self._testMethodName, response.text)
         self.assertEqual(response.status_code, 400)
