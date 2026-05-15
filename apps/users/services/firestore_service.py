@@ -30,8 +30,6 @@ class FirestoreUserService:
 
             doc_ref = self.db.collection(self.avatars_collection).document()
             doc_ref.set(avatar_data)
-            doc_ref = self.db.collection(self.avatars_collection).document()
-            doc_ref.set(avatar_data)
 
             user_data: dict[str, Any] = {
                 "current_avatar_id": doc_ref.id,
