@@ -3,7 +3,10 @@ from logging import getLogger
 from pathlib import Path
 
 from decouple import config
+from django_countries.fields import countries
 from dotenv import load_dotenv
+
+from apps.common.enums import RaceStatusEnum
 
 logger = getLogger(__name__)
 
@@ -123,6 +126,16 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "FastLap API",
     "DESCRIPTION": "API for motorsport fans platform",
     "VERSION": "1.0.0",
+    "ENUM_NAME_OVERRIDES": {
+        "CountryEnum": countries,
+        "DriverResultStatusEnum": [
+            ("finished", "finished"),
+            ("dnf", "dnf"),
+            ("dns", "dns"),
+            ("dsq", "dsq"),
+        ],
+        "RaceStatusEnum": [(status.value, status.value) for status in RaceStatusEnum],
+    },
 }
 
 
@@ -131,7 +144,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-
 }
 
 LANGUAGE_CODE = "en-us"
@@ -142,7 +154,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
 MEDIA_URL = "/media/"

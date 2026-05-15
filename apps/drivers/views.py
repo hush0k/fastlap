@@ -7,6 +7,7 @@ from typing import Any
 
 # Django modules
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 
 # Django REST Framework
 from rest_framework import filters, viewsets
@@ -14,7 +15,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request as DRFRequest
 from rest_framework.response import Response as DRFResponse
-from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
@@ -38,7 +38,11 @@ class DriverViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
     lookup_field = "slug"
     pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    )
     filterset_class = DriverFilter
     search_fields = ("first_name", "last_name")
     ordering_fields = ("first_name", "last_name", "number")
@@ -87,6 +91,10 @@ class DriverViewSet(viewsets.ModelViewSet):
         """
         return super().retrieve(request, *args, **kwargs)
 
+    @extend_schema(
+        operation_id="v1_drivers_driver_results_list",
+        responses=DriverResultSerializer(many=True),
+    )
     @action(
         methods=("GET",),
         detail=True,
