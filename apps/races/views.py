@@ -16,6 +16,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.races.models import Race, Series
 from apps.races.serializers import (
     RaceDetailSerializer,
@@ -36,7 +37,7 @@ class SeriesViewSet(viewsets.ModelViewSet):
   """
   
   queryset = Series.objects.all()
-  permission_classes = [IsAuthenticatedOrReadOnly]
+  permission_classes = [IsAuthenticatedOrReadOnly, IsStaffOrReadOnly]
   pagination_class = CustomPagination
   filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
   filterset_fields = ["category"]
