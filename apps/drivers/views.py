@@ -21,7 +21,7 @@ from apps.common.pagination import CustomPagination
 from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
 from apps.drivers.filters import DriverFilter, DriverResultFilter
 from apps.drivers.models import Driver, DriverResult
-from apps.drivers.permissions import IsAdminOrReadOnly
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.drivers.serializers import (
     DriverDetailSerializer,
     DriverListSerializer,
@@ -36,7 +36,7 @@ class DriverViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Driver.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
+    permission_classes = (IsAuthenticated, IsStaffOrReadOnly)
     lookup_field = "slug"
     pagination_class = CustomPagination
     filter_backends = (
@@ -147,7 +147,7 @@ class DriverResultViewSet(viewsets.ModelViewSet):
     """
 
     queryset = DriverResult.objects.select_related("driver", "race")
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
+    permission_classes = (IsAuthenticated, IsStaffOrReadOnly)
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = DriverResultFilter
