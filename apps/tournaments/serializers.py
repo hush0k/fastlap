@@ -1,13 +1,22 @@
-from rest_framework.serializers import ModelSerializer
+"""
+Serializers for the tournaments app.
+"""
 
-from apps.races.serializers import SeriesSerializer
+# Django REST Framework
+from rest_framework import serializers
 
-from .models import Tournament
+# Project modules
+from apps.races.serializers import SeriesListSerializer
+from apps.tournaments.models import Tournament
 
 
-class TournamentListSerializer(ModelSerializer):
-    series = SeriesSerializer()
-
+class TournamentListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing Tournaments.
+    """
+    
+    series = SeriesListSerializer()
+    
     class Meta:
         model = Tournament
         fields = [
@@ -27,9 +36,13 @@ class TournamentListSerializer(ModelSerializer):
         ]
 
 
-class TournamentDetailSerializer(ModelSerializer):
-    series = SeriesSerializer()
-
+class TournamentDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for detailed Tournament view.
+    """
+    
+    series = SeriesListSerializer()
+    
     class Meta:
         model = Tournament
         fields = [
@@ -53,10 +66,14 @@ class TournamentDetailSerializer(ModelSerializer):
         ]
 
 
-class TournamentCreateSerializer(ModelSerializer):
+class TournamentCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating Tournaments.
+    """
+    
     class Meta:
         model = Tournament
-        fields = (
+        fields = [
             "name",
             "series",
             "description",
@@ -67,13 +84,17 @@ class TournamentCreateSerializer(ModelSerializer):
             "end_date",
             "total_rounds",
             "logo",
-        )
+        ]
 
 
-class TournamentUpdateSerializer(ModelSerializer):
+class TournamentUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating Tournaments.
+    """
+    
     class Meta:
         model = Tournament
-        fields = (
+        fields = [
             "name",
             "series",
             "description",
@@ -84,5 +105,5 @@ class TournamentUpdateSerializer(ModelSerializer):
             "end_date",
             "total_rounds",
             "logo",
-        )
+        ]
         extra_kwargs = {field: {"required": False} for field in fields}

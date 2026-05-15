@@ -27,6 +27,8 @@ share/python-wheels/
 MANIFEST
 media/
 media/avatars/
+staticfiles/
+staticfiles/*
 **/.idea/
 .idea/
 Makefile
