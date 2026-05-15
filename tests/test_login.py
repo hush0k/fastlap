@@ -42,7 +42,9 @@ class TestLogin(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("Invalid email or password.", loads(response.text)["non_field_errors"][0])
+        self.assertIn(
+            "Invalid email or password.", loads(response.text)["non_field_errors"][0]
+        )
 
     def test_wrong_email(self) -> None:
         self.valid_data["email"] = "notexist@example.com"
@@ -50,7 +52,9 @@ class TestLogin(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("Invalid email or password.", loads(response.text)["non_field_errors"][0])
+        self.assertIn(
+            "Invalid email or password.", loads(response.text)["non_field_errors"][0]
+        )
 
     def test_invalid_email_format(self) -> None:
         self.valid_data["email"] = "notanemail"
@@ -58,7 +62,9 @@ class TestLogin(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual("Enter a valid email address.", loads(response.text)["email"][0])
+        self.assertEqual(
+            "Enter a valid email address.", loads(response.text)["email"][0]
+        )
 
     def test_inactive_user(self) -> None:
         self.user.is_active = False
@@ -68,7 +74,9 @@ class TestLogin(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
 
         self.assertEqual(response.status_code, 400)
-        self.assertIn("User account is disabled.", loads(response.text)["non_field_errors"][0])
+        self.assertIn(
+            "User account is disabled.", loads(response.text)["non_field_errors"][0]
+        )
 
     def test_missing_email(self) -> None:
         del self.valid_data["email"]
