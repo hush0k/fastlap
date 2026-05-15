@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from apps.races.models import Series, Race
+
+from apps.races.models import Race, Series
 
 
 class Command(BaseCommand):
@@ -22,9 +23,30 @@ class Command(BaseCommand):
         f1 = series_objects["Formula 1"]
 
         races = [
-            {"name": "Bahrain Grand Prix", "round_number": 1, "scheduled_at": timezone.now(), "status": "finished", "watch_platform": "f1_tv", "laps_total": 57},
-            {"name": "Saudi Arabian Grand Prix", "round_number": 2, "scheduled_at": timezone.now(), "status": "finished", "watch_platform": "f1_tv", "laps_total": 50},
-            {"name": "Australian Grand Prix", "round_number": 3, "scheduled_at": timezone.now(), "status": "upcoming", "watch_platform": "f1_tv", "laps_total": 58},
+            {
+                "name": "Bahrain Grand Prix",
+                "round_number": 1,
+                "scheduled_at": timezone.now(),
+                "status": "finished",
+                "watch_platform": "f1_tv",
+                "laps_total": 57,
+            },
+            {
+                "name": "Saudi Arabian Grand Prix",
+                "round_number": 2,
+                "scheduled_at": timezone.now(),
+                "status": "finished",
+                "watch_platform": "f1_tv",
+                "laps_total": 50,
+            },
+            {
+                "name": "Australian Grand Prix",
+                "round_number": 3,
+                "scheduled_at": timezone.now(),
+                "status": "upcoming",
+                "watch_platform": "f1_tv",
+                "laps_total": 58,
+            },
         ]
 
         for data in races:
