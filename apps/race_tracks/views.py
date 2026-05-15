@@ -2,6 +2,7 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 
+from apps.drivers.permissions import IsAdminOrReadOnly
 from apps.race_tracks.models import Track
 from apps.race_tracks.schema.custom_schema import RaceTrackAutoSchema
 from apps.race_tracks.serializers import (
@@ -13,7 +14,7 @@ from apps.race_tracks.serializers import (
 
 class RaceTrackViewSet(viewsets.ModelViewSet):
     queryset = Track.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['country']
     search_fields = ['name', 'city']

@@ -18,10 +18,15 @@ def get_image_content_type(file: str | Path) -> str:
     return Image.MIME[image.format]
 
 
-def get_simple_upload_file(file_path: Path) -> SimpleUploadedFile:
+def get_simple_upload_file(file_path: Path, empty: bool = False) -> SimpleUploadedFile:
+    if empty:
+        content = "".encode()
+    else:
+        content = get_image_bytes(file_path)
+
     return SimpleUploadedFile(
         name=file_path.name,
-        content=get_image_bytes(file_path),
+        content=content,
         content_type=get_image_content_type(file_path),
     )
 
