@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 
+from apps.common.enums import RaceStatusEnum, WatchPlatformEnum
 from apps.races.models import Race, Series
 from tests.config import TEST_LOGGER_NAME
 
@@ -25,24 +26,24 @@ class TestRaceList(TestCase):
             series=cls.series_f1,
             round_number=8,
             scheduled_at="2025-06-01T14:00:00Z",
-            status="upcoming",
-            watch_platform="f1_tv",
+            status=RaceStatusEnum.UPCOMING,
+            watch_platform=WatchPlatformEnum.F1_TV,
         )
         cls.race_bahrain = Race.objects.create(
             name="Bahrain Grand Prix",
             series=cls.series_f1,
             round_number=1,
             scheduled_at="2025-03-02T15:00:00Z",
-            status="finished",
-            watch_platform="dazn",
+            status=RaceStatusEnum.FINISHED,
+            watch_platform=WatchPlatformEnum.DAZN,
         )
         cls.race_motogp_qatar = Race.objects.create(
             name="Qatar MotoGP",
             series=cls.series_motogp,
             round_number=1,
             scheduled_at="2025-03-30T19:00:00Z",
-            status="finished",
-            watch_platform="youtube",
+            status=RaceStatusEnum.FINISHED,
+            watch_platform=WatchPlatformEnum.YOUTUBE,
         )
 
     def test_success_list(self) -> None:
