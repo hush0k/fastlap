@@ -6,7 +6,7 @@ info:
 paths:
   /api/schema/:
     get:
-      operationId: api_schema_retrieve
+      operationId: schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -125,7 +125,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - api
+      - schema
       security:
       - jwtAuth: []
       - {}
@@ -151,10 +151,10 @@ paths:
           description: ''
   /api/v1/auth/avatar/:
     get:
-      operationId: api_v1_auth_avatar_retrieve
+      operationId: v1_auth_avatar_retrieve
       description: Get user's current avatar from Firestore.
       tags:
-      - api
+      - Auth
       security:
       - jwtAuth: []
       responses:
@@ -169,10 +169,10 @@ paths:
           description: ''
   /api/v1/auth/avatar/delete/:
     delete:
-      operationId: api_v1_auth_avatar_delete_destroy
+      operationId: v1_auth_avatar_delete_destroy
       description: Delete user's avatar from Firestore.
       tags:
-      - api
+      - Auth
       security:
       - jwtAuth: []
       responses:
@@ -187,10 +187,10 @@ paths:
           description: ''
   /api/v1/auth/avatar/upload/:
     post:
-      operationId: api_v1_auth_avatar_upload_create
+      operationId: v1_auth_avatar_upload_create
       description: Upload user avatar to Firestore.
       tags:
-      - api
+      - Auth
       requestBody:
         content:
           multipart/form-data:
@@ -217,9 +217,9 @@ paths:
           description: ''
   /api/v1/auth/login/:
     post:
-      operationId: api_v1_auth_login_create
+      operationId: v1_auth_login_create
       tags:
-      - api
+      - Auth
       requestBody:
         content:
           application/json:
@@ -249,12 +249,12 @@ paths:
           description: ''
   /api/v1/auth/refresh/:
     post:
-      operationId: api_v1_auth_refresh_create
+      operationId: v1_auth_refresh_create
       description: |-
         Takes a refresh type JSON web token and returns an access type JSON web
         token if the refresh token is valid.
       tags:
-      - api
+      - Auth
       requestBody:
         content:
           application/json:
@@ -278,9 +278,9 @@ paths:
           description: ''
   /api/v1/auth/register/:
     post:
-      operationId: api_v1_auth_register_create
+      operationId: v1_auth_register_create
       tags:
-      - api
+      - Auth
       requestBody:
         content:
           multipart/form-data:
@@ -316,9 +316,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Register'
           description: ''
+  /api/v1/drivers/:
+    get:
+      operationId: v1_drivers_list
+      tags:
+      - Drivers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverList'
+          description: ''
+    post:
+      operationId: v1_drivers_create
+      tags:
+      - Drivers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverDetail'
+          description: ''
   /api/v1/drivers/{slug}/:
     get:
-      operationId: api_v1_drivers_retrieve
+      operationId: v1_drivers_retrieve
       parameters:
       - in: path
         name: slug
@@ -326,7 +365,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Drivers
       security:
       - jwtAuth: []
       responses:
@@ -337,7 +376,7 @@ paths:
                 $ref: '#/components/schemas/DriverDetail'
           description: ''
     put:
-      operationId: api_v1_drivers_update
+      operationId: v1_drivers_update
       parameters:
       - in: path
         name: slug
@@ -345,7 +384,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Drivers
       requestBody:
         content:
           application/json:
@@ -368,7 +407,7 @@ paths:
                 $ref: '#/components/schemas/DriverDetail'
           description: ''
     patch:
-      operationId: api_v1_drivers_partial_update
+      operationId: v1_drivers_partial_update
       parameters:
       - in: path
         name: slug
@@ -376,7 +415,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Drivers
       requestBody:
         content:
           application/json:
@@ -398,7 +437,7 @@ paths:
                 $ref: '#/components/schemas/DriverDetail'
           description: ''
     delete:
-      operationId: api_v1_drivers_destroy
+      operationId: v1_drivers_destroy
       parameters:
       - in: path
         name: slug
@@ -406,7 +445,131 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Drivers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/drivers/results/:
+    get:
+      operationId: v1_driver_results_list
+      tags:
+      - Driver Results
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResult'
+          description: ''
+    post:
+      operationId: v1_driver_results_create
+      tags:
+      - Driver Results
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResultCreate'
+          description: ''
+  /api/v1/news/:
+    get:
+      operationId: v1_news_list
+      tags:
+      - News
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleList'
+          description: ''
+    post:
+      operationId: v1_news_create
+      tags:
+      - News
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: ''
+  /api/v1/news/{id}/:
+    patch:
+      operationId: v1_news_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - News
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: ''
+    delete:
+      operationId: v1_news_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - News
       security:
       - jwtAuth: []
       responses:
@@ -414,7 +577,7 @@ paths:
           description: No response body
   /api/v1/news/{slug}/:
     get:
-      operationId: api_v1_news_retrieve
+      operationId: v1_news_retrieve
       parameters:
       - in: path
         name: slug
@@ -422,7 +585,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - News
       security:
       - jwtAuth: []
       - {}
@@ -435,7 +598,7 @@ paths:
           description: ''
   /api/v1/race_tracks/tracks/:
     get:
-      operationId: api_v1_race_tracks_tracks_list
+      operationId: v1_race_tracks_tracks_list
       parameters:
       - in: query
         name: country
@@ -966,7 +1129,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - Race Tracks
       security:
       - jwtAuth: []
       - {}
@@ -978,9 +1141,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedRaceTrackList'
           description: ''
     post:
-      operationId: api_v1_race_tracks_tracks_create
+      operationId: v1_race_tracks_tracks_create
       tags:
-      - api
+      - Race Tracks
       requestBody:
         content:
           application/json:
@@ -1004,7 +1167,7 @@ paths:
           description: ''
   /api/v1/race_tracks/tracks/{id}/:
     get:
-      operationId: api_v1_race_tracks_tracks_retrieve
+      operationId: v1_race_tracks_tracks_retrieve
       parameters:
       - in: path
         name: id
@@ -1013,7 +1176,7 @@ paths:
         description: A unique integer value identifying this track.
         required: true
       tags:
-      - api
+      - Race Tracks
       security:
       - jwtAuth: []
       - {}
@@ -1025,7 +1188,7 @@ paths:
                 $ref: '#/components/schemas/RaceTrackDetail'
           description: ''
     put:
-      operationId: api_v1_race_tracks_tracks_update
+      operationId: v1_race_tracks_tracks_update
       parameters:
       - in: path
         name: id
@@ -1034,7 +1197,7 @@ paths:
         description: A unique integer value identifying this track.
         required: true
       tags:
-      - api
+      - Race Tracks
       requestBody:
         content:
           application/json:
@@ -1057,7 +1220,7 @@ paths:
                 $ref: '#/components/schemas/RaceTracksCreate'
           description: ''
     patch:
-      operationId: api_v1_race_tracks_tracks_partial_update
+      operationId: v1_race_tracks_tracks_partial_update
       parameters:
       - in: path
         name: id
@@ -1066,7 +1229,7 @@ paths:
         description: A unique integer value identifying this track.
         required: true
       tags:
-      - api
+      - Race Tracks
       requestBody:
         content:
           application/json:
@@ -1088,7 +1251,7 @@ paths:
                 $ref: '#/components/schemas/RaceTracksCreate'
           description: ''
     delete:
-      operationId: api_v1_race_tracks_tracks_destroy
+      operationId: v1_race_tracks_tracks_destroy
       parameters:
       - in: path
         name: id
@@ -1097,7 +1260,7 @@ paths:
         description: A unique integer value identifying this track.
         required: true
       tags:
-      - api
+      - Race Tracks
       security:
       - jwtAuth: []
       responses:
@@ -1105,7 +1268,7 @@ paths:
           description: No response body
   /api/v1/team_stuff/staff/:
     get:
-      operationId: api_v1_team_stuff_staff_list
+      operationId: v1_team_stuff_staff_list
       parameters:
       - in: query
         name: country
@@ -1640,7 +1803,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - Team Staff
       security:
       - jwtAuth: []
       - {}
@@ -1652,9 +1815,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedStaffMemberListList'
           description: ''
     post:
-      operationId: api_v1_team_stuff_staff_create
+      operationId: v1_team_stuff_staff_create
       tags:
-      - api
+      - Team Staff
       requestBody:
         content:
           application/json:
@@ -1678,7 +1841,7 @@ paths:
           description: ''
   /api/v1/team_stuff/staff/{slug}/:
     get:
-      operationId: api_v1_team_stuff_staff_retrieve
+      operationId: v1_team_stuff_staff_retrieve
       parameters:
       - in: path
         name: slug
@@ -1686,7 +1849,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Team Staff
       security:
       - jwtAuth: []
       - {}
@@ -1698,7 +1861,7 @@ paths:
                 $ref: '#/components/schemas/StaffMemberDetail'
           description: ''
     put:
-      operationId: api_v1_team_stuff_staff_update
+      operationId: v1_team_stuff_staff_update
       parameters:
       - in: path
         name: slug
@@ -1706,7 +1869,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Team Staff
       requestBody:
         content:
           application/json:
@@ -1729,7 +1892,7 @@ paths:
                 $ref: '#/components/schemas/StaffMemberWrite'
           description: ''
     patch:
-      operationId: api_v1_team_stuff_staff_partial_update
+      operationId: v1_team_stuff_staff_partial_update
       parameters:
       - in: path
         name: slug
@@ -1737,7 +1900,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Team Staff
       requestBody:
         content:
           application/json:
@@ -1759,7 +1922,7 @@ paths:
                 $ref: '#/components/schemas/StaffMemberWrite'
           description: ''
     delete:
-      operationId: api_v1_team_stuff_staff_destroy
+      operationId: v1_team_stuff_staff_destroy
       parameters:
       - in: path
         name: slug
@@ -1767,7 +1930,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Team Staff
       security:
       - jwtAuth: []
       responses:
@@ -1775,7 +1938,7 @@ paths:
           description: No response body
   /api/v1/team_stuff/staff/{slug}/current-team/:
     get:
-      operationId: api_v1_team_stuff_staff_current_team_retrieve
+      operationId: v1_team_stuff_staff_current_team_retrieve
       description: Current active team for a staff member.
       parameters:
       - in: path
@@ -1784,7 +1947,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Team Staff
       security:
       - jwtAuth: []
       - {}
@@ -1797,7 +1960,7 @@ paths:
           description: ''
   /api/v1/team_stuff/staff/{slug}/history/:
     get:
-      operationId: api_v1_team_stuff_staff_history_retrieve
+      operationId: v1_team_stuff_staff_history_retrieve
       description: Team history for a staff member.
       parameters:
       - in: path
@@ -1806,7 +1969,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Team Staff
       security:
       - jwtAuth: []
       - {}
@@ -1819,7 +1982,7 @@ paths:
           description: ''
   /api/v1/teams/:
     get:
-      operationId: api_v1_teams_list
+      operationId: v1_teams_list
       parameters:
       - in: query
         name: country
@@ -2354,7 +2517,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - Teams
       security:
       - jwtAuth: []
       - {}
@@ -2366,9 +2529,9 @@ paths:
                 $ref: '#/components/schemas/PaginatedTeamListList'
           description: ''
     post:
-      operationId: api_v1_teams_create
+      operationId: v1_teams_create
       tags:
-      - api
+      - Teams
       requestBody:
         content:
           application/json:
@@ -2392,7 +2555,7 @@ paths:
           description: ''
   /api/v1/teams/{slug}/:
     get:
-      operationId: api_v1_teams_retrieve
+      operationId: v1_teams_retrieve
       parameters:
       - in: path
         name: slug
@@ -2400,7 +2563,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Teams
       security:
       - jwtAuth: []
       - {}
@@ -2412,7 +2575,7 @@ paths:
                 $ref: '#/components/schemas/TeamDetail'
           description: ''
     put:
-      operationId: api_v1_teams_update
+      operationId: v1_teams_update
       parameters:
       - in: path
         name: slug
@@ -2420,7 +2583,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Teams
       requestBody:
         content:
           application/json:
@@ -2443,7 +2606,7 @@ paths:
                 $ref: '#/components/schemas/TeamWrite'
           description: ''
     patch:
-      operationId: api_v1_teams_partial_update
+      operationId: v1_teams_partial_update
       parameters:
       - in: path
         name: slug
@@ -2451,7 +2614,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Teams
       requestBody:
         content:
           application/json:
@@ -2473,7 +2636,7 @@ paths:
                 $ref: '#/components/schemas/TeamWrite'
           description: ''
     delete:
-      operationId: api_v1_teams_destroy
+      operationId: v1_teams_destroy
       parameters:
       - in: path
         name: slug
@@ -2481,7 +2644,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Teams
       security:
       - jwtAuth: []
       responses:
@@ -2489,7 +2652,7 @@ paths:
           description: No response body
   /api/v1/teams/{slug}/standings/:
     get:
-      operationId: api_v1_teams_standings_retrieve
+      operationId: v1_teams_standings_retrieve
       parameters:
       - in: path
         name: slug
@@ -2497,7 +2660,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - Teams
       security:
       - jwtAuth: []
       - {}
@@ -2508,9 +2671,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/TeamDetail'
           description: ''
-  /api/v1/tournaments/{id}/detail/:
+  /api/v1/tournaments/:
     get:
-      operationId: api_v1_tournaments_detail_retrieve
+      operationId: v1_tournaments_list
+      tags:
+      - Tournaments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentList'
+          description: ''
+    post:
+      operationId: v1_tournaments_create
+      tags:
+      - Tournaments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TournamentCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TournamentCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TournamentCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: ''
+  /api/v1/tournaments/{id}/:
+    put:
+      operationId: v1_tournaments_update
       parameters:
       - in: path
         name: id
@@ -2518,7 +2720,83 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - Tournaments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TournamentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TournamentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TournamentUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: ''
+    patch:
+      operationId: v1_tournaments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Tournaments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTournamentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTournamentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTournamentUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: ''
+    delete:
+      operationId: v1_tournaments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Tournaments
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/tournaments/{id}/detail/:
+    get:
+      operationId: v1_tournaments_detail_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Tournaments
       security:
       - jwtAuth: []
       - {}
@@ -2531,6 +2809,58 @@ paths:
           description: ''
 components:
   schemas:
+    ArticleCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        author:
+          type: integer
+          readOnly: true
+        series:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+      required:
+      - author
+      - content
+      - id
+      - name
+      - published_at
+      - slug
+      - tags
+      - views_count
     ArticleDetail:
       type: object
       properties:
@@ -2573,6 +2903,66 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tag'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - author
+      - content
+      - id
+      - name
+      - series
+      - slug
+      - tags
+    ArticleList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        series:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              oneOf:
+              - type: integer
+              - type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
         published_at:
           type: string
           format: date-time
@@ -3168,7 +3558,7 @@ components:
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
         nationality:
-          $ref: '#/components/schemas/NationalityEnum'
+          $ref: '#/components/schemas/CountryEnum'
         date_of_birth:
           type: string
           format: date
@@ -3197,6 +3587,168 @@ components:
       - nationality_name
       - slug
       - updated_at
+    DriverList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        nationality:
+          $ref: '#/components/schemas/CountryEnum'
+        nationality_name:
+          type: string
+          readOnly: true
+        number:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Racing Number
+        profile_image:
+          type: string
+          format: uri
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - first_name
+      - id
+      - last_name
+      - nationality
+      - nationality_name
+      - slug
+    DriverResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        driver:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        race:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Finish Position
+        grid_position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/DriverResultStatusEnum'
+        fastest_lap:
+          type: boolean
+        laps_completed:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+      required:
+      - created_at
+      - driver
+      - id
+      - points
+      - race
+      - status
+      - updated_at
+    DriverResultCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Finish Position
+        grid_position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/DriverResultStatusEnum'
+        fastest_lap:
+          type: boolean
+        laps_completed:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        driver:
+          type: integer
+        race:
+          type: integer
+      required:
+      - created_at
+      - driver
+      - id
+      - points
+      - race
+      - status
+      - updated_at
+    DriverResultStatusEnum:
+      enum:
+      - finished
+      - dnf
+      - dns
+      - dsq
+      type: string
+      description: |-
+        * `finished` - finished
+        * `dnf` - dnf
+        * `dns` - dns
+        * `dsq` - dsq
     Login:
       type: object
       properties:
@@ -3209,508 +3761,6 @@ components:
       required:
       - email
       - password
-    NationalityEnum:
-      enum:
-      - AF
-      - AX
-      - AL
-      - DZ
-      - AS
-      - AD
-      - AO
-      - AI
-      - AQ
-      - AG
-      - AR
-      - AM
-      - AW
-      - AU
-      - AT
-      - AZ
-      - BS
-      - BH
-      - BD
-      - BB
-      - BY
-      - BE
-      - BZ
-      - BJ
-      - BM
-      - BT
-      - BO
-      - BQ
-      - BA
-      - BW
-      - BV
-      - BR
-      - IO
-      - BN
-      - BG
-      - BF
-      - BI
-      - CV
-      - KH
-      - CM
-      - CA
-      - KY
-      - CF
-      - TD
-      - CL
-      - CN
-      - CX
-      - CC
-      - CO
-      - KM
-      - CG
-      - CK
-      - CR
-      - CI
-      - HR
-      - CU
-      - CW
-      - CY
-      - CZ
-      - CD
-      - DK
-      - DJ
-      - DM
-      - DO
-      - EC
-      - EG
-      - SV
-      - GQ
-      - ER
-      - EE
-      - SZ
-      - ET
-      - FK
-      - FO
-      - FJ
-      - FI
-      - FR
-      - GF
-      - PF
-      - TF
-      - GA
-      - GM
-      - GE
-      - DE
-      - GH
-      - GI
-      - GR
-      - GL
-      - GD
-      - GP
-      - GU
-      - GT
-      - GG
-      - GN
-      - GW
-      - GY
-      - HT
-      - HM
-      - HN
-      - HK
-      - HU
-      - IS
-      - IN
-      - ID
-      - IR
-      - IQ
-      - IE
-      - IM
-      - IL
-      - IT
-      - JM
-      - JP
-      - JE
-      - JO
-      - KZ
-      - KE
-      - KI
-      - KW
-      - KG
-      - LA
-      - LV
-      - LB
-      - LS
-      - LR
-      - LY
-      - LI
-      - LT
-      - LU
-      - MO
-      - MG
-      - MW
-      - MY
-      - MV
-      - ML
-      - MT
-      - MH
-      - MQ
-      - MR
-      - MU
-      - YT
-      - MX
-      - FM
-      - MD
-      - MC
-      - MN
-      - ME
-      - MS
-      - MA
-      - MZ
-      - MM
-      - NA
-      - NR
-      - NP
-      - NL
-      - NC
-      - NZ
-      - NI
-      - NE
-      - NG
-      - NU
-      - NF
-      - KP
-      - MK
-      - MP
-      - 'NO'
-      - OM
-      - PK
-      - PW
-      - PS
-      - PA
-      - PG
-      - PY
-      - PE
-      - PH
-      - PN
-      - PL
-      - PT
-      - PR
-      - QA
-      - RE
-      - RO
-      - RU
-      - RW
-      - BL
-      - SH
-      - KN
-      - LC
-      - MF
-      - PM
-      - VC
-      - WS
-      - SM
-      - ST
-      - SA
-      - SN
-      - RS
-      - SC
-      - SL
-      - SG
-      - SX
-      - SK
-      - SI
-      - SB
-      - SO
-      - ZA
-      - GS
-      - KR
-      - SS
-      - ES
-      - LK
-      - SD
-      - SR
-      - SJ
-      - SE
-      - CH
-      - SY
-      - TW
-      - TJ
-      - TZ
-      - TH
-      - TL
-      - TG
-      - TK
-      - TO
-      - TT
-      - TN
-      - TR
-      - TM
-      - TC
-      - TV
-      - UG
-      - UA
-      - AE
-      - GB
-      - UM
-      - US
-      - UY
-      - UZ
-      - VU
-      - VA
-      - VE
-      - VN
-      - VG
-      - VI
-      - WF
-      - EH
-      - YE
-      - ZM
-      - ZW
-      type: string
-      description: |-
-        * `AF` - Afghanistan
-        * `AX` - Åland Islands
-        * `AL` - Albania
-        * `DZ` - Algeria
-        * `AS` - American Samoa
-        * `AD` - Andorra
-        * `AO` - Angola
-        * `AI` - Anguilla
-        * `AQ` - Antarctica
-        * `AG` - Antigua and Barbuda
-        * `AR` - Argentina
-        * `AM` - Armenia
-        * `AW` - Aruba
-        * `AU` - Australia
-        * `AT` - Austria
-        * `AZ` - Azerbaijan
-        * `BS` - Bahamas (The)
-        * `BH` - Bahrain
-        * `BD` - Bangladesh
-        * `BB` - Barbados
-        * `BY` - Belarus
-        * `BE` - Belgium
-        * `BZ` - Belize
-        * `BJ` - Benin
-        * `BM` - Bermuda
-        * `BT` - Bhutan
-        * `BO` - Bolivia
-        * `BQ` - Bonaire, Sint Eustatius and Saba
-        * `BA` - Bosnia and Herzegovina
-        * `BW` - Botswana
-        * `BV` - Bouvet Island
-        * `BR` - Brazil
-        * `IO` - British Indian Ocean Territory
-        * `BN` - Brunei
-        * `BG` - Bulgaria
-        * `BF` - Burkina Faso
-        * `BI` - Burundi
-        * `CV` - Cabo Verde
-        * `KH` - Cambodia
-        * `CM` - Cameroon
-        * `CA` - Canada
-        * `KY` - Cayman Islands
-        * `CF` - Central African Republic
-        * `TD` - Chad
-        * `CL` - Chile
-        * `CN` - China
-        * `CX` - Christmas Island
-        * `CC` - Cocos (Keeling) Islands
-        * `CO` - Colombia
-        * `KM` - Comoros
-        * `CG` - Congo
-        * `CK` - Cook Islands
-        * `CR` - Costa Rica
-        * `CI` - Côte d'Ivoire
-        * `HR` - Croatia
-        * `CU` - Cuba
-        * `CW` - Curaçao
-        * `CY` - Cyprus
-        * `CZ` - Czechia
-        * `CD` - Democratic Republic of the Congo
-        * `DK` - Denmark
-        * `DJ` - Djibouti
-        * `DM` - Dominica
-        * `DO` - Dominican Republic
-        * `EC` - Ecuador
-        * `EG` - Egypt
-        * `SV` - El Salvador
-        * `GQ` - Equatorial Guinea
-        * `ER` - Eritrea
-        * `EE` - Estonia
-        * `SZ` - Eswatini
-        * `ET` - Ethiopia
-        * `FK` - Falkland Islands (Malvinas)
-        * `FO` - Faroe Islands
-        * `FJ` - Fiji
-        * `FI` - Finland
-        * `FR` - France
-        * `GF` - French Guiana
-        * `PF` - French Polynesia
-        * `TF` - French Southern Territories
-        * `GA` - Gabon
-        * `GM` - Gambia
-        * `GE` - Georgia
-        * `DE` - Germany
-        * `GH` - Ghana
-        * `GI` - Gibraltar
-        * `GR` - Greece
-        * `GL` - Greenland
-        * `GD` - Grenada
-        * `GP` - Guadeloupe
-        * `GU` - Guam
-        * `GT` - Guatemala
-        * `GG` - Guernsey
-        * `GN` - Guinea
-        * `GW` - Guinea-Bissau
-        * `GY` - Guyana
-        * `HT` - Haiti
-        * `HM` - Heard Island and McDonald Islands
-        * `HN` - Honduras
-        * `HK` - Hong Kong
-        * `HU` - Hungary
-        * `IS` - Iceland
-        * `IN` - India
-        * `ID` - Indonesia
-        * `IR` - Iran
-        * `IQ` - Iraq
-        * `IE` - Ireland
-        * `IM` - Isle of Man
-        * `IL` - Israel
-        * `IT` - Italy
-        * `JM` - Jamaica
-        * `JP` - Japan
-        * `JE` - Jersey
-        * `JO` - Jordan
-        * `KZ` - Kazakhstan
-        * `KE` - Kenya
-        * `KI` - Kiribati
-        * `KW` - Kuwait
-        * `KG` - Kyrgyzstan
-        * `LA` - Laos
-        * `LV` - Latvia
-        * `LB` - Lebanon
-        * `LS` - Lesotho
-        * `LR` - Liberia
-        * `LY` - Libya
-        * `LI` - Liechtenstein
-        * `LT` - Lithuania
-        * `LU` - Luxembourg
-        * `MO` - Macao
-        * `MG` - Madagascar
-        * `MW` - Malawi
-        * `MY` - Malaysia
-        * `MV` - Maldives
-        * `ML` - Mali
-        * `MT` - Malta
-        * `MH` - Marshall Islands
-        * `MQ` - Martinique
-        * `MR` - Mauritania
-        * `MU` - Mauritius
-        * `YT` - Mayotte
-        * `MX` - Mexico
-        * `FM` - Micronesia
-        * `MD` - Moldova
-        * `MC` - Monaco
-        * `MN` - Mongolia
-        * `ME` - Montenegro
-        * `MS` - Montserrat
-        * `MA` - Morocco
-        * `MZ` - Mozambique
-        * `MM` - Myanmar
-        * `NA` - Namibia
-        * `NR` - Nauru
-        * `NP` - Nepal
-        * `NL` - Netherlands
-        * `NC` - New Caledonia
-        * `NZ` - New Zealand
-        * `NI` - Nicaragua
-        * `NE` - Niger
-        * `NG` - Nigeria
-        * `NU` - Niue
-        * `NF` - Norfolk Island
-        * `KP` - North Korea
-        * `MK` - North Macedonia
-        * `MP` - Northern Mariana Islands
-        * `NO` - Norway
-        * `OM` - Oman
-        * `PK` - Pakistan
-        * `PW` - Palau
-        * `PS` - Palestine
-        * `PA` - Panama
-        * `PG` - Papua New Guinea
-        * `PY` - Paraguay
-        * `PE` - Peru
-        * `PH` - Philippines
-        * `PN` - Pitcairn
-        * `PL` - Poland
-        * `PT` - Portugal
-        * `PR` - Puerto Rico
-        * `QA` - Qatar
-        * `RE` - Réunion
-        * `RO` - Romania
-        * `RU` - Russia
-        * `RW` - Rwanda
-        * `BL` - Saint Barthélemy
-        * `SH` - Saint Helena
-        * `KN` - Saint Kitts and Nevis
-        * `LC` - Saint Lucia
-        * `MF` - Saint Martin (French part)
-        * `PM` - Saint Pierre and Miquelon
-        * `VC` - Saint Vincent and the Grenadines
-        * `WS` - Samoa
-        * `SM` - San Marino
-        * `ST` - Sao Tome and Principe
-        * `SA` - Saudi Arabia
-        * `SN` - Senegal
-        * `RS` - Serbia
-        * `SC` - Seychelles
-        * `SL` - Sierra Leone
-        * `SG` - Singapore
-        * `SX` - Sint Maarten (Dutch part)
-        * `SK` - Slovakia
-        * `SI` - Slovenia
-        * `SB` - Solomon Islands
-        * `SO` - Somalia
-        * `ZA` - South Africa
-        * `GS` - South Georgia
-        * `KR` - South Korea
-        * `SS` - South Sudan
-        * `ES` - Spain
-        * `LK` - Sri Lanka
-        * `SD` - Sudan
-        * `SR` - Suriname
-        * `SJ` - Svalbard and Jan Mayen
-        * `SE` - Sweden
-        * `CH` - Switzerland
-        * `SY` - Syria
-        * `TW` - Taiwan
-        * `TJ` - Tajikistan
-        * `TZ` - Tanzania
-        * `TH` - Thailand
-        * `TL` - Timor-Leste
-        * `TG` - Togo
-        * `TK` - Tokelau
-        * `TO` - Tonga
-        * `TT` - Trinidad and Tobago
-        * `TN` - Tunisia
-        * `TR` - Türkiye
-        * `TM` - Turkmenistan
-        * `TC` - Turks and Caicos Islands
-        * `TV` - Tuvalu
-        * `UG` - Uganda
-        * `UA` - Ukraine
-        * `AE` - United Arab Emirates
-        * `GB` - United Kingdom
-        * `UM` - United States Minor Outlying Islands
-        * `US` - United States of America
-        * `UY` - Uruguay
-        * `UZ` - Uzbekistan
-        * `VU` - Vanuatu
-        * `VA` - Vatican City
-        * `VE` - Venezuela
-        * `VN` - Vietnam
-        * `VG` - Virgin Islands (British)
-        * `VI` - Virgin Islands (U.S.)
-        * `WF` - Wallis and Futuna
-        * `EH` - Western Sahara
-        * `YE` - Yemen
-        * `ZM` - Zambia
-        * `ZW` - Zimbabwe
     PaginatedRaceTrackList:
       type: object
       required:
@@ -3780,6 +3830,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TeamList'
+    PatchedArticleUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        author:
+          type: integer
+          readOnly: true
+        series:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
     PatchedDriverDetail:
       type: object
       properties:
@@ -3808,7 +3901,7 @@ components:
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
         nationality:
-          $ref: '#/components/schemas/NationalityEnum'
+          $ref: '#/components/schemas/CountryEnum'
         date_of_birth:
           type: string
           format: date
@@ -3928,6 +4021,50 @@ components:
         secondary_sponsor:
           type: string
           maxLength: 255
+    PatchedTournamentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        series:
+          type: integer
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        logo:
+          type: string
+          format: uri
+          nullable: true
+    RaceStatusEnum:
+      enum:
+      - upcoming
+      - live
+      - finished
+      - cancelled
+      type: string
+      description: |-
+        * `upcoming` - upcoming
+        * `live` - live
+        * `finished` - finished
+        * `cancelled` - cancelled
     RaceTrack:
       type: object
       properties:
@@ -4223,18 +4360,6 @@ components:
       required:
       - first_name
       - last_name
-    StatusEnum:
-      enum:
-      - upcoming
-      - live
-      - finished
-      - cancelled
-      type: string
-      description: |-
-        * `upcoming` - upcoming
-        * `live` - live
-        * `finished` - finished
-        * `cancelled` - cancelled
     Tag:
       type: object
       properties:
@@ -4480,6 +4605,45 @@ components:
       required:
       - access
       - refresh
+    TournamentCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        series:
+          type: integer
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        logo:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - end_date
+      - name
+      - series
+      - start_date
+      - total_rounds
+      - year
     TournamentDetail:
       type: object
       properties:
@@ -4501,7 +4665,7 @@ components:
           maximum: 32767
           minimum: 0
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/RaceStatusEnum'
         is_active:
           type: boolean
         logo:
@@ -4552,6 +4716,94 @@ components:
       - total_rounds
       - updated_at
       - year
+    TournamentList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        series:
+          $ref: '#/components/schemas/Series'
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        prize_fund:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        currency:
+          oneOf:
+          - $ref: '#/components/schemas/CurrencyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - end_date
+      - id
+      - name
+      - series
+      - slug
+      - start_date
+      - total_rounds
+      - year
+    TournamentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        series:
+          type: integer
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        logo:
+          type: string
+          format: uri
+          nullable: true
   securitySchemes:
     jwtAuth:
       type: http

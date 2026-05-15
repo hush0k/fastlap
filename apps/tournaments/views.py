@@ -60,16 +60,52 @@ class TournamentDestroyView(generics.DestroyAPIView):
 
 
 class TournamentView(APIView):
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        match request.method:
-            case "GET":
-                handler = TournamentListView.as_view()
-            case "POST":
-                handler = TournamentCreateView.as_view()
-            case "PUT" | "PATCH":
-                handler = TournamentUpdateView.as_view()
-            case "DELETE":
-                handler = TournamentDestroyView.as_view()
-            case _:
-                return self.http_method_not_allowed(request, *args, **kwargs)
+    @extend_schema(
+        tags=["Tournaments"],
+        operation_id="v1_tournaments_list",
+        responses=TournamentListSerializer,
+    )
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = TournamentListView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=["Tournaments"],
+        operation_id="v1_tournaments_create",
+        request=TournamentCreateSerializer,
+        responses=TournamentDetailSerializer,
+    )
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = TournamentCreateView.as_view()
+        return handler(request, *args, **kwargs)
+
+
+class TournamentManageView(APIView):
+    @extend_schema(
+        tags=["Tournaments"],
+        operation_id="v1_tournaments_update",
+        request=TournamentUpdateSerializer,
+        responses=TournamentDetailSerializer,
+    )
+    def put(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = TournamentUpdateView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=["Tournaments"],
+        operation_id="v1_tournaments_partial_update",
+        request=TournamentUpdateSerializer,
+        responses=TournamentDetailSerializer,
+    )
+    def patch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = TournamentUpdateView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=["Tournaments"],
+        operation_id="v1_tournaments_destroy",
+        responses={204: None},
+    )
+    def delete(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = TournamentDestroyView.as_view()
         return handler(request, *args, **kwargs)

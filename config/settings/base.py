@@ -1,6 +1,10 @@
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import config
+from django_countries.fields import countries
+
+from apps.common.enums import RaceStatusEnum
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -48,7 +52,8 @@ MIDDLEWARE = [
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        "NAME": "django.contrib.auth.password_validation."
+        "UserAttributeSimilarityValidator"
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -110,9 +115,17 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "FastLap API",
     "DESCRIPTION": "API for motorsport fans platform",
     "VERSION": "1.0.0",
+    "ENUM_NAME_OVERRIDES": {
+        "CountryEnum": countries,
+        "DriverResultStatusEnum": [
+            ("finished", "finished"),
+            ("dnf", "dnf"),
+            ("dns", "dns"),
+            ("dsq", "dsq"),
+        ],
+        "RaceStatusEnum": [(status.value, status.value) for status in RaceStatusEnum],
+    },
 }
-
-from datetime import timedelta
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -210,10 +223,10 @@ LOGGING = {
 }
 
 
-FIREBASE_PROJECT_ID = config('FIREBASE_PROJECT_ID', default='')
-FIREBASE_COLLECTION_USERS = 'users'
-FIREBASE_COLLECTION_AVATARS = 'avatars'
+FIREBASE_PROJECT_ID = config("FIREBASE_PROJECT_ID", default="")
+FIREBASE_COLLECTION_USERS = "users"
+FIREBASE_COLLECTION_AVATARS = "avatars"
 
 AVATAR_MAX_SIZE_MB = 2
 AVATAR_MAX_SIZE_BYTES = AVATAR_MAX_SIZE_MB * 1024 * 1024
-ALLOWED_AVATAR_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+ALLOWED_AVATAR_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]

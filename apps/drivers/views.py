@@ -1,4 +1,4 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from typing import Any
 
 from django_filters.rest_framework.backends import DjangoFilterBackend
@@ -65,22 +65,42 @@ class DriverResultCreateView(generics.CreateAPIView):
 
 
 class DriverView(APIView):
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if request.method == "GET":
-            handler = DriverListView.as_view()
-        elif request.method == "POST":
-            handler = DriverCreateView.as_view()
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
+    @extend_schema(
+        tags=["Drivers"],
+        operation_id="v1_drivers_list",
+        responses=DriverListSerializer,
+    )
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = DriverListView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=["Drivers"],
+        operation_id="v1_drivers_create",
+        request=DriverDetailSerializer,
+        responses=DriverDetailSerializer,
+    )
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = DriverCreateView.as_view()
         return handler(request, *args, **kwargs)
 
 
 class DriverResultView(APIView):
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if request.method == "GET":
-            handler = DriverResultListView.as_view()
-        elif request.method == "POST":
-            handler = DriverResultCreateView.as_view()
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
+    @extend_schema(
+        tags=["Driver Results"],
+        operation_id="v1_driver_results_list",
+        responses=DriverResultSerializer,
+    )
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = DriverResultListView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=["Driver Results"],
+        operation_id="v1_driver_results_create",
+        request=DriverResultCreateSerializer,
+        responses=DriverResultCreateSerializer,
+    )
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = DriverResultCreateView.as_view()
         return handler(request, *args, **kwargs)

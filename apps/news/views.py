@@ -69,15 +69,38 @@ class ArticleDetailView(generics.RetrieveAPIView):
 
 
 class ArticleView(APIView):
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        if request.method == "GET":
-            handler = ArticleListView.as_view()
-        elif request.method == "POST":
-            handler = ArticleCreateView.as_view()
-        elif request.method == "PATCH":
-            handler = ArticleUpdateView.as_view()
-        elif request.method == "DELETE":
-            handler = ArticleDestroyView.as_view()
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
+    @extend_schema(
+        tags=["News"],
+        operation_id="v1_news_list",
+        responses=ArticleListSerializer,
+    )
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = ArticleListView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=["News"],
+        operation_id="v1_news_create",
+        request=ArticleCreateSerializer,
+        responses=ArticleDetailSerializer,
+    )
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = ArticleCreateView.as_view()
+        return handler(request, *args, **kwargs)
+
+
+class ArticleManageView(APIView):
+    @extend_schema(
+        tags=["News"],
+        operation_id="v1_news_partial_update",
+        request=ArticleUpdateSerializer,
+        responses=ArticleDetailSerializer,
+    )
+    def patch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = ArticleUpdateView.as_view()
+        return handler(request, *args, **kwargs)
+
+    @extend_schema(tags=["News"], operation_id="v1_news_destroy", responses={204: None})
+    def delete(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        handler = ArticleDestroyView.as_view()
         return handler(request, *args, **kwargs)
