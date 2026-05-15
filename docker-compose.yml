@@ -18,6 +18,21 @@ services:
     env_file:
       - .env.prod
 
+  redis:
+    image: redis:7.4-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   web:
     build:
       context: .
@@ -29,6 +44,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - ENV_FILE=.env.prod
       - DJANGO_SETTINGS_MODULE=config.settings.prod
@@ -37,6 +54,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
 
 secrets:
   fastlap_firebase_credentials:
