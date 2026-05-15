@@ -1,17 +1,13 @@
-from json import loads
+from datetime import datetime
 from logging import getLogger
 
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.common.enums import SeriesCategoryEnum
-from apps.users.models import User
-from tests.config import IMAGE_PATH, LARGE_AVATAR, TEST_LOGGER_NAME, firestore_service
-from tests.utils import get_image_bytes, get_image_content_type
 from apps.news.models import Article, Tag
 from apps.races.models import Series
-from datetime import datetime
+from apps.users.models import User
+from tests.config import TEST_LOGGER_NAME
 
 logger = getLogger(TEST_LOGGER_NAME)
 
@@ -265,41 +261,41 @@ class TestArtcilesList(TestCase):
         response = self.client.get(self.news_url)
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 18)
+        self.assertEqual(response.json()["count"], 18)
 
     def test_filter_one_series(self) -> None:
-        series = 'NASCAR'
+        series = "NASCAR"
         response = self.client.get(self.news_url + f"?series={series}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        for article in response.json()['results']:
-            self.assertIn(series, [i['name'] for i in article['series']])
+        for article in response.json()["results"]:
+            self.assertIn(series, [i["name"] for i in article["series"]])
 
     def test_filter_several_series(self) -> None:
-        series1 = 'NASCAR'
-        series2 = 'Formula 1'
+        series1 = "NASCAR"
+        series2 = "Formula 1"
         response = self.client.get(self.news_url + f"?series={series1},{series2}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        for article in response.json()['results']:
-            article_series: set[str] = {i['name'] for i in article['series']}
+        for article in response.json()["results"]:
+            article_series: set[str] = {i["name"] for i in article["series"]}
             self.assertTrue({series1, series2} & article_series)
 
     def test_filter_with_tags(self) -> None:
-        tag = 'Qualifying'
+        tag = "Qualifying"
         response = self.client.get(self.news_url + f"?tags={tag}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        for article in response.json()['results']:
-            self.assertIn(tag, [i['name'] for i in article['tags']])
+        for article in response.json()["results"]:
+            self.assertIn(tag, [i["name"] for i in article["tags"]])
 
     def test_search_with_correct_name(self) -> None:
         name = "MotoGP Rookie Driver Spotlight"
         response = self.client.get(self.news_url + f"?search={name}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 1)
-        self.assertEqual(response.json()['results'][0]['name'], name)
+        self.assertEqual(response.json()["count"], 1)
+        self.assertEqual(response.json()["results"][0]["name"], name)
 
     def test_search_with_name_part(self) -> None:
         name_part = "MotoGP"
@@ -307,28 +303,30 @@ class TestArtcilesList(TestCase):
         logger.debug("%s: %s", self._testMethodName, response.text)
 
         # it returns 3 not 4 because 1 article is not published
-        self.assertEqual(response.json()['count'], 3)
-        for article in response.json()['results']:
-            self.assertIn(name_part, article['name'])
+        self.assertEqual(response.json()["count"], 3)
+        for article in response.json()["results"]:
+            self.assertIn(name_part, article["name"])
 
     def test_filter_published_after(self) -> None:
         date_str = "2024-06-01"
         response = self.client.get(self.news_url + f"?published_after={date_str}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 5)
-        for article in response.json()['results']:
-            article_date = datetime.fromisoformat(article['published_at']).date()
-            self.assertGreaterEqual(article_date, datetime.fromisoformat(date_str).date())
+        self.assertEqual(response.json()["count"], 5)
+        for article in response.json()["results"]:
+            article_date = datetime.fromisoformat(article["published_at"]).date()
+            self.assertGreaterEqual(
+                article_date, datetime.fromisoformat(date_str).date()
+            )
 
     def test_filter_published_before(self) -> None:
         date_str = "2024-03-15"
         response = self.client.get(self.news_url + f"?published_before={date_str}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 5)
-        for article in response.json()['results']:
-            article_date = datetime.fromisoformat(article['published_at']).date()
+        self.assertEqual(response.json()["count"], 5)
+        for article in response.json()["results"]:
+            article_date = datetime.fromisoformat(article["published_at"]).date()
             self.assertLessEqual(article_date, datetime.fromisoformat(date_str).date())
 
     def test_filter_min_views(self) -> None:
@@ -336,24 +334,24 @@ class TestArtcilesList(TestCase):
         response = self.client.get(self.news_url + f"?min_views={min_views}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 4)
-        for article in response.json()['results']:
-            self.assertGreaterEqual(article['views_count'], min_views)
+        self.assertEqual(response.json()["count"], 4)
+        for article in response.json()["results"]:
+            self.assertGreaterEqual(article["views_count"], min_views)
 
     def test_filter_max_views(self) -> None:
         max_views = 300
         response = self.client.get(self.news_url + f"?max_views={max_views}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 3)
-        for article in response.json()['results']:
-            self.assertLessEqual(article['views_count'], max_views)
+        self.assertEqual(response.json()["count"], 3)
+        for article in response.json()["results"]:
+            self.assertLessEqual(article["views_count"], max_views)
 
     def test_filter_author_id(self) -> None:
         author_id = self.author1.id
         response = self.client.get(self.news_url + f"?author_id={author_id}")
         logger.debug("%s: %s", self._testMethodName, response.text)
 
-        self.assertEqual(response.json()['count'], 6)
-        for article in response.json()['results']:
-            self.assertEqual(article['author']['id'], author_id)
+        self.assertEqual(response.json()["count"], 6)
+        for article in response.json()["results"]:
+            self.assertEqual(article["author"]["id"], author_id)
