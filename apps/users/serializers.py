@@ -1,15 +1,24 @@
+"""
+Serializers for the users app.
+"""
+
+# Python modules
 import re
 from typing import Any
 
-from drf_spectacular.utils import extend_schema_field
-from rest_framework_simplejwt.tokens import RefreshToken
-
+# Django modules
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
+
+# Django REST Framework
 from rest_framework import serializers
 from rest_framework.request import Request
+from rest_framework_simplejwt.tokens import RefreshToken
+from drf_spectacular.utils import extend_schema_field
 
+# Project modules
 from .utils.avatar_utils import AvatarProcessor
 from .services.firestore_service import FirestoreUserService
 
@@ -17,11 +26,16 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password: serializers.CharField = serializers.CharField(write_only=True, min_length=8)
+    """
+    Serializer for user registration.
+    """
+    
+    password = serializers.CharField(write_only=True, min_length=8)
     avatar = serializers.ImageField(required=False, allow_empty_file=True)
 
     @extend_schema_field({"type": "string", "format": "binary"})
     def get_avatar(self, obj: Any) -> None:
+        """Avatar field for schema generation."""
         pass
 
     class Meta:
@@ -29,23 +43,56 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ("email", "username", "password", "first_name", "last_name", "avatar")
 
     def validate_password(self, value: str) -> str:
-        validate_password(value)
-
+        """
+        Validate password strength.
+        
+        Checks:
+        - Minimum length: 8 characters
+        - Maximum length: 128 characters
+        - Contains both uppercase and lowercase letters
+        - Contains at least one number
+        - Contains at least one special character
+        - Passes Django's built-in validators
+        """
+        if len(value) < 8:
+            raise serializers.ValidationError(
+                _("Password must be at least 8 characters long.")
+            )
+        
+        if len(value) > 128:
+            raise serializers.ValidationError(
+                _("Password must be no more than 128 characters long.")
+            )
+        
+        has_upper = any(c.isupper() for c in value)
+        has_lower = any(c.islower() for c in value)
+        if not (has_upper and has_lower):
+            raise serializers.ValidationError(
+                _("Password must contain both uppercase and lowercase letters.")
+            )
+        
+        has_digit = any(c.isdigit() for c in value)
+        if not has_digit:
+            raise serializers.ValidationError(
+                _("Password must contain at least one number.")
+            )
+        
         if not re.search(r"[^\w\s]", value):
             raise serializers.ValidationError(
                 _("Password must contain at least one special character (e.g. @, &, /, !).")
             )
-
-        has_letter: bool = any(c.isalpha() for c in value)
-        has_digit: bool = any(c.isdigit() for c in value)
-        if not (has_letter and has_digit):
-            raise serializers.ValidationError(
-                _("Password must contain both letters and numbers.")
-            )
-
+        
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.messages)
+        
         return value
 
     def validate_avatar(self, value):
+        """
+        Validate avatar file if provided.
+        """
         if value is None:
             return value
         
@@ -61,6 +108,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
+        """
+        Create a new user with optional avatar.
+        """
         password = validated_data.pop("password")
         avatar_file = validated_data.pop("avatar", None)
         user = User.objects.create_user(password=password, **validated_data)
@@ -92,12 +142,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email: serializers.EmailField = serializers.EmailField()
-    password: serializers.CharField = serializers.CharField(
+    """
+    Serializer for user login.
+    """
+    
+    email = serializers.EmailField()
+    password = serializers.CharField(
         write_only=True, trim_whitespace=False
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, str]:
+        """
+        Validate login credentials and return JWT tokens.
+        """
         email: str = attrs.get("email")
         password: str = attrs.get("password")
 
