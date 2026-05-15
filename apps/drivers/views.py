@@ -18,6 +18,7 @@ from rest_framework.response import Response as DRFResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
+from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
 from apps.drivers.filters import DriverFilter, DriverResultFilter
 from apps.drivers.models import Driver, DriverResult
 from apps.drivers.permissions import IsAdminOrReadOnly
@@ -110,6 +111,34 @@ class DriverViewSet(viewsets.ModelViewSet):
         results = DriverResult.objects.filter(driver=driver).select_related("race")
         serializer = DriverResultSerializer(results, many=True)
         return DRFResponse(serializer.data)
+    
+    @cache_response(timeout=300, key_prefix='drivers_list')
+    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle GET requests to list all drivers with caching.
+        """
+        return super().list(request, *args, **kwargs)
+    
+    @invalidate_cache('drivers_list:*')
+    def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle POST requests to create a new driver (invalidates cache).
+        """
+        return super().create(request, *args, **kwargs)
+    
+    @invalidate_cache('drivers_list:*')
+    def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle PUT/PATCH requests to update a driver (invalidates cache).
+        """
+        return super().update(request, *args, **kwargs)
+    
+    @invalidate_cache('drivers_list:*')
+    def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle DELETE requests to remove a driver (invalidates cache).
+        """
+        return super().destroy(request, *args, **kwargs)
 
 
 class DriverResultViewSet(viewsets.ModelViewSet):
