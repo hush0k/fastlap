@@ -166,7 +166,7 @@ class RaceViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Race.objects.select_related("series").all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsStaffOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = [
         DjangoFilterBackend,
