@@ -71,7 +71,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
-    "django.contrib.auth.backends.ModelBackend",
+    "django.contrib.auth.backends.AllowAllUsersModelBackend",
 ]
 
 ROOT_URLCONF = "config.urls"
