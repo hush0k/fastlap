@@ -154,6 +154,6 @@ class TeamViewSet(viewsets.ModelViewSet):
         serializer = TeamStandingsSerializer(standings, many=True)
 
         response = Response(serializer.data)
-        RedisService.set(cache_key, response, timeout=300)
+        async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response
