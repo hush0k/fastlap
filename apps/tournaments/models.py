@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
+from django.core.validators import MaxLengthValidator
 from django.db.models import (
     CASCADE,
     BooleanField,
@@ -65,7 +66,7 @@ class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
         blank=True,
         null=True,
     )
-    description = TextField(blank=True)
+    description = TextField(blank=True, validators=[MaxLengthValidator(7500)])
     start_date = DateField()
     end_date = DateField()
     total_rounds = PositiveSmallIntegerField()

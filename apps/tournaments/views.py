@@ -19,6 +19,7 @@ from rest_framework.response import Response as DRFResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
+from apps.common.services.redis_service import RedisService
 from apps.tournaments.filters import TournamentFilter
 from apps.tournaments.models import Tournament
 from apps.tournaments.permissions import IsContentManager
@@ -32,7 +33,7 @@ from apps.tournaments.serializers import (
 
 class TournamentViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for managing Tournament resources.
+    ViewSet for managing Tournament resources with Redis caching.
     """
 
     queryset = Tournament.objects.select_related("series")
@@ -81,6 +82,34 @@ class TournamentViewSet(viewsets.ModelViewSet):
             return TournamentUpdateSerializer
         return TournamentDetailSerializer
 
+    def _get_cache_key(self, request: DRFRequest, suffix: str = "") -> str:
+        """Generate cache key for tournament requests."""
+        key_parts = ["tournaments"]
+        
+        query_params = request.GET.dict()
+        if query_params:
+            import json
+            import hashlib
+            params_hash = hashlib.md5(
+                json.dumps(query_params, sort_keys=True).encode()
+            ).hexdigest()[:8]
+            key_parts.append(params_hash)
+        
+        offset = request.GET.get('offset', '0')
+        limit = request.GET.get('limit', '20')
+        key_parts.append(f"offset_{offset}")
+        key_parts.append(f"limit_{limit}")
+        
+        if suffix:
+            key_parts.append(suffix)
+        
+        return ":".join(key_parts)
+
+    def _invalidate_tournament_cache(self):
+        """Invalidate all tournament-related cache."""
+        RedisService.delete_pattern("tournaments:*")
+        RedisService.delete_pattern("tournament:slug:*")
+
     @extend_schema(
         summary=_("List Tournaments"),
         description=_(
@@ -95,9 +124,20 @@ class TournamentViewSet(viewsets.ModelViewSet):
     )
     def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle GET requests to list all accessible tournaments.
+        Handle GET requests to list all accessible tournaments with caching.
         """
-        return super().list(request, *args, **kwargs)
+        cache_key = self._get_cache_key(request, "list")
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().list(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=600)
+        
+        return response
 
     @extend_schema(
         summary=_("Create Tournament"),
@@ -118,9 +158,12 @@ class TournamentViewSet(viewsets.ModelViewSet):
     )
     def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle POST requests to create a new tournament.
+        Handle POST requests to create a new tournament and invalidate cache.
         """
-        return super().create(request, *args, **kwargs)
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            self._invalidate_tournament_cache()
+        return response
 
     @extend_schema(
         summary=_("Retrieve Tournament"),
@@ -137,9 +180,21 @@ class TournamentViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle GET requests to retrieve a specific tournament.
+        Handle GET requests to retrieve a specific tournament with caching.
         """
-        return super().retrieve(request, *args, **kwargs)
+        slug = kwargs.get('slug', '')
+        cache_key = f"tournament:slug:{slug}"
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().retrieve(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=600)
+        
+        return response
 
     @extend_schema(
         summary=_("Update Tournament"),
@@ -165,9 +220,12 @@ class TournamentViewSet(viewsets.ModelViewSet):
     )
     def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle PUT/PATCH requests to update a tournament.
+        Handle PUT/PATCH requests to update a tournament and invalidate cache.
         """
-        return super().update(request, *args, **kwargs)
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            self._invalidate_tournament_cache()
+        return response
 
     @extend_schema(
         summary=_("Delete Tournament"),
@@ -186,6 +244,13 @@ class TournamentViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle DELETE requests to remove a tournament.
+        Handle DELETE requests to remove a tournament and invalidate cache.
         """
+<<<<<<< HEAD
         return super().destroy(request, *args, **kwargs)
+=======
+        response = super().destroy(request, *args, **kwargs)
+        if response.status_code == 204:
+            self._invalidate_tournament_cache()
+        return response
+>>>>>>> e352d4a8f3d9b40780960780cf8ad99fc02abb18

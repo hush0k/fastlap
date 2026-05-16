@@ -83,7 +83,10 @@ class TournamentCreateSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "total_rounds",
+            "prize_fund",
             "logo",
+            "regulations_url",
+            "currency",
         ]
 
 

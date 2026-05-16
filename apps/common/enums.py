@@ -3,6 +3,10 @@ from enum import Enum
 from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
 
+class RoleEnum(StrEnum):
+    CONTENT_MANAGER = "ContentManager"
+    AUTHOR = "Author"
+
 
 class SeriesCategoryEnum(TextChoices):
     CAR = "car", _("Car")
