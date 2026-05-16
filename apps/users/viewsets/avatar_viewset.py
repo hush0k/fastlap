@@ -4,6 +4,9 @@ ViewSet for user avatar management.
 
 # Python modules
 
+# Django modules
+from asgiref.sync import async_to_sync
+
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
 # Django REST Framework
@@ -78,7 +81,7 @@ class AvatarViewSet(viewsets.GenericViewSet):
             )
 
         firestore_service = FirestoreUserService()
-        success: bool = firestore_service.update_user_avatar(
+        success: bool = async_to_sync(firestore_service.update_user_avatar)(
             request.user.id, base64_avatar
         )
 
@@ -117,7 +120,9 @@ class AvatarViewSet(viewsets.GenericViewSet):
         Get user's current avatar from Firestore.
         """
         firestore_service = FirestoreUserService()
-        avatar_base64: str | None = firestore_service.get_user_avatar(request.user.id)
+        avatar_base64: str | None = async_to_sync(firestore_service.get_user_avatar)(
+            request.user.id
+        )
 
         if avatar_base64:
             return DRFResponse({"avatar": avatar_base64})
@@ -147,7 +152,9 @@ class AvatarViewSet(viewsets.GenericViewSet):
         Delete user's avatar from Firestore.
         """
         firestore_service = FirestoreUserService()
-        success: bool = firestore_service.delete_user_avatar(request.user.id)
+        success: bool = async_to_sync(firestore_service.delete_user_avatar)(
+            request.user.id
+        )
 
         if success:
             request.user.use_firestore_avatar = False

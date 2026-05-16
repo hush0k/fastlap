@@ -5,6 +5,7 @@ ViewSet for the team_stuff app.
 # Python modules
 
 # Django modules
+from asgiref.sync import async_to_sync
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
@@ -81,10 +82,10 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
 
     def _invalidate_staff_cache(self):
         """Invalidate all staff-related cache."""
-        RedisService.delete_pattern("staff:*")
-        RedisService.delete_pattern("staff:slug:*")
-        RedisService.delete_pattern("staff:history:*")
-        RedisService.delete_pattern("staff:current-team:*")
+        async_to_sync(RedisService.delete_pattern)("staff:*")
+        async_to_sync(RedisService.delete_pattern)("staff:slug:*")
+        async_to_sync(RedisService.delete_pattern)("staff:history:*")
+        async_to_sync(RedisService.delete_pattern)("staff:current-team:*")
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         """
@@ -92,14 +93,14 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         """
         cache_key = self._get_cache_key(request, "list")
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().list(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=300)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response
 
@@ -110,14 +111,14 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         slug = kwargs.get("slug", "")
         cache_key = f"staff:slug:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().retrieve(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=600)
 
         return response
 
@@ -165,7 +166,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         """
         cache_key = f"staff:history:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
@@ -174,7 +175,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         serializer = TeamRosterSerializer(rosters, many=True)
 
         response = Response(serializer.data)
-        RedisService.set(cache_key, response, timeout=300)
+        async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response
 
@@ -198,7 +199,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         """
         cache_key = f"staff:current-team:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
@@ -212,6 +213,6 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
 
         serializer = TeamRosterSerializer(roster)
         response = Response(serializer.data)
-        RedisService.set(cache_key, response, timeout=300)
+        async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response

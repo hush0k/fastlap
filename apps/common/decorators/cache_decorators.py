@@ -9,6 +9,10 @@ from functools import wraps
 from typing import Callable
 
 # Django modules
+from asgiref.sync import async_to_sync
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+
 # Project modules
 from apps.common.services.redis_service import RedisService
 
@@ -17,7 +21,6 @@ def cache_response(timeout: int = 300, key_prefix: str = ""):
     """
     Decorator to cache API responses.
     """
-
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(self, request, *args, **kwargs):
@@ -41,19 +44,17 @@ def cache_response(timeout: int = 300, key_prefix: str = ""):
 
             cache_key = ":".join(cache_key_parts)
 
-            cached_response = RedisService.get(cache_key)
+            cached_response = async_to_sync(RedisService.get)(cache_key)
             if cached_response:
                 return cached_response
 
             response = func(self, request, *args, **kwargs)
 
             if response.status_code == 200:
-                RedisService.set(cache_key, response, timeout=timeout)
+                async_to_sync(RedisService.set)(cache_key, response, timeout=timeout)
 
             return response
-
         return wrapper
-
     return decorator
 
 
@@ -61,15 +62,12 @@ def invalidate_cache(pattern: str):
     """
     Decorator to invalidate cache after mutation.
     """
-
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(self, request, *args, **kwargs):
             response = func(self, request, *args, **kwargs)
             if response.status_code in [200, 201, 204]:
-                RedisService.delete_pattern(pattern)
+                async_to_sync(RedisService.delete_pattern)(pattern)
             return response
-
         return wrapper
-
     return decorator
