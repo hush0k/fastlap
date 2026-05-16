@@ -1,5 +1,9 @@
 from enum import StrEnum, Enum
 
+class RoleEnum(StrEnum):
+    CONTENT_MANAGER = "ContentManager"
+    AUTHOR = "Author"
+
 
 class SeriesCategoryEnum(StrEnum):
     CAR = "car"
