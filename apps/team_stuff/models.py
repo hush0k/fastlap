@@ -5,6 +5,13 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 
+from apps.common.utils import get_image_size_validator
+from config.settings.base import STAFF_MEMBER_PHOTO_VALIDATOR_BYTES
+
+staff_member_photo_validator = get_image_size_validator(
+    STAFF_MEMBER_PHOTO_VALIDATOR_BYTES
+)
+
 
 class StaffMember(UpdatedAtMixin, CreatedAtMixin, NameMixin, models.Model):
     first_name: models.CharField = models.CharField(max_length=100)
@@ -16,7 +23,10 @@ class StaffMember(UpdatedAtMixin, CreatedAtMixin, NameMixin, models.Model):
     role: models.CharField = models.CharField(max_length=100, blank=True)
     description: models.TextField = models.TextField(blank=True)
     photo: models.ImageField = models.ImageField(
-        upload_to="staff/photos/", null=True, blank=True
+        upload_to="staff/photos/",
+        null=True,
+        blank=True,
+        validators=[staff_member_photo_validator],
     )
 
     class Meta:

@@ -9,18 +9,22 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('team_stuff', '0001_initial'),
-        ('teams', '0001_initial'),
+        ("team_stuff", "0001_initial"),
+        ("teams", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='teamroster',
-            name='team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='roster', to='teams.team'),
+            model_name="teamroster",
+            name="team",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="roster",
+                to="teams.team",
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='teamroster',
-            unique_together={('team', 'staff_member', 'start_date')},
+            name="teamroster",
+            unique_together={("team", "staff_member", "start_date")},
         ),
     ]
