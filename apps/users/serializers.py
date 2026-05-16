@@ -6,6 +6,7 @@ Serializers for the users app.
 import re
 from typing import Any
 
+from asgiref.sync import async_to_sync
 from drf_spectacular.utils import extend_schema_field
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -127,7 +128,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 user.delete()
                 raise serializers.ValidationError({"avatar": error})
 
-            avatar_id = firestore_service.create_user_avatar(user.id, base64_avatar)
+            avatar_id = async_to_sync(firestore_service.create_user_avatar)(user.id, base64_avatar)
 
             if avatar_id:
                 user.firestore_avatar_id = avatar_id
