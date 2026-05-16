@@ -9,6 +9,8 @@ from typing import Any
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
+from django.utils.translation import gettext_lazy as _
+
 # Django REST Framework
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
@@ -16,9 +18,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request as DRFRequest
 from rest_framework.response import Response as DRFResponse
 
+from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
+
 # Project modules
 from apps.common.pagination import CustomPagination
-from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
 from apps.drivers.filters import DriverFilter, DriverResultFilter
 from apps.drivers.models import Driver, DriverResult
 from apps.drivers.permissions import IsStaffOrReadOnly
@@ -58,11 +61,13 @@ class DriverViewSet(viewsets.ModelViewSet):
         return DriverDetailSerializer
 
     @extend_schema(
-        summary="List Drivers",
-        description="Retrieve a paginated list of all drivers with optional filtering.",
+        summary=_("List Drivers"),
+        description=_(
+            "Retrieve a paginated list of all drivers with optional filtering."
+        ),  # noqa: E501
         responses={
             200: OpenApiResponse(
-                description="Successful response with paginated driver list.",
+                description=_("Successful response with paginated driver list."),
                 response=DriverListSerializer,
             ),
         },
@@ -74,15 +79,15 @@ class DriverViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     @extend_schema(
-        summary="Retrieve Driver Details",
-        description="Retrieve detailed information about a specific driver by slug.",
+        summary=_("Retrieve Driver Details"),
+        description=_("Retrieve detailed information about a specific driver by slug."),
         responses={
             200: OpenApiResponse(
-                description="Successful response with driver details.",
+                description=_("Successful response with driver details."),
                 response=DriverDetailSerializer,
             ),
             404: OpenApiResponse(
-                description="Driver not found with the provided slug.",
+                description=_("Driver not found with the provided slug."),
             ),
         },
     )
@@ -111,29 +116,29 @@ class DriverViewSet(viewsets.ModelViewSet):
         results = DriverResult.objects.filter(driver=driver).select_related("race")
         serializer = DriverResultSerializer(results, many=True)
         return DRFResponse(serializer.data)
-    
-    @cache_response(timeout=300, key_prefix='drivers_list')
-    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+
+    @cache_response(timeout=300, key_prefix="drivers_list")
+    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:  # noqa: F811
         """
         Handle GET requests to list all drivers with caching.
         """
         return super().list(request, *args, **kwargs)
-    
-    @invalidate_cache('drivers_list:*')
+
+    @invalidate_cache("drivers_list:*")
     def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
         Handle POST requests to create a new driver (invalidates cache).
         """
         return super().create(request, *args, **kwargs)
-    
-    @invalidate_cache('drivers_list:*')
+
+    @invalidate_cache("drivers_list:*")
     def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
         Handle PUT/PATCH requests to update a driver (invalidates cache).
         """
         return super().update(request, *args, **kwargs)
-    
-    @invalidate_cache('drivers_list:*')
+
+    @invalidate_cache("drivers_list:*")
     def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
         Handle DELETE requests to remove a driver (invalidates cache).

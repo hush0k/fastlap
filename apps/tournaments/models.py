@@ -16,6 +16,8 @@ from django.db.models import (
     TextField,
     URLField,
 )
+from django.utils.translation import gettext as __
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.enums import Currency, RaceStatusEnum
 from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
@@ -31,7 +33,7 @@ logger = getLogger(__name__)
 
 def logo_upload_path(instance: "Tournament", filename: str) -> str:
     """Return upload path for tournament logo using slug and original extension."""
-    logger.debug("instance: %s, filename: %s", instance.slug, filename)
+    logger.debug(__("instance: %s, filename: %s"), instance.slug, filename)
 
     extension = Path(filename).suffix
     result = MEDIA_LOCATION.TOURNAMENTS_LOGO / str(instance.slug + extension)
@@ -41,10 +43,12 @@ def logo_upload_path(instance: "Tournament", filename: str) -> str:
 
 def validate_image_size(value: UploadedFile):
     """:raises raise ValidationError:"""
-    logger.debug("image size: %s bytes", value.size)
+    logger.debug(__("image size: %s bytes"), value.size)
 
     if value.size > (TOURNAMENT_LOGO_MAX_SIZE_BYTES):
-        raise ValidationError(f"Max image size is {TOURNAMENT_LOGO_MAX_SIZE_MB} MB")
+        raise ValidationError(
+            __("Max image size is {0} MB").format(TOURNAMENT_LOGO_MAX_SIZE_MB)
+        )
 
 
 class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
@@ -77,8 +81,8 @@ class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
 
     class Meta:
         ordering = ["start_date"]
-        verbose_name = "Tournament"
-        verbose_name_plural = "Tournaments"
+        verbose_name = _("Tournament")
+        verbose_name_plural = _("Tournaments")
 
     def __str__(self):
         return self.name

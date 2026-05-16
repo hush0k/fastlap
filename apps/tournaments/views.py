@@ -7,14 +7,15 @@ from typing import Any
 
 # Django modules
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+
+from django.utils.translation import gettext_lazy as _
 
 # Django REST Framework
-from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action
+from rest_framework import filters, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request as DRFRequest
 from rest_framework.response import Response as DRFResponse
-from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
@@ -38,7 +39,11 @@ class TournamentViewSet(viewsets.ModelViewSet):
     queryset = Tournament.objects.select_related("series")
     permission_classes = (IsAuthenticated, IsContentManager)
     pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    )
     filterset_class = TournamentFilter
     search_fields = ("name", "series__name")
     ordering_fields = ("year", "start_date", "end_date", "prize_fund", "total_rounds")
@@ -58,7 +63,10 @@ class TournamentViewSet(viewsets.ModelViewSet):
         Filter queryset to show only active tournaments to non-authenticated users.
         """
         queryset = super().get_queryset()
-        if self.action in ("list", "retrieve") and not self.request.user.is_authenticated:
+        if (
+            self.action in ("list", "retrieve")
+            and not self.request.user.is_authenticated
+        ):
             queryset = queryset.filter(is_active=True)
         return queryset
 
@@ -77,24 +85,25 @@ class TournamentViewSet(viewsets.ModelViewSet):
     def _get_cache_key(self, request: DRFRequest, suffix: str = "") -> str:
         """Generate cache key for tournament requests."""
         key_parts = ["tournaments"]
-        
+
         query_params = request.GET.dict()
         if query_params:
-            import json
             import hashlib
+            import json
+
             params_hash = hashlib.md5(
                 json.dumps(query_params, sort_keys=True).encode()
             ).hexdigest()[:8]
             key_parts.append(params_hash)
-        
-        offset = request.GET.get('offset', '0')
-        limit = request.GET.get('limit', '20')
+
+        offset = request.GET.get("offset", "0")
+        limit = request.GET.get("limit", "20")
         key_parts.append(f"offset_{offset}")
         key_parts.append(f"limit_{limit}")
-        
+
         if suffix:
             key_parts.append(suffix)
-        
+
         return ":".join(key_parts)
 
     def _invalidate_tournament_cache(self):
@@ -103,11 +112,13 @@ class TournamentViewSet(viewsets.ModelViewSet):
         RedisService.delete_pattern("tournament:slug:*")
 
     @extend_schema(
-        summary="List Tournaments",
-        description="Retrieve a paginated list of tournaments with optional filtering.",
+        summary=_("List Tournaments"),
+        description=_(
+            "Retrieve a paginated list of tournaments with optional filtering."
+        ),
         responses={
             200: OpenApiResponse(
-                description="Successful response with paginated tournament list.",
+                description=_("Successful response with paginated tournament list."),
                 response=TournamentListSerializer,
             ),
         },
@@ -117,32 +128,32 @@ class TournamentViewSet(viewsets.ModelViewSet):
         Handle GET requests to list all accessible tournaments with caching.
         """
         cache_key = self._get_cache_key(request, "list")
-        
+
         cached_response = RedisService.get(cache_key)
         if cached_response:
             return cached_response
-        
+
         response = super().list(request, *args, **kwargs)
-        
+
         if response.status_code == 200:
             RedisService.set(cache_key, response, timeout=600)
-        
+
         return response
 
     @extend_schema(
-        summary="Create Tournament",
-        description="Create a new tournament. User must be in ContentManager group.",
+        summary=_("Create Tournament"),
+        description=_("Create a new tournament. User must be in ContentManager group."),
         request=TournamentCreateSerializer,
         responses={
             201: OpenApiResponse(
-                description="Tournament created successfully.",
+                description=_("Tournament created successfully."),
                 response=TournamentDetailSerializer,
             ),
             400: OpenApiResponse(
-                description="Invalid input data.",
+                description=_("Invalid input data."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to create tournaments.",
+                description=_("User is not authorized to create tournaments."),
             ),
         },
     )
@@ -156,15 +167,15 @@ class TournamentViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary="Retrieve Tournament",
-        description="Retrieve a specific tournament by slug.",
+        summary=_("Retrieve Tournament"),
+        description=_("Retrieve a specific tournament by slug."),
         responses={
             200: OpenApiResponse(
-                description="Successful response with tournament details.",
+                description=_("Successful response with tournament details."),
                 response=TournamentDetailSerializer,
             ),
             404: OpenApiResponse(
-                description="Tournament not found.",
+                description=_("Tournament not found."),
             ),
         },
     )
@@ -172,37 +183,39 @@ class TournamentViewSet(viewsets.ModelViewSet):
         """
         Handle GET requests to retrieve a specific tournament with caching.
         """
-        slug = kwargs.get('slug', '')
+        slug = kwargs.get("slug", "")
         cache_key = f"tournament:slug:{slug}"
-        
+
         cached_response = RedisService.get(cache_key)
         if cached_response:
             return cached_response
-        
+
         response = super().retrieve(request, *args, **kwargs)
-        
+
         if response.status_code == 200:
             RedisService.set(cache_key, response, timeout=600)
-        
+
         return response
 
     @extend_schema(
-        summary="Update Tournament",
-        description="Update an existing tournament. User must be in ContentManager group.",
+        summary=_("Update Tournament"),
+        description=_(
+            "Update an existing tournament. User must be in ContentManager group."
+        ),
         request=TournamentUpdateSerializer,
         responses={
             200: OpenApiResponse(
-                description="Tournament updated successfully.",
+                description=_("Tournament updated successfully."),
                 response=TournamentDetailSerializer,
             ),
             400: OpenApiResponse(
-                description="Invalid input data.",
+                description=_("Invalid input data."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to update tournaments.",
+                description=_("User is not authorized to update tournaments."),
             ),
             404: OpenApiResponse(
-                description="Tournament not found.",
+                description=_("Tournament not found."),
             ),
         },
     )
@@ -216,17 +229,17 @@ class TournamentViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary="Delete Tournament",
-        description="Delete a tournament. User must be in ContentManager group.",
+        summary=_("Delete Tournament"),
+        description=_("Delete a tournament. User must be in ContentManager group."),
         responses={
             204: OpenApiResponse(
-                description="Tournament deleted successfully.",
+                description=_("Tournament deleted successfully."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to delete tournaments.",
+                description=_("User is not authorized to delete tournaments."),
             ),
             404: OpenApiResponse(
-                description="Tournament not found.",
+                description=_("Tournament not found."),
             ),
         },
     )
