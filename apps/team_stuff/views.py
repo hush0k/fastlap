@@ -19,6 +19,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.common.services.redis_service import RedisService
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.team_stuff.models import StaffMember
 from apps.team_stuff.serializers import (
     StaffMemberDetailSerializer,
@@ -35,7 +36,7 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
     """
 
     queryset = StaffMember.objects.prefetch_related("rosters__team").all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsStaffOrReadOnly]
     lookup_field = "slug"
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
