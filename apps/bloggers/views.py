@@ -15,8 +15,4 @@ class BloggerViewSet(APIView):
     """
 
     def get(self, request):
-<<<<<<< HEAD
         return Response({"message": _("Blogger endpoints coming soon")})
-=======
-        return Response({"message": "Blogger endpoints coming soon"})
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae

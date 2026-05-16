@@ -7,6 +7,7 @@ from typing import Any, Optional
 
 # Django modules
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 
 # Django REST Framework
 from rest_framework import filters, viewsets
@@ -15,11 +16,11 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
-from drf_spectacular.utils import extend_schema
 
 # Project modules
 from apps.common.pagination import CustomPagination
 from apps.common.services.redis_service import RedisService
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.teams.models import Team
 from apps.teams.serializers import (
     TeamDetailSerializer,
@@ -39,7 +40,11 @@ class TeamViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     permission_classes = [IsAuthenticatedOrReadOnly, IsStaffOrReadOnly]
 
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
     ordering_fields = ["name", "founded_year"]
     ordering = ["name"]
     search_fields = ["name", "short_name", "country"]
@@ -55,27 +60,28 @@ class TeamViewSet(viewsets.ModelViewSet):
     def _get_cache_key(self, request: Request, suffix: str = "") -> str:
         """Generate cache key for team requests."""
         key_parts = ["teams"]
-        
+
         if request.user and request.user.is_authenticated:
             key_parts.append(f"user_{request.user.id}")
-        
+
         query_params = request.GET.dict()
         if query_params:
-            import json
             import hashlib
+            import json
+
             params_hash = hashlib.md5(
                 json.dumps(query_params, sort_keys=True).encode()
             ).hexdigest()[:8]
             key_parts.append(params_hash)
-        
-        offset = request.GET.get('offset', '0')
-        limit = request.GET.get('limit', '20')
+
+        offset = request.GET.get("offset", "0")
+        limit = request.GET.get("limit", "20")
         key_parts.append(f"offset_{offset}")
         key_parts.append(f"limit_{limit}")
-        
+
         if suffix:
             key_parts.append(suffix)
-        
+
         return ":".join(key_parts)
 
     def _invalidate_team_cache(self):
@@ -87,32 +93,32 @@ class TeamViewSet(viewsets.ModelViewSet):
     def list(self, request: Request, *args, **kwargs) -> Response:
         """List teams with caching."""
         cache_key = self._get_cache_key(request, "list")
-        
+
         cached_response = RedisService.get(cache_key)
         if cached_response:
             return cached_response
-        
+
         response = super().list(request, *args, **kwargs)
-        
+
         if response.status_code == 200:
             RedisService.set(cache_key, response, timeout=600)
-        
+
         return response
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         """Retrieve team with caching."""
-        slug = kwargs.get('slug', '')
+        slug = kwargs.get("slug", "")
         cache_key = f"team:slug:{slug}"
-        
+
         cached_response = RedisService.get(cache_key)
         if cached_response:
             return cached_response
-        
+
         response = super().retrieve(request, *args, **kwargs)
-        
+
         if response.status_code == 200:
             RedisService.set(cache_key, response, timeout=600)
-        
+
         return response
 
     def create(self, request: Request, *args, **kwargs) -> Response:
@@ -137,16 +143,16 @@ class TeamViewSet(viewsets.ModelViewSet):
     def standings(self, request: Request, slug: str | None = None) -> Response:
         """Get team standings with caching."""
         cache_key = f"team:standings:{slug}"
-        
+
         cached_response = RedisService.get(cache_key)
         if cached_response:
             return cached_response
-        
+
         team = self.get_object()
         standings = team.standings.select_related("tournament").all()
         serializer = TeamStandingsSerializer(standings, many=True)
-        
+
         response = Response(serializer.data)
         RedisService.set(cache_key, response, timeout=300)
-        
+
         return response

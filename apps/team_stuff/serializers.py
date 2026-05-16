@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-from django.utils.translation import gettext as _
-from rest_framework import serializers
-=======
 from typing import Optional
 
 from rest_framework import serializers
 
 from apps.team_stuff.models import StaffMember, TeamRoster
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
 
-from apps.team_stuff.models import StaffMember, TeamRoster
 
 class TeamRosterSerializer(serializers.ModelSerializer):
     team_name: serializers.CharField = serializers.CharField(
@@ -33,7 +27,9 @@ class TeamRosterSerializer(serializers.ModelSerializer):
 
 class StaffMemberListSerializer(serializers.ModelSerializer):
     country: serializers.CharField = serializers.CharField(source="country.name")
-    current_team: serializers.SerializerMethodField = serializers.SerializerMethodField()
+    current_team: serializers.SerializerMethodField = (
+        serializers.SerializerMethodField()
+    )
 
     class Meta:
         model = StaffMember
@@ -85,9 +81,5 @@ class StaffMemberWriteSerializer(serializers.ModelSerializer):
 
     def validate_age(self, value: Optional[int]) -> Optional[int]:
         if value is not None and not (16 <= value <= 80):
-<<<<<<< HEAD
-            raise serializers.ValidationError(_("Age must be between 16 and 80."))
-=======
             raise serializers.ValidationError("Age must be between 16 and 80.")
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
         return value

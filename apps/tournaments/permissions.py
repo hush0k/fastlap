@@ -12,12 +12,9 @@ logger = getLogger(__name__)
 
 class IsContentManager(BasePermission):
     def has_permission(self, request: Request, view: View) -> bool:
-<<<<<<< HEAD
-        result: bool = request.user.groups.filter(name="ContentManager").exists()
+        result: bool = request.user.groups.filter(
+            name=RoleEnum.CONTENT_MANAGER
+        ).exists()
         logger.debug(_("user: %s, has_permission: %s"), request.user, result)
-=======
-        result: bool = request.user.groups.filter(name=RoleEnum.CONTENT_MANAGER).exists()
-        logger.debug("user: %s, has_permission: %s", request.user, result)
->>>>>>> e352d4a8f3d9b40780960780cf8ad99fc02abb18
 
         return result

@@ -8,11 +8,8 @@ from typing import Any
 # Django modules
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
-<<<<<<< HEAD
 
 from django.utils.translation import gettext_lazy as _
-=======
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
 
 # Django REST Framework
 from rest_framework import filters, viewsets
@@ -21,9 +18,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request as DRFRequest
 from rest_framework.response import Response as DRFResponse
 
+from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
+
 # Project modules
 from apps.common.pagination import CustomPagination
-from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
 from apps.drivers.filters import DriverFilter, DriverResultFilter
 from apps.drivers.models import Driver, DriverResult
 from apps.drivers.permissions import IsStaffOrReadOnly
@@ -64,7 +62,9 @@ class DriverViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary=_("List Drivers"),
-        description=_("Retrieve a paginated list of all drivers with optional filtering."),  # noqa: E501
+        description=_(
+            "Retrieve a paginated list of all drivers with optional filtering."
+        ),  # noqa: E501
         responses={
             200: OpenApiResponse(
                 description=_("Successful response with paginated driver list."),
@@ -116,29 +116,29 @@ class DriverViewSet(viewsets.ModelViewSet):
         results = DriverResult.objects.filter(driver=driver).select_related("race")
         serializer = DriverResultSerializer(results, many=True)
         return DRFResponse(serializer.data)
-    
-    @cache_response(timeout=300, key_prefix='drivers_list')
-    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+
+    @cache_response(timeout=300, key_prefix="drivers_list")
+    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:  # noqa: F811
         """
         Handle GET requests to list all drivers with caching.
         """
         return super().list(request, *args, **kwargs)
-    
-    @invalidate_cache('drivers_list:*')
+
+    @invalidate_cache("drivers_list:*")
     def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
         Handle POST requests to create a new driver (invalidates cache).
         """
         return super().create(request, *args, **kwargs)
-    
-    @invalidate_cache('drivers_list:*')
+
+    @invalidate_cache("drivers_list:*")
     def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
         Handle PUT/PATCH requests to update a driver (invalidates cache).
         """
         return super().update(request, *args, **kwargs)
-    
-    @invalidate_cache('drivers_list:*')
+
+    @invalidate_cache("drivers_list:*")
     def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
         Handle DELETE requests to remove a driver (invalidates cache).

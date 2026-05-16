@@ -1,11 +1,10 @@
-from enum import Enum
-
 from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
 
-class RoleEnum(StrEnum):
-    CONTENT_MANAGER = "ContentManager"
-    AUTHOR = "Author"
+
+class RoleEnum(TextChoices):
+    CONTENT_MANAGER = "ContentManager", _("Content Manager")
+    AUTHOR = "Author", _("Author")
 
 
 class SeriesCategoryEnum(TextChoices):
@@ -30,7 +29,7 @@ class WatchPlatformEnum(TextChoices):
     SKY_SPORTS = "sky_sports", _("Sky Sports")
 
 
-class Currency(Enum):
+class Currency(TextChoices):
     """
     Enum of popular currencies.
 

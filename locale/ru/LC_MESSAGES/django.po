@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-16 02:44+0000\n"
+"POT-Creation-Date: 2026-05-16 05:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,115 +24,123 @@ msgstr ""
 msgid "Blogger endpoints coming soon"
 msgstr ""
 
-#: apps/common/enums.py:9
-msgid "Car"
+#: apps/common/enums.py:6
+msgid "Content Manager"
 msgstr ""
 
-#: apps/common/enums.py:10
-msgid "Moto"
+#: apps/common/enums.py:7 apps/news/models.py:59
+msgid "Author"
 msgstr ""
 
 #: apps/common/enums.py:11
+msgid "Car"
+msgstr ""
+
+#: apps/common/enums.py:12
+msgid "Moto"
+msgstr ""
+
+#: apps/common/enums.py:13
 msgid "Endurance"
 msgstr ""
 
-#: apps/common/enums.py:15
+#: apps/common/enums.py:17
 msgid "Upcoming"
 msgstr ""
 
-#: apps/common/enums.py:16
+#: apps/common/enums.py:18
 msgid "Live"
 msgstr ""
 
-#: apps/common/enums.py:17 apps/drivers/enums.py:6
+#: apps/common/enums.py:19 apps/drivers/enums.py:6
 msgid "Finished"
 msgstr ""
 
-#: apps/common/enums.py:18
+#: apps/common/enums.py:20
 msgid "Cancelled"
 msgstr ""
 
-#: apps/common/enums.py:22
+#: apps/common/enums.py:24
 msgid "F1 TV"
 msgstr ""
 
-#: apps/common/enums.py:23
+#: apps/common/enums.py:25
 msgid "Youtube"
 msgstr ""
 
-#: apps/common/enums.py:24
+#: apps/common/enums.py:26
 msgid "Twitch"
 msgstr ""
 
-#: apps/common/enums.py:25
+#: apps/common/enums.py:27
 msgid "Dazn"
 msgstr ""
 
-#: apps/common/enums.py:26
+#: apps/common/enums.py:28
 msgid "ESPN"
 msgstr ""
 
-#: apps/common/enums.py:27
+#: apps/common/enums.py:29
 msgid "Sky Sports"
 msgstr ""
 
-#: apps/common/enums.py:38
+#: apps/common/enums.py:40
 msgid "US Dollar"
 msgstr ""
 
-#: apps/common/enums.py:39
+#: apps/common/enums.py:41
 msgid "Euro"
 msgstr ""
 
-#: apps/common/enums.py:40
+#: apps/common/enums.py:42
 msgid "British Pound"
 msgstr ""
 
-#: apps/common/enums.py:41
+#: apps/common/enums.py:43
 msgid "Japanese Yen"
 msgstr ""
 
-#: apps/common/enums.py:42
+#: apps/common/enums.py:44
 msgid "Chinese Yuan"
 msgstr ""
 
-#: apps/common/enums.py:43
+#: apps/common/enums.py:45
 msgid "South Korean Won"
 msgstr ""
 
-#: apps/common/enums.py:44
+#: apps/common/enums.py:46
 msgid "Russian Ruble"
 msgstr ""
 
-#: apps/common/enums.py:45
+#: apps/common/enums.py:47
 msgid "Kazakhstani Tenge"
 msgstr ""
 
-#: apps/common/enums.py:46
+#: apps/common/enums.py:48
 msgid "Canadian Dollar"
 msgstr ""
 
-#: apps/common/enums.py:47
+#: apps/common/enums.py:49
 msgid "Australian Dollar"
 msgstr ""
 
-#: apps/common/enums.py:48
+#: apps/common/enums.py:50
 msgid "Swiss Franc"
 msgstr ""
 
-#: apps/common/enums.py:49
+#: apps/common/enums.py:51
 msgid "Swedish Krona"
 msgstr ""
 
-#: apps/common/enums.py:50
+#: apps/common/enums.py:52
 msgid "Brazilian Real"
 msgstr ""
 
-#: apps/common/enums.py:51
+#: apps/common/enums.py:53
 msgid "Indian Rupee"
 msgstr ""
 
-#: apps/common/enums.py:52
+#: apps/common/enums.py:54
 msgid "Singapore Dollar"
 msgstr ""
 
@@ -144,13 +152,13 @@ msgstr ""
 msgid "Racing Information"
 msgstr ""
 
-#: apps/drivers/admin.py:51 apps/race_tracks/admin.py:46 apps/races/admin.py:31
-#: apps/races/admin.py:67 apps/team_stuff/admin.py:40
+#: apps/drivers/admin.py:51 apps/race_tracks/admin.py:46 apps/races/admin.py:32
+#: apps/races/admin.py:69 apps/team_stuff/admin.py:40
 #: apps/tournaments/admin.py:60
 msgid "Timestamps"
 msgstr ""
 
-#: apps/drivers/apps.py:8 apps/drivers/models.py:56
+#: apps/drivers/apps.py:8 apps/drivers/models.py:82
 msgid "Drivers"
 msgstr ""
 
@@ -166,158 +174,120 @@ msgstr ""
 msgid "DSQ"
 msgstr ""
 
-#: apps/drivers/models.py:36
+#: apps/drivers/models.py:54
 msgid "First Name"
 msgstr ""
 
-#: apps/drivers/models.py:37
+#: apps/drivers/models.py:55
 msgid "Last Name"
 msgstr ""
 
-#: apps/drivers/models.py:42
+#: apps/drivers/models.py:60
 msgid "Nationality"
 msgstr ""
 
-#: apps/drivers/models.py:43
+#: apps/drivers/models.py:61
 msgid "Date of Birth"
 msgstr ""
 
-#: apps/drivers/models.py:44
+#: apps/drivers/models.py:63
 msgid "Racing Number"
 msgstr ""
 
-#: apps/drivers/models.py:49
+#: apps/drivers/models.py:70
 msgid "Profile Image"
 msgstr ""
 
-#: apps/drivers/models.py:51
+#: apps/drivers/models.py:75
 msgid "Bio"
 msgstr ""
 
-#: apps/drivers/models.py:52
+#: apps/drivers/models.py:78
 msgid "Is Active"
 msgstr ""
 
-#: apps/drivers/models.py:55 apps/drivers/models.py:67
+#: apps/drivers/models.py:81 apps/drivers/models.py:93
 msgid "Driver"
 msgstr ""
 
-#: apps/drivers/models.py:73
+#: apps/drivers/models.py:99
 msgid "Race"
 msgstr ""
 
-#: apps/drivers/models.py:76
+#: apps/drivers/models.py:102
 msgid "Finish Position"
 msgstr ""
 
-#: apps/drivers/models.py:79
+#: apps/drivers/models.py:105
 msgid "Grid Position"
 msgstr ""
 
-#: apps/drivers/models.py:81
+#: apps/drivers/models.py:108
 msgid "Points"
 msgstr ""
 
-#: apps/drivers/models.py:85
+#: apps/drivers/models.py:113
 msgid "Status"
 msgstr ""
 
-#: apps/drivers/models.py:87
+#: apps/drivers/models.py:116
 msgid "Fastest Lap"
 msgstr ""
 
-#: apps/drivers/models.py:89
+#: apps/drivers/models.py:119
 msgid "Laps Completed"
 msgstr ""
 
-#: apps/drivers/models.py:93
+#: apps/drivers/models.py:123
 msgid "Driver Result"
 msgstr ""
 
-#: apps/drivers/models.py:94
+#: apps/drivers/models.py:124
 msgid "Driver Results"
 msgstr ""
 
-#: apps/drivers/views.py:62
+#: apps/drivers/views.py:64
 msgid "List Drivers"
 msgstr ""
 
-#: apps/drivers/views.py:63
+#: apps/drivers/views.py:66
 msgid "Retrieve a paginated list of all drivers with optional filtering."
 msgstr ""
 
-#: apps/drivers/views.py:66
+#: apps/drivers/views.py:70
 msgid "Successful response with paginated driver list."
 msgstr ""
 
-#: apps/drivers/views.py:78
+#: apps/drivers/views.py:82
 msgid "Retrieve Driver Details"
 msgstr ""
 
-#: apps/drivers/views.py:79
+#: apps/drivers/views.py:83
 msgid "Retrieve detailed information about a specific driver by slug."
 msgstr ""
 
-#: apps/drivers/views.py:82
+#: apps/drivers/views.py:86
 msgid "Successful response with driver details."
 msgstr ""
 
-#: apps/drivers/views.py:86
+#: apps/drivers/views.py:90
 msgid "Driver not found with the provided slug."
 msgstr ""
 
-#: apps/news/models.py:51
+#: apps/news/models.py:41
 msgid "Tag"
 msgstr ""
 
-#: apps/news/models.py:52 apps/news/models.py:82
+#: apps/news/models.py:42
 msgid "Tags"
 msgstr ""
 
-#: apps/news/models.py:66
-msgid "Author"
-msgstr ""
-
-#: apps/news/models.py:69
+#: apps/news/models.py:62
 msgid "Content"
 msgstr ""
 
-#: apps/news/models.py:76
+#: apps/news/models.py:69
 msgid "Cover Image"
-msgstr ""
-
-#: apps/news/models.py:80
-msgid "Series"
-msgstr ""
-
-#: apps/news/models.py:83
-msgid "Published At"
-msgstr ""
-
-#: apps/news/models.py:84
-msgid "Is Published"
-msgstr ""
-
-#: apps/news/models.py:85
-msgid "Views Count"
-msgstr ""
-
-#: apps/news/models.py:90
-msgid "Article"
-msgstr ""
-
-#: apps/news/models.py:91
-msgid "Articles"
-msgstr ""
-
-#: apps/news/permissions.py:16 apps/tournaments/permissions.py:14
-#, python-format
-msgid "user: %s, has_permission: %s"
-msgstr ""
-
-#: apps/news/permissions.py:23
-#, python-format
-msgid "user: %s, has_object_permission: %s"
 msgstr ""
 
 #: apps/news/serializers.py:79
@@ -329,108 +299,12 @@ msgstr ""
 msgid "published_at was set"
 msgstr ""
 
-#: apps/news/serializers.py:92
-msgid "tags and series was assigned"
-msgstr ""
-
-#: apps/news/serializers.py:94
-#, python-format
-msgid "created article: %s"
-msgstr ""
-
-#: apps/news/serializers.py:105
-#, python-format
-msgid "validated_data: %r"
-msgstr ""
-
-#: apps/news/serializers.py:109
+#: apps/news/serializers.py:108
 #, python-format
 msgid "article %s: published_at assigned"
 msgstr ""
 
-#: apps/news/serializers.py:112
-#, python-format
-msgid "updated article: %s"
-msgstr ""
-
-#: apps/news/views.py:90
-msgid "List Articles"
-msgstr ""
-
-#: apps/news/views.py:91
-msgid "Retrieve a paginated list of articles with optional filtering."
-msgstr ""
-
-#: apps/news/views.py:94
-msgid "Successful response with paginated article list."
-msgstr ""
-
-#: apps/news/views.py:106
-msgid "Create Article"
-msgstr ""
-
-#: apps/news/views.py:107
-msgid "Create a new article. User must be in Author group."
-msgstr ""
-
-#: apps/news/views.py:111
-msgid "Article created successfully."
-msgstr ""
-
-#: apps/news/views.py:115 apps/news/views.py:161 apps/tournaments/views.py:112
-#: apps/tournaments/views.py:156 apps/users/views.py:50
-msgid "Invalid input data."
-msgstr ""
-
-#: apps/news/views.py:118
-msgid "User is not authorized to create articles."
-msgstr ""
-
-#: apps/news/views.py:129
-msgid "Retrieve Article"
-msgstr ""
-
-#: apps/news/views.py:130
-msgid "Retrieve a specific article by slug."
-msgstr ""
-
-#: apps/news/views.py:133
-msgid "Successful response with article details."
-msgstr ""
-
-#: apps/news/views.py:137 apps/news/views.py:167 apps/news/views.py:188
-msgid "Article not found."
-msgstr ""
-
-#: apps/news/views.py:152
-msgid "Update Article"
-msgstr ""
-
-#: apps/news/views.py:153
-msgid "Update an existing article. User must be the author."
-msgstr ""
-
-#: apps/news/views.py:157
-msgid "Article updated successfully."
-msgstr ""
-
-#: apps/news/views.py:164 apps/news/views.py:185
-msgid "User is not the author of this article."
-msgstr ""
-
-#: apps/news/views.py:178
-msgid "Delete Article"
-msgstr ""
-
-#: apps/news/views.py:179
-msgid "Delete an article. User must be the author."
-msgstr ""
-
-#: apps/news/views.py:182
-msgid "Article deleted successfully."
-msgstr ""
-
-#: apps/race_tracks/admin.py:37 apps/races/admin.py:26 apps/races/admin.py:60
+#: apps/race_tracks/admin.py:37 apps/races/admin.py:27 apps/races/admin.py:62
 #: apps/tournaments/admin.py:40
 msgid "Basic Information"
 msgstr ""
@@ -439,23 +313,27 @@ msgstr ""
 msgid "Track Specifications"
 msgstr ""
 
-#: apps/race_tracks/serializers.py:60
+#: apps/race_tracks/serializers.py:66
+msgid "Validation failed: length_km must be greater than 0"
+msgstr ""
+
+#: apps/race_tracks/serializers.py:67
 msgid "Length km must be greater than 0"
 msgstr ""
 
-#: apps/races/admin.py:29 apps/tournaments/admin.py:44
+#: apps/races/admin.py:30 apps/tournaments/admin.py:44
 msgid "Media"
 msgstr ""
 
-#: apps/races/admin.py:63
+#: apps/races/admin.py:65
 msgid "Schedule"
 msgstr ""
 
-#: apps/races/admin.py:64
+#: apps/races/admin.py:66
 msgid "Race Details"
 msgstr ""
 
-#: apps/races/admin.py:65
+#: apps/races/admin.py:67
 msgid "Broadcast"
 msgstr ""
 
@@ -463,47 +341,39 @@ msgstr ""
 msgid "Professional Information"
 msgstr ""
 
-#: apps/team_stuff/models.py:22
+#: apps/team_stuff/models.py:24
 msgid "Staff Member"
 msgstr ""
 
-#: apps/team_stuff/models.py:23
+#: apps/team_stuff/models.py:25
 msgid "Staff Members"
 msgstr ""
 
-#: apps/team_stuff/models.py:51
+#: apps/team_stuff/models.py:53
 msgid "Team Roster"
 msgstr ""
 
-#: apps/team_stuff/models.py:52
+#: apps/team_stuff/models.py:54
 msgid "Team Rosters"
 msgstr ""
 
-#: apps/team_stuff/serializers.py:77
-msgid "Age must be between 16 and 80."
-msgstr ""
-
-#: apps/team_stuff/views.py:54
-msgid "Not a member of any team."
-msgstr ""
-
-#: apps/teams/models.py:24
+#: apps/teams/models.py:30
 msgid "Team"
 msgstr ""
 
-#: apps/teams/models.py:25
+#: apps/teams/models.py:31
 msgid "Teams"
 msgstr ""
 
-#: apps/teams/models.py:51
+#: apps/teams/models.py:57
 msgid "Team Standing"
 msgstr ""
 
-#: apps/teams/models.py:52
+#: apps/teams/models.py:58
 msgid "Team Standings"
 msgstr ""
 
-#: apps/teams/serializers.py:89
+#: apps/teams/serializers.py:90
 msgid "budget_currency must be a 3-letter currency code like USD, EUR, or KZT."
 msgstr ""
 
@@ -519,88 +389,98 @@ msgstr ""
 msgid "Additional"
 msgstr ""
 
-#: apps/tournaments/models.py:83
+#: apps/tournaments/models.py:84
 msgid "Tournament"
 msgstr ""
 
-#: apps/tournaments/models.py:84
+#: apps/tournaments/models.py:85
 msgid "Tournaments"
 msgstr ""
 
-#: apps/tournaments/views.py:85
-msgid "List Tournaments"
-msgstr ""
-
-#: apps/tournaments/views.py:87
-msgid "Retrieve a paginated list of tournaments with optional filtering."
-msgstr ""
-
-#: apps/tournaments/views.py:91
-msgid "Successful response with paginated tournament list."
-msgstr ""
-
-#: apps/tournaments/views.py:103
-msgid "Create Tournament"
-msgstr ""
-
-#: apps/tournaments/views.py:104
-msgid "Create a new tournament. User must be in ContentManager group."
-msgstr ""
-
-#: apps/tournaments/views.py:108
-msgid "Tournament created successfully."
+#: apps/tournaments/permissions.py:18
+#, python-format
+msgid "user: %s, has_permission: %s"
 msgstr ""
 
 #: apps/tournaments/views.py:115
-msgid "User is not authorized to create tournaments."
+msgid "List Tournaments"
 msgstr ""
 
-#: apps/tournaments/views.py:126
-msgid "Retrieve Tournament"
+#: apps/tournaments/views.py:117
+msgid "Retrieve a paginated list of tournaments with optional filtering."
 msgstr ""
 
-#: apps/tournaments/views.py:127
-msgid "Retrieve a specific tournament by slug."
+#: apps/tournaments/views.py:121
+msgid "Successful response with paginated tournament list."
 msgstr ""
 
-#: apps/tournaments/views.py:130
-msgid "Successful response with tournament details."
-msgstr ""
-
-#: apps/tournaments/views.py:134 apps/tournaments/views.py:162
-#: apps/tournaments/views.py:183
-msgid "Tournament not found."
+#: apps/tournaments/views.py:144
+msgid "Create Tournament"
 msgstr ""
 
 #: apps/tournaments/views.py:145
-msgid "Update Tournament"
+msgid "Create a new tournament. User must be in ContentManager group."
 msgstr ""
 
-#: apps/tournaments/views.py:147
-msgid "Update an existing tournament. User must be in ContentManager group."
+#: apps/tournaments/views.py:149
+msgid "Tournament created successfully."
 msgstr ""
 
-#: apps/tournaments/views.py:152
-msgid "Tournament updated successfully."
+#: apps/tournaments/views.py:153 apps/tournaments/views.py:212
+#: apps/users/views.py:51
+msgid "Invalid input data."
 msgstr ""
 
-#: apps/tournaments/views.py:159
-msgid "User is not authorized to update tournaments."
+#: apps/tournaments/views.py:156
+msgid "User is not authorized to create tournaments."
 msgstr ""
 
-#: apps/tournaments/views.py:173
-msgid "Delete Tournament"
+#: apps/tournaments/views.py:170
+msgid "Retrieve Tournament"
+msgstr ""
+
+#: apps/tournaments/views.py:171
+msgid "Retrieve a specific tournament by slug."
 msgstr ""
 
 #: apps/tournaments/views.py:174
+msgid "Successful response with tournament details."
+msgstr ""
+
+#: apps/tournaments/views.py:178 apps/tournaments/views.py:218
+#: apps/tournaments/views.py:242
+msgid "Tournament not found."
+msgstr ""
+
+#: apps/tournaments/views.py:201
+msgid "Update Tournament"
+msgstr ""
+
+#: apps/tournaments/views.py:203
+msgid "Update an existing tournament. User must be in ContentManager group."
+msgstr ""
+
+#: apps/tournaments/views.py:208
+msgid "Tournament updated successfully."
+msgstr ""
+
+#: apps/tournaments/views.py:215
+msgid "User is not authorized to update tournaments."
+msgstr ""
+
+#: apps/tournaments/views.py:232
+msgid "Delete Tournament"
+msgstr ""
+
+#: apps/tournaments/views.py:233
 msgid "Delete a tournament. User must be in ContentManager group."
 msgstr ""
 
-#: apps/tournaments/views.py:177
+#: apps/tournaments/views.py:236
 msgid "Tournament deleted successfully."
 msgstr ""
 
-#: apps/tournaments/views.py:180
+#: apps/tournaments/views.py:239
 msgid "User is not authorized to delete tournaments."
 msgstr ""
 
@@ -616,89 +496,48 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-#: apps/users/models.py:46
+#: apps/users/models.py:60
 msgid "User"
 msgstr ""
 
-#: apps/users/models.py:47
+#: apps/users/models.py:61
 msgid "Users"
 msgstr ""
 
-#: apps/users/serializers.py:35
+#: apps/users/serializers.py:61
+msgid "Password must be at least 8 characters long."
+msgstr ""
+
+#: apps/users/serializers.py:66
+msgid "Password must be no more than 128 characters long."
+msgstr ""
+
+#: apps/users/serializers.py:73
+msgid "Password must contain both uppercase and lowercase letters."
+msgstr ""
+
+#: apps/users/serializers.py:79
+msgid "Password must contain at least one number."
+msgstr ""
+
+#: apps/users/serializers.py:85
 msgid "Password must contain at least one special character (e.g. @, &, /, !)."
 msgstr ""
 
-#: apps/users/serializers.py:43
-msgid "Password must contain both letters and numbers."
-msgstr ""
-
-#: apps/users/serializers.py:51
+#: apps/users/serializers.py:105
 msgid "Avatar must be uploaded as a file (multipart/form-data)."
 msgstr ""
 
-#: apps/users/serializers.py:55
-msgid "Avatar is required."
-msgstr ""
-
-#: apps/users/serializers.py:84
-msgid "Failed to store avatar. Please try again."
-msgstr ""
-
-#: apps/users/serializers.py:101
+#: apps/users/serializers.py:166
 msgid "Internal error: request context is missing."
 msgstr ""
 
-#: apps/users/serializers.py:107
+#: apps/users/serializers.py:172
 msgid "Invalid email or password."
 msgstr ""
 
-#: apps/users/serializers.py:110
+#: apps/users/serializers.py:175
 msgid "User account is disabled."
-msgstr ""
-
-#: apps/users/services/firestore_service.py:47
-#, python-brace-format
-msgid "Avatar stored in Firestore for user {user_id}, doc_id: {doc_ref.id}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:55
-#, python-brace-format
-msgid "Error storing avatar in Firestore for user {user_id}: {e}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:69
-#, python-brace-format
-msgid "User {user_id} not found in Firestore"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:87
-#, python-brace-format
-msgid "Avatar {avatar_id} not found for user {user_id}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:98
-#, python-brace-format
-msgid "Error getting avatar from Firestore for user {user_id}: {e}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:144
-#, python-brace-format
-msgid "Avatar updated for user {user_id}, new doc_id: {new_avatar_ref.id}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:152
-#, python-brace-format
-msgid "Error updating avatar in Firestore for user {user_id}: {e}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:182
-#, python-brace-format
-msgid "Avatar deleted for user {user_id}"
-msgstr ""
-
-#: apps/users/services/firestore_service.py:190
-#, python-brace-format
-msgid "Error deleting avatar from Firestore for user {user_id}: {e}"
 msgstr ""
 
 #: apps/users/utils/avatar_utils.py:22
@@ -706,76 +545,35 @@ msgstr ""
 msgid "Avatar size must be <= {settings.AVATAR_MAX_SIZE_MB}MB"
 msgstr ""
 
-#: apps/users/utils/avatar_utils.py:30
-msgid ""
-"File extension {ext} not allowed. Allowed: {', '.join(settings."
-"ALLOWED_AVATAR_EXTENSIONS)}"
-msgstr ""
-
-#: apps/users/utils/avatar_utils.py:44
-msgid "Invalid image format. Supported: {', '.join(allowed_formats)}"
-msgstr ""
-
-#: apps/users/utils/avatar_utils.py:50
-#, python-brace-format
-msgid "Error validating image with Pillow: {e}"
-msgstr ""
-
-#: apps/users/utils/avatar_utils.py:53
-msgid "Invalid image file - could not be opened as an image"
-msgstr ""
-
-#: apps/users/utils/avatar_utils.py:84
-#, python-brace-format
-msgid "Error resizing avatar: {e}"
-msgstr ""
-
-#: apps/users/utils/avatar_utils.py:108
-#, python-brace-format
-msgid "Error processing avatar: {e}"
-msgstr ""
-
-#: apps/users/utils/avatar_utils.py:111
-msgid "Error processing avatar image"
-msgstr ""
-
 #: apps/users/vieews/avatar_views.py:23
 msgid "Avatar image file (max 2MB)"
 msgstr ""
 
-#: apps/users/views.py:27
-msgid "User Registration"
-msgstr ""
-
-#: apps/users/views.py:29
-msgid "Register a new user account with email, username, password, and avatar."
-msgstr ""
-
-#: apps/users/views.py:47
+#: apps/users/views.py:48
 msgid "User registered successfully."
 msgstr ""
 
-#: apps/users/views.py:65
+#: apps/users/views.py:69
 msgid "User Login"
 msgstr ""
 
-#: apps/users/views.py:66
+#: apps/users/views.py:70
 msgid "Authenticate user and return JWT tokens."
 msgstr ""
 
-#: apps/users/views.py:70
+#: apps/users/views.py:74
 msgid "Successful login returns access and refresh tokens."
 msgstr ""
 
-#: apps/users/views.py:80
+#: apps/users/views.py:84
 msgid "Invalid credentials or missing data."
 msgstr ""
 
-#: config/settings/base.py:142
+#: config/settings/base.py:216
 msgid "English"
 msgstr ""
 
-#: config/settings/base.py:143
+#: config/settings/base.py:217
 msgid "Russian"
 msgstr ""
 

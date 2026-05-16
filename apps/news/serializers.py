@@ -1,4 +1,4 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from typing import Any
 
 from django.utils import timezone
@@ -88,15 +88,9 @@ class ArticleCreateSerializer(ModelSerializer):
         article: Article = Article.objects.create(author=user, **validated_data)
         article.tags.set(tags)
         article.series.set(series)
-<<<<<<< HEAD
-        logger.debug(_("tags and series was assigned"))
-
-        logger.info(_("created article: %s"), article.id)
-=======
         logger.debug("tags and series was assigned")
         logger.info("created article: %s", article.id)
 
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
         return article
 
 
@@ -106,25 +100,15 @@ class ArticleUpdateSerializer(ModelSerializer):
         fields = "__all__"
         read_only_fields = ("id", "slug", "author", "views_count", "published_at")
 
-<<<<<<< HEAD
-    def update(self, instance: Article, validated_data: Any) -> Article:
-        logger.debug(_("validated_data: %r"), validated_data)
-=======
     def update(self, instance: Article, validated_data: dict[str, Any]) -> Article:
         logger.debug("validated_data: %r", validated_data)
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
 
         if validated_data.get("is_published") is True and instance.published_at is None:
             validated_data["published_at"] = timezone.now()
             logger.debug(_("article %s: published_at assigned"), instance.id)
 
-<<<<<<< HEAD
-        result = super().update(instance, validated_data)
-        logger.info(_("updated article: %s"), result.id)
-=======
         result: Article = super().update(instance, validated_data)
         logger.info("updated article: %s", result.id)
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
 
         return result
 

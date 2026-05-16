@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-# apps/team_stuff/models.py
-
-=======
-from django.db import models
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
 from django_countries.fields import CountryField
 
 from django.db import models
@@ -15,7 +9,9 @@ from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 class StaffMember(UpdatedAtMixin, CreatedAtMixin, NameMixin, models.Model):
     first_name: models.CharField = models.CharField(max_length=100)
     last_name: models.CharField = models.CharField(max_length=100)
-    age: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(null=True, blank=True)
+    age: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(
+        null=True, blank=True
+    )
     country: CountryField = CountryField(blank=True)
     role: models.CharField = models.CharField(max_length=100, blank=True)
     description: models.TextField = models.TextField(blank=True)
@@ -57,9 +53,5 @@ class TeamRoster(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
         verbose_name = _("Team Roster")
         verbose_name_plural = _("Team Rosters")
 
-<<<<<<< HEAD
-    def __str__(self):
-=======
     def __str__(self) -> str:
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
         return f"{self.team.short_name} — {self.staff_member.full_name}"

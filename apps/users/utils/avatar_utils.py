@@ -4,8 +4,6 @@ from io import BytesIO
 from pathlib import Path
 from typing import Optional, Tuple
 
-from django.conf import settings
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 
 from django.conf import settings

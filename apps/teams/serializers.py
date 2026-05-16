@@ -35,10 +35,7 @@ class TeamListSerializer(serializers.ModelSerializer):
             "slug",
             "country",
             "country_name",
-<<<<<<< HEAD
-=======
             "founded_year",
->>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
         ]
 
 

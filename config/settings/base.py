@@ -6,6 +6,8 @@ from decouple import config
 from django_countries.fields import countries
 from dotenv import load_dotenv
 
+from django.utils.translation import gettext_lazy as _
+
 from apps.common.enums import RaceStatusEnum
 
 logger = getLogger(__name__)
