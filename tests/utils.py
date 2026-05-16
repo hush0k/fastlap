@@ -1,15 +1,17 @@
-from logging import Logger
+from logging import getLogger
 from pathlib import Path
 from typing import Literal
 
 from PIL import Image
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from rest_framework.test import APIClient
 
 from apps.users.models import User
+from tests.config import TEST_LOGGER_NAME
 
 HTTPMethod = Literal["post", "patch", "put"]
+
+logger = getLogger(TEST_LOGGER_NAME)
 
 
 def get_image_bytes(file: str | Path) -> bytes:
@@ -51,17 +53,15 @@ def get_user(*_, **kwargs) -> User:
 
 def assert_validation_error(
     *,
-    api_client: APIClient,
+    self,
     method: HTTPMethod,
     url: str,
     data: dict,
     field: str,
     token: str | None,
-    logger: Logger,
-    test_name: str,
     expected_status: int = 400,
 ) -> None:
-    request_method = getattr(api_client, method)
+    request_method = getattr(self.api_client, method)
 
     headers = {}
 
@@ -76,11 +76,11 @@ def assert_validation_error(
 
     logger.debug(
         "%s [%s] %s: %s",
-        test_name,
+        self._testMethodName,
         method.upper(),
         data,
         response.text,
     )
 
-    assert response.status_code == expected_status
-    assert field in response.json()
+    self.assertEqual(response.status_code, expected_status)
+    self.assertIn(field, response.json())

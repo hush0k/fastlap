@@ -1,14 +1,19 @@
-from django.db import models
+from autoslug import AutoSlugField
 from django_countries.fields import CountryField
 
-from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
+from django.db import models
+from django.db.models import CharField
+
+from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin
 
 
-class Team(CreatedAtMixin, NameMixin, UpdatedAtMixin, models.Model):
-    short_name = models.CharField(max_length=10)
+class Team(CreatedAtMixin, UpdatedAtMixin, models.Model):
+    name: CharField = CharField(max_length=255, unique=True)
+    slug: AutoSlugField = AutoSlugField(populate_from="name", unique=True, null=True, blank=True)
+    short_name = models.CharField(max_length=10, unique=True)
     logo = models.ImageField(upload_to="teams/logos/", null=True, blank=True)
     banner = models.ImageField(upload_to="teams/banners/", null=True, blank=True)
-    country = CountryField(blank=True)
+    country = CountryField()
     founded_year = models.PositiveSmallIntegerField(null=True, blank=True)
     description = models.TextField(blank=True)
 

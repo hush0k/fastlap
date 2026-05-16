@@ -37,7 +37,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     queryset = Team.objects.all().prefetch_related("standings__tournament")
     lookup_field = "slug"
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsStaffOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     ordering_fields = ["name", "founded_year"]
