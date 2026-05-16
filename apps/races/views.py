@@ -6,6 +6,7 @@ ViewSet for the races app.
 from typing import Any
 
 # Django modules
+from asgiref.sync import async_to_sync
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
@@ -63,8 +64,8 @@ class SeriesViewSet(viewsets.ModelViewSet):
 
     def _invalidate_series_cache(self):
         """Invalidate all series-related cache."""
-        RedisService.delete_pattern("series:*")
-        RedisService.delete_pattern("series:slug:*")
+        async_to_sync(RedisService.delete_pattern)("series:*")
+        async_to_sync(RedisService.delete_pattern)("series:slug:*")
 
     @extend_schema(
         summary="List Series",
@@ -82,14 +83,14 @@ class SeriesViewSet(viewsets.ModelViewSet):
         """
         cache_key = "series:list"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().list(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=3600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=3600)
 
         return response
 
@@ -136,14 +137,14 @@ class SeriesViewSet(viewsets.ModelViewSet):
         slug = kwargs.get("slug", "")
         cache_key = f"series:slug:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().retrieve(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=3600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=3600)
 
         return response
 
@@ -172,7 +173,7 @@ class SeriesViewSet(viewsets.ModelViewSet):
         if response.status_code == 200:
             self._invalidate_series_cache()
             slug = kwargs.get("slug", "")
-            RedisService.delete(f"series:slug:{slug}")
+            async_to_sync(RedisService.delete)(f"series:slug:{slug}")
         return response
 
     @extend_schema(
@@ -255,8 +256,8 @@ class RaceViewSet(viewsets.ModelViewSet):
 
     def _invalidate_race_cache(self):
         """Invalidate all race-related cache."""
-        RedisService.delete_pattern("races:*")
-        RedisService.delete_pattern("race:slug:*")
+        async_to_sync(RedisService.delete_pattern)("races:*")
+        async_to_sync(RedisService.delete_pattern)("race:slug:*")
 
     @extend_schema(
         summary="List Races",
@@ -274,14 +275,14 @@ class RaceViewSet(viewsets.ModelViewSet):
         """
         cache_key = self._get_cache_key(request, "list")
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().list(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=300)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response
 
@@ -328,14 +329,14 @@ class RaceViewSet(viewsets.ModelViewSet):
         slug = kwargs.get("slug", "")
         cache_key = f"race:slug:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().retrieve(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=600)
 
         return response
 
@@ -364,7 +365,7 @@ class RaceViewSet(viewsets.ModelViewSet):
         if response.status_code == 200:
             self._invalidate_race_cache()
             slug = kwargs.get("slug", "")
-            RedisService.delete(f"race:slug:{slug}")
+            async_to_sync(RedisService.delete)(f"race:slug:{slug}")
         return response
 
     @extend_schema(
