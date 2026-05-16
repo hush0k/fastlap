@@ -6,6 +6,7 @@ ViewSet for the race_tracks app.
 from typing import Any
 
 # Django modules
+from asgiref.sync import async_to_sync
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 
@@ -78,8 +79,8 @@ class RaceTrackViewSet(viewsets.ModelViewSet):
 
     def _invalidate_track_cache(self):
         """Invalidate all track-related cache."""
-        RedisService.delete_pattern("tracks:*")
-        RedisService.delete_pattern("track:slug:*")
+        async_to_sync(RedisService.delete_pattern)("tracks:*")
+        async_to_sync(RedisService.delete_pattern)("track:slug:*")
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         """
@@ -87,14 +88,14 @@ class RaceTrackViewSet(viewsets.ModelViewSet):
         """
         cache_key = self._get_cache_key(request, "list")
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().list(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=3600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=3600)
 
         return response
 
@@ -105,14 +106,14 @@ class RaceTrackViewSet(viewsets.ModelViewSet):
         slug = kwargs.get("slug", "")
         cache_key = f"track:slug:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().retrieve(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=3600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=3600)
 
         return response
 
