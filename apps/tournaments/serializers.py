@@ -86,6 +86,7 @@ class TournamentCreateSerializer(serializers.ModelSerializer):
             "prize_fund",
             "logo",
             "regulations_url",
+            "currency",
         ]
 
 
