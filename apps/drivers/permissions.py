@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 
 
-class IsAdminOrReadOnly(BasePermission):
+class IsStaffOrReadOnly(BasePermission):
     def has_permission(self, request: Request, view: View) -> bool:
         if request.method in ("GET", "HEAD", "OPTIONS"):
             return True

@@ -1,25 +1,38 @@
-from django.db import models
 from django_countries.fields import CountryField
 
-from apps.common.mixins import UpdatedAtMixin, CreatedAtMixin, NameMixin
-from apps.common.models import BaseModel
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
+
+from apps.common.utils import get_image_size_validator
+from config.settings.base import STAFF_MEMBER_PHOTO_VALIDATOR_BYTES
+
+staff_member_photo_validator = get_image_size_validator(
+    STAFF_MEMBER_PHOTO_VALIDATOR_BYTES
+)
 
 
 class StaffMember(UpdatedAtMixin, CreatedAtMixin, NameMixin, models.Model):
     first_name: models.CharField = models.CharField(max_length=100)
     last_name: models.CharField = models.CharField(max_length=100)
-    age: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(null=True, blank=True)
+    age: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(
+        null=True, blank=True
+    )
     country: CountryField = CountryField(blank=True)
     role: models.CharField = models.CharField(max_length=100, blank=True)
     description: models.TextField = models.TextField(blank=True)
     photo: models.ImageField = models.ImageField(
-        upload_to="staff/photos/", null=True, blank=True
+        upload_to="staff/photos/",
+        null=True,
+        blank=True,
+        validators=[staff_member_photo_validator],
     )
 
     class Meta:
         ordering = ["last_name", "first_name"]
-        verbose_name = "Staff Member"
-        verbose_name_plural = "Staff Members"
+        verbose_name = _("Staff Member")
+        verbose_name_plural = _("Staff Members")
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
@@ -47,8 +60,8 @@ class TeamRoster(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
     class Meta:
         unique_together = ("team", "staff_member", "start_date")
         ordering = ["-start_date"]
-        verbose_name = "Team Roster"
-        verbose_name_plural = "Team Rosters"
+        verbose_name = _("Team Roster")
+        verbose_name_plural = _("Team Rosters")
 
     def __str__(self) -> str:
         return f"{self.team.short_name} — {self.staff_member.full_name}"

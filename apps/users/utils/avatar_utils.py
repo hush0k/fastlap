@@ -4,19 +4,23 @@ from io import BytesIO
 from pathlib import Path
 from typing import Optional, Tuple
 
-from django.conf import settings
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 
-logger = logging.getLogger(__name__)
+from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.translation import gettext as _
 
+logger = logging.getLogger(__name__)
 
 
 class AvatarProcessor:
     @staticmethod
     def validate_image(file: InMemoryUploadedFile) -> Tuple[bool, str]:
         if file.size > settings.AVATAR_MAX_SIZE_BYTES:
-            return False, f"Avatar size must be <= {settings.AVATAR_MAX_SIZE_MB}MB"
+            return (
+                False,
+                _(f"Avatar size must be <= {settings.AVATAR_MAX_SIZE_MB}MB"),
+            )
 
         ext: str = Path(file.name).suffix.lower()
         if ext not in settings.ALLOWED_AVATAR_EXTENSIONS:

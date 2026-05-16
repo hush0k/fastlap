@@ -6,6 +6,8 @@ from decouple import config
 from django_countries.fields import countries
 from dotenv import load_dotenv
 
+from django.utils.translation import gettext_lazy as _
+
 from apps.common.enums import RaceStatusEnum
 
 logger = getLogger(__name__)
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -110,6 +113,64 @@ DATABASES = {
     }
 }
 
+# Redis Configuration
+REDIS_HOST = config('REDIS_HOST', default='localhost')
+REDIS_PORT = config('REDIS_PORT', default=6379)
+REDIS_DB = config('REDIS_DB', default=0)
+REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 50,
+                'timeout': 20,
+            },
+            'MAX_CONNECTIONS': 1000,
+            'PICKLE_VERSION': -1,
+            'SOCKET_TIMEOUT': 5,
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'RETRY_ON_TIMEOUT': True,
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+        },
+        'KEY_PREFIX': 'fastlap',
+        'TIMEOUT': 300,
+    }
+}
+
+# Session Configuration (optional - use Redis for sessions)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Channel Layers for WebSockets (if using channels)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(REDIS_HOST, REDIS_PORT)],
+            'capacity': 1500,
+            'expiry': 10,
+            'group_expiry': 86400,
+            'channel_capacity': {
+                'http.request': 200,
+                'websocket.send': 100,
+            },
+        },
+    },
+}
+
+# Rate Limiting with Redis
+AXES_CACHE = 'default'
+AXES_LOCK_OUT_AT_FAILURE = True
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 0.5
+AXES_RESET_ON_SUCCESS = True
+
 AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
@@ -151,6 +212,13 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+LANGUAGES = (
+    ("en", _("English")),
+    ("ru", _("Russian")),
+)
+
+LOCALE_PATHS = (BASE_DIR / "locale",)
+
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
@@ -180,8 +248,11 @@ DRIVER_IMAGE_MAX_SIZE_MB = 4
 DRIVER_IMAGE_MAX_SIZE_BYTES = DRIVER_IMAGE_MAX_SIZE_MB * 1024 * 1024
 ARTICLE_IMAGE_MAX_SIZE_MB = 10
 ARTICLE_IMAGE_MAX_SIZE_BYTES = ARTICLE_IMAGE_MAX_SIZE_MB * 1024 * 1024
-TOURNAMENT_LOGO_MAX_SIZE_MB = 20
+TOURNAMENT_LOGO_MAX_SIZE_MB = 10
 TOURNAMENT_LOGO_MAX_SIZE_BYTES = TOURNAMENT_LOGO_MAX_SIZE_MB * 1024 * 1024
+MAP_IMAGE_MAX_SIZE_BYTES = 10 * 1024 * 1024
+SERIES_LOGO_MAX_SIZE_BYTES = 5 * 1024 * 1024
+STAFF_MEMBER_PHOTO_VALIDATOR_BYTES = 5 * 1024 * 1024
 
 LOG_LEVEL = config("LOG_LEVEL", default="INFO")
 APP_LOGGER_NAME = 'app'

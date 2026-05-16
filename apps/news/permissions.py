@@ -1,4 +1,4 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
 from django.views import View
 from rest_framework.permissions import BasePermission

@@ -6,6 +6,9 @@ Serializers for the users app.
 import re
 from typing import Any
 
+from drf_spectacular.utils import extend_schema_field
+from rest_framework_simplejwt.tokens import RefreshToken
+
 # Django modules
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
@@ -15,12 +18,11 @@ from django.utils.translation import gettext_lazy as _
 # Django REST Framework
 from rest_framework import serializers
 from rest_framework.request import Request
-from rest_framework_simplejwt.tokens import RefreshToken
-from drf_spectacular.utils import extend_schema_field
+
+from .services.firestore_service import FirestoreUserService
 
 # Project modules
 from .utils.avatar_utils import AvatarProcessor
-from .services.firestore_service import FirestoreUserService
 
 User = get_user_model()
 
@@ -29,7 +31,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     """
     Serializer for user registration.
     """
-    
+
     password = serializers.CharField(write_only=True, min_length=8)
     avatar = serializers.ImageField(required=False, allow_empty_file=True)
 
@@ -45,7 +47,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_password(self, value: str) -> str:
         """
         Validate password strength.
-        
+
         Checks:
         - Minimum length: 8 characters
         - Maximum length: 128 characters
@@ -58,35 +60,37 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 _("Password must be at least 8 characters long.")
             )
-        
+
         if len(value) > 128:
             raise serializers.ValidationError(
                 _("Password must be no more than 128 characters long.")
             )
-        
+
         has_upper = any(c.isupper() for c in value)
         has_lower = any(c.islower() for c in value)
         if not (has_upper and has_lower):
             raise serializers.ValidationError(
                 _("Password must contain both uppercase and lowercase letters.")
             )
-        
+
         has_digit = any(c.isdigit() for c in value)
         if not has_digit:
             raise serializers.ValidationError(
                 _("Password must contain at least one number.")
             )
-        
+
         if not re.search(r"[^\w\s]", value):
             raise serializers.ValidationError(
-                _("Password must contain at least one special character (e.g. @, &, /, !).")
+                _(
+                    "Password must contain at least one special character (e.g. @, &, /, !)."  # noqa: E501
+                )
             )
-        
+
         try:
             validate_password(value)
         except DjangoValidationError as e:
             raise serializers.ValidationError(e.messages)
-        
+
         return value
 
     def validate_avatar(self, value):
@@ -95,16 +99,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         """
         if value is None:
             return value
-        
+
         if isinstance(value, str):
             raise serializers.ValidationError(
                 _("Avatar must be uploaded as a file (multipart/form-data).")
             )
-        
+
         is_valid, error = AvatarProcessor.validate_image(value)
         if not is_valid:
             raise serializers.ValidationError(_(error))
-        
+
         return value
 
     def create(self, validated_data):
@@ -118,13 +122,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         if avatar_file:
             firestore_service = FirestoreUserService()
             base64_avatar, error = AvatarProcessor.process_avatar(avatar_file)
-            
+
             if error:
                 user.delete()
                 raise serializers.ValidationError({"avatar": error})
-            
+
             avatar_id = firestore_service.create_user_avatar(user.id, base64_avatar)
-            
+
             if avatar_id:
                 user.firestore_avatar_id = avatar_id
                 user.use_firestore_avatar = True
@@ -145,11 +149,9 @@ class LoginSerializer(serializers.Serializer):
     """
     Serializer for user login.
     """
-    
+
     email = serializers.EmailField()
-    password = serializers.CharField(
-        write_only=True, trim_whitespace=False
-    )
+    password = serializers.CharField(write_only=True, trim_whitespace=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, str]:
         """
