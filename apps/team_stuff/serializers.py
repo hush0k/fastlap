@@ -27,7 +27,9 @@ class TeamRosterSerializer(serializers.ModelSerializer):
 
 class StaffMemberListSerializer(serializers.ModelSerializer):
     country: serializers.CharField = serializers.CharField(source="country.name")
-    current_team: serializers.SerializerMethodField = serializers.SerializerMethodField()
+    current_team: serializers.SerializerMethodField = (
+        serializers.SerializerMethodField()
+    )
 
     class Meta:
         model = StaffMember
