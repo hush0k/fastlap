@@ -7,15 +7,16 @@ from typing import Any
 
 # Django modules
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+
+from django.utils.translation import gettext_lazy as _
 
 # Django REST Framework
-from rest_framework import filters, status, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request as DRFRequest
 from rest_framework.response import Response as DRFResponse
-from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
@@ -35,10 +36,16 @@ class ArticleViewSet(viewsets.ModelViewSet):
     ViewSet for managing Article resources.
     """
 
-    queryset = Article.objects.prefetch_related("tags", "series").select_related("author")
+    queryset = Article.objects.prefetch_related("tags", "series").select_related(
+        "author"
+    )
     permission_classes = (IsAuthenticated, IsAuthor)
     pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    )
     filterset_class = ArticleFilter
     search_fields = ("name", "content")
     ordering_fields = ("published_at", "views_count", "created_at")
@@ -71,17 +78,20 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """
         queryset = super().get_queryset()
 
-        if self.action in ("list", "retrieve") and not self.request.user.is_authenticated:
+        if (
+            self.action in ("list", "retrieve")
+            and not self.request.user.is_authenticated
+        ):
             queryset = queryset.filter(is_published=True)
 
         return queryset
 
     @extend_schema(
-        summary="List Articles",
-        description="Retrieve a paginated list of articles with optional filtering.",
+        summary=_("List Articles"),
+        description=_("Retrieve a paginated list of articles with optional filtering."),
         responses={
             200: OpenApiResponse(
-                description="Successful response with paginated article list.",
+                description=_("Successful response with paginated article list."),
                 response=ArticleListSerializer,
             ),
         },
@@ -93,19 +103,19 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     @extend_schema(
-        summary="Create Article",
-        description="Create a new article. User must be in Author group.",
+        summary=_("Create Article"),
+        description=_("Create a new article. User must be in Author group."),
         request=ArticleCreateSerializer,
         responses={
             201: OpenApiResponse(
-                description="Article created successfully.",
+                description=_("Article created successfully."),
                 response=ArticleDetailSerializer,
             ),
             400: OpenApiResponse(
-                description="Invalid input data.",
+                description=_("Invalid input data."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to create articles.",
+                description=_("User is not authorized to create articles."),
             ),
         },
     )
@@ -116,15 +126,15 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     @extend_schema(
-        summary="Retrieve Article",
-        description="Retrieve a specific article by slug.",
+        summary=_("Retrieve Article"),
+        description=_("Retrieve a specific article by slug."),
         responses={
             200: OpenApiResponse(
-                description="Successful response with article details.",
+                description=_("Successful response with article details."),
                 response=ArticleDetailSerializer,
             ),
             404: OpenApiResponse(
-                description="Article not found.",
+                description=_("Article not found."),
             ),
         },
     )
@@ -139,22 +149,22 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return DRFResponse(serializer.data)
 
     @extend_schema(
-        summary="Update Article",
-        description="Update an existing article. User must be the author.",
+        summary=_("Update Article"),
+        description=_("Update an existing article. User must be the author."),
         request=ArticleUpdateSerializer,
         responses={
             200: OpenApiResponse(
-                description="Article updated successfully.",
+                description=_("Article updated successfully."),
                 response=ArticleDetailSerializer,
             ),
             400: OpenApiResponse(
-                description="Invalid input data.",
+                description=_("Invalid input data."),
             ),
             403: OpenApiResponse(
-                description="User is not the author of this article.",
+                description=_("User is not the author of this article."),
             ),
             404: OpenApiResponse(
-                description="Article not found.",
+                description=_("Article not found."),
             ),
         },
     )
@@ -165,17 +175,17 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @extend_schema(
-        summary="Delete Article",
-        description="Delete an article. User must be the author.",
+        summary=_("Delete Article"),
+        description=_("Delete an article. User must be the author."),
         responses={
             204: OpenApiResponse(
-                description="Article deleted successfully.",
+                description=_("Article deleted successfully."),
             ),
             403: OpenApiResponse(
-                description="User is not the author of this article.",
+                description=_("User is not the author of this article."),
             ),
             404: OpenApiResponse(
-                description="Article not found.",
+                description=_("Article not found."),
             ),
         },
     )
@@ -192,13 +202,17 @@ class ArticleViewSet(viewsets.ModelViewSet):
         url_name="my-articles",
         permission_classes=(IsAuthenticated, IsAuthor),
     )
-    def my_articles(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+    def my_articles(
+        self, request: DRFRequest, *args: Any, **kwargs: Any
+    ) -> DRFResponse:
         """
         Retrieve articles authored by the authenticated user.
         """
-        articles = Article.objects.filter(author=request.user).prefetch_related(
-            "tags", "series"
-        ).select_related("author")
+        articles = (
+            Article.objects.filter(author=request.user)
+            .prefetch_related("tags", "series")
+            .select_related("author")
+        )
         page = self.paginate_queryset(articles)
         if page is not None:
             serializer = ArticleListSerializer(page, many=True)

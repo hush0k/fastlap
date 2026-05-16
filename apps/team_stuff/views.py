@@ -1,4 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
+
+from django.utils.translation import gettext as _
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -14,15 +16,15 @@ from apps.team_stuff.serializers import (
 
 
 class StaffMemberViewSet(viewsets.ModelViewSet):
-    queryset = (
-        StaffMember.objects
-        .prefetch_related("rosters__team")
-        .all()
-    )
+    queryset = StaffMember.objects.prefetch_related("rosters__team").all()
     permission_classes = [IsAuthenticatedOrReadOnly]
     lookup_field = "slug"
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
     filterset_fields = ["country", "role"]
     search_fields = ["first_name", "last_name", "role"]
     ordering_fields = ["last_name", "role", "country"]
@@ -49,6 +51,6 @@ class StaffMemberViewSet(viewsets.ModelViewSet):
         member = self.get_object()
         roster = member.rosters.filter(is_active=True).select_related("team").first()
         if not roster:
-            return Response({"detail": "Не состоит ни в одной команде."}, status=404)
+            return Response({"detail": _("Not a member of any team.")}, status=404)
         serializer = TeamRosterSerializer(roster)
         return Response(serializer.data)

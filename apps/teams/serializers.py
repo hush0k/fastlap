@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from apps.teams.models import Team, TeamStandings
@@ -25,7 +26,16 @@ class TeamListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ["id", "name", "short_name", "logo", "banner", "slug", "country", "country_name"]
+        fields = [
+            "id",
+            "name",
+            "short_name",
+            "logo",
+            "banner",
+            "slug",
+            "country",
+            "country_name",
+        ]
 
 
 class TeamDetailSerializer(serializers.ModelSerializer):
@@ -75,6 +85,8 @@ class TeamWriteSerializer(serializers.ModelSerializer):
     def validate_budget_currency(self, value):
         if value and len(value) != 3:
             raise serializers.ValidationError(
-                "budget_currency must be a 3-letter currency code like USD, EUR, or KZT."
+                _(
+                    "budget_currency must be a 3-letter currency code like USD, EUR, or KZT."  # noqa: E501
+                )
             )
         return value.upper() if value else value

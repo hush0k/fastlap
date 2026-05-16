@@ -14,6 +14,7 @@ from django.db.models import (
     PositiveIntegerField,
     TextField,
 )
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin
 from apps.common.models import BaseModel
@@ -32,27 +33,27 @@ def driver_slug(instance):
 
 
 class Driver(CreatedAtMixin, UpdatedAtMixin, BaseModel):
-    first_name = CharField(max_length=100, verbose_name="First Name")
-    last_name = CharField(max_length=100, verbose_name="Last Name")
+    first_name = CharField(max_length=100, verbose_name=_("First Name"))
+    last_name = CharField(max_length=100, verbose_name=_("Last Name"))
     slug = AutoSlugField(
         populate_from=driver_slug,
         unique=True,
     )  # type: ignore
-    nationality = CountryField(verbose_name="Nationality")
-    date_of_birth = DateField(blank=True, null=True, verbose_name="Date of Birth")
-    number = PositiveIntegerField(blank=True, null=True, verbose_name="Racing Number")
+    nationality = CountryField(verbose_name=_("Nationality"))
+    date_of_birth = DateField(blank=True, null=True, verbose_name=_("Date of Birth"))
+    number = PositiveIntegerField(blank=True, null=True, verbose_name=_("Racing Number"))  # noqa: E501
     profile_image = ImageField(
         upload_to=profile_image_upload_path,
         blank=True,
         null=True,
-        verbose_name="Profile Image",
+        verbose_name=_("Profile Image"),
     )
-    bio = TextField(blank=True, null=True, verbose_name="Bio")
-    is_active = BooleanField(default=True, verbose_name="Is Active")
+    bio = TextField(blank=True, null=True, verbose_name=_("Bio"))
+    is_active = BooleanField(default=True, verbose_name=_("Is Active"))
 
     class Meta:
-        verbose_name = "Driver"
-        verbose_name_plural = "Drivers"
+        verbose_name = _("Driver")
+        verbose_name_plural = _("Drivers")
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
@@ -63,34 +64,34 @@ class DriverResult(CreatedAtMixin, UpdatedAtMixin, BaseModel):
         to=Driver,
         on_delete=PROTECT,
         related_name="results",
-        verbose_name="Driver",
+        verbose_name=_("Driver"),
     )
     race = ForeignKey(
         to="races.Race",
         on_delete=PROTECT,
         related_name="driver_results",
-        verbose_name="Race",
+        verbose_name=_("Race"),
     )
     position = PositiveIntegerField(
-        blank=True, null=True, verbose_name="Finish Position"
+        blank=True, null=True, verbose_name=_("Finish Position")
     )
     grid_position = PositiveIntegerField(
-        blank=True, null=True, verbose_name="Grid Position"
+        blank=True, null=True, verbose_name=_("Grid Position")
     )
-    points = DecimalField(max_digits=6, decimal_places=2, verbose_name="Points")
+    points = DecimalField(max_digits=6, decimal_places=2, verbose_name=_("Points"))
     status = CharField(
         max_length=10,
         choices=[(i.value, i.value) for i in DriverResultStatusEnum],
-        verbose_name="Status",
+        verbose_name=_("Status"),
     )
-    fastest_lap = BooleanField(default=False, verbose_name="Fastest Lap")
+    fastest_lap = BooleanField(default=False, verbose_name=_("Fastest Lap"))
     laps_completed = PositiveIntegerField(
-        blank=True, null=True, verbose_name="Laps Completed"
+        blank=True, null=True, verbose_name=_("Laps Completed")
     )
 
     class Meta:
-        verbose_name = "Driver Result"
-        verbose_name_plural = "Driver Results"
+        verbose_name = _("Driver Result")
+        verbose_name_plural = _("Driver Results")
         unique_together = ("driver", "race")
 
     def __str__(self) -> str:

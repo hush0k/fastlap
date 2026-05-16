@@ -1,26 +1,29 @@
-from enum import StrEnum, Enum
+from enum import Enum
+
+from django.db.models import TextChoices
+from django.utils.translation import gettext_lazy as _
 
 
-class SeriesCategoryEnum(StrEnum):
-    CAR = "car"
-    MOTO = "moto"
-    ENDURANCE = "endurance"
+class SeriesCategoryEnum(TextChoices):
+    CAR = "car", _("Car")
+    MOTO = "moto", _("Moto")
+    ENDURANCE = "endurance", _("Endurance")
 
 
-class RaceStatusEnum(StrEnum):
-    UPCOMING = "upcoming"
-    LIVE = "live"
-    FINISHED = "finished"
-    CANCELLED = "cancelled"
+class RaceStatusEnum(TextChoices):
+    UPCOMING = "upcoming", _("Upcoming")
+    LIVE = "live", _("Live")
+    FINISHED = "finished", _("Finished")
+    CANCELLED = "cancelled", _("Cancelled")
 
 
-class WatchPlatformEnum(StrEnum):
-    F1_TV = "f1_tv"
-    YOUTUBE = "youtube"
-    TWITCH = "twitch"
-    DAZN = "dazn"
-    ESPN = "espn"
-    SKY_SPORTS = "sky_sports"
+class WatchPlatformEnum(TextChoices):
+    F1_TV = "f1_tv", _("F1 TV")
+    YOUTUBE = "youtube", _("Youtube")
+    TWITCH = "twitch", _("Twitch")
+    DAZN = "dazn", _("Dazn")
+    ESPN = "espn", _("ESPN")
+    SKY_SPORTS = "sky_sports", _("Sky Sports")
 
 
 class Currency(Enum):
@@ -29,23 +32,23 @@ class Currency(Enum):
 
     Each member is a tuple of (code, verbose_name).
     Use `.code` to get the ISO 4217 currency code and `.verbose` for the human-readable name.
-    """
+    """  # noqa: E501
 
-    USD = ("USD", "US Dollar")
-    EUR = ("EUR", "Euro")
-    GBP = ("GBP", "British Pound")
-    JPY = ("JPY", "Japanese Yen")
-    CNY = ("CNY", "Chinese Yuan")
-    KRW = ("KRW", "South Korean Won")
-    RUB = ("RUB", "Russian Ruble")
-    KZT = ("KZT", "Kazakhstani Tenge")
-    CAD = ("CAD", "Canadian Dollar")
-    AUD = ("AUD", "Australian Dollar")
-    CHF = ("CHF", "Swiss Franc")
-    SEK = ("SEK", "Swedish Krona")
-    BRL = ("BRL", "Brazilian Real")
-    INR = ("INR", "Indian Rupee")
-    SGD = ("SGD", "Singapore Dollar")
+    USD = ("USD", _("US Dollar"))
+    EUR = ("EUR", _("Euro"))
+    GBP = ("GBP", _("British Pound"))
+    JPY = ("JPY", _("Japanese Yen"))
+    CNY = ("CNY", _("Chinese Yuan"))
+    KRW = ("KRW", _("South Korean Won"))
+    RUB = ("RUB", _("Russian Ruble"))
+    KZT = ("KZT", _("Kazakhstani Tenge"))
+    CAD = ("CAD", _("Canadian Dollar"))
+    AUD = ("AUD", _("Australian Dollar"))
+    CHF = ("CHF", _("Swiss Franc"))
+    SEK = ("SEK", _("Swedish Krona"))
+    BRL = ("BRL", _("Brazilian Real"))
+    INR = ("INR", _("Indian Rupee"))
+    SGD = ("SGD", _("Singapore Dollar"))
 
     @property
     def code(self) -> str:

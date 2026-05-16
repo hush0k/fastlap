@@ -1,6 +1,7 @@
+from django.utils.translation import gettext as _
 from rest_framework import serializers
-from apps.team_stuff.models import StaffMember, TeamRoster
 
+from apps.team_stuff.models import StaffMember, TeamRoster
 
 
 class TeamRosterSerializer(serializers.ModelSerializer):
@@ -9,7 +10,14 @@ class TeamRosterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamRoster
-        fields = ["id", "team_name", "team_short", "start_date", "end_date", "is_active"]
+        fields = [
+            "id",
+            "team_name",
+            "team_short",
+            "start_date",
+            "end_date",
+            "is_active",
+        ]
 
 
 class StaffMemberListSerializer(serializers.ModelSerializer):
@@ -66,5 +74,5 @@ class StaffMemberWriteSerializer(serializers.ModelSerializer):
 
     def validate_age(self, value):
         if value is not None and not (16 <= value <= 80):
-            raise serializers.ValidationError("Возраст должен быть от 16 до 80.")
+            raise serializers.ValidationError(_("Age must be between 16 and 80."))
         return value

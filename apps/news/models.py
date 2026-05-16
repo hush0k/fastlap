@@ -17,6 +17,7 @@ from django.db.models import (
     PositiveIntegerField,
     TextField,
 )
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.mixins import NameMixin
 from apps.common.models import BaseModel
@@ -47,8 +48,8 @@ def validate_image_size(value: UploadedFile):
 
 class Tag(NameMixin, BaseModel):
     class Meta:
-        verbose_name = "Tag"
-        verbose_name_plural = "Tags"
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.id}, {self.name})"
@@ -62,32 +63,32 @@ class Article(BaseModel):
         to="users.User",
         on_delete=CASCADE,
         related_name="articles",
-        verbose_name="Author",
+        verbose_name=_("Author"),
     )
     content = TextField(
-        verbose_name="Content",
+        verbose_name=_("Content"),
         validators=[MinLengthValidator(200), MaxLengthValidator(7500)],
     )
     cover_image = ImageField(
         upload_to=article_cover_path,
         blank=True,
         null=True,
-        verbose_name="Cover Image",
+        verbose_name=_("Cover Image"),
         validators=[validate_image_size],
     )
     series = ManyToManyField(
-        to="races.Series", blank=True, related_name="articles", verbose_name="Series"
+        to="races.Series", blank=True, related_name="articles", verbose_name=_("Series")
     )
-    tags = ManyToManyField(to="news.Tag", related_name="articles", verbose_name="Tags")
-    published_at = DateTimeField(blank=True, null=True, verbose_name="Published At")
-    is_published = BooleanField(default=False, verbose_name="Is Published")
-    views_count = PositiveIntegerField(default=0, verbose_name="Views Count")
+    tags = ManyToManyField(to="news.Tag", related_name="articles", verbose_name=_("Tags"))  # noqa: E501
+    published_at = DateTimeField(blank=True, null=True, verbose_name=_("Published At"))
+    is_published = BooleanField(default=False, verbose_name=_("Is Published"))
+    views_count = PositiveIntegerField(default=0, verbose_name=_("Views Count"))
 
     author_id: int
 
     class Meta:
-        verbose_name = "Article"
-        verbose_name_plural = "Articles"
+        verbose_name = _("Article")
+        verbose_name_plural = _("Articles")
 
         ordering = ["-published_at"]
 

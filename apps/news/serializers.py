@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Any
 
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from apps.races.models import Series
@@ -75,22 +76,22 @@ class ArticleCreateSerializer(ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> Article:
         user: User = self.context["request"].user
-        logger.debug("create user=%s, data=%r", user, validated_data)
+        logger.debug(_("create user=%s, data=%r"), user, validated_data)
 
         tags: list[Tag] = validated_data.pop("tags", [])
         series: list[Series] = validated_data.pop("series", [])
 
         if validated_data["is_published"] is True:
             validated_data["published_at"] = timezone.now()
-            logger.debug("published_at was set")
+            logger.debug(_("published_at was set"))
 
         article = Article.objects.create(author=user, **validated_data)
 
         article.tags.set(tags)
         article.series.set(series)
-        logger.debug("tags and series was assigned")
+        logger.debug(_("tags and series was assigned"))
 
-        logger.info("created article: %s", article.id)
+        logger.info(_("created article: %s"), article.id)
         return article
 
 
@@ -101,14 +102,14 @@ class ArticleUpdateSerializer(ModelSerializer):
         read_only_fields = ("id", "slug", "author", "views_count", "published_at")
 
     def update(self, instance: Article, validated_data: Any) -> Article:
-        logger.debug("validated_data: %r", validated_data)
+        logger.debug(_("validated_data: %r"), validated_data)
 
         if validated_data.get("is_published") is True and instance.published_at is None:
             validated_data["published_at"] = timezone.now()
-            logger.debug("article %s: published_at assigned", instance.id)
+            logger.debug(_("article %s: published_at assigned"), instance.id)
 
         result = super().update(instance, validated_data)
-        logger.info("updated article: %s", result.id)
+        logger.info(_("updated article: %s"), result.id)
 
         return result
 

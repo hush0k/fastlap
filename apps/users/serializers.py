@@ -5,11 +5,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
-from .utils.avatar_utils import AvatarProcessor
 from .services.firestore_service import FirestoreUserService
+from .utils.avatar_utils import AvatarProcessor
 
 User = get_user_model()
 
@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not re.search(r"[^\w\s]", value):
             raise serializers.ValidationError(
                 _(
-                    "Password must contain at least one special character (e.g. @, &, /, !)."
+                    "Password must contain at least one special character (e.g. @, &, /, !)."  # noqa: E501
                 )
             )
 
@@ -71,7 +71,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         if error:
             user.delete()
             raise serializers.ValidationError({"avatar": error})
-        
+
         avatar_id = firestore_service.create_user_avatar(user.id, base64_avatar)
 
         if avatar_id:
@@ -81,7 +81,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         else:
             user.delete()
             raise serializers.ValidationError(
-                {"avatar": "Failed to store avatar. Please try again."}
+                {"avatar": _("Failed to store avatar. Please try again.")}
             )
 
         return user
