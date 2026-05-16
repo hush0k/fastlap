@@ -5,6 +5,8 @@ from pathlib import Path
 from decouple import config
 from dotenv import load_dotenv
 
+from django.utils.translation import gettext_lazy as _
+
 logger = getLogger(__name__)
 
 ENV_FILE = config("ENV_FILE", default=".env")
@@ -47,6 +49,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -134,6 +137,13 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+LANGUAGES = (
+    ("en", _("English")),
+    ("ru", _("Russian")),
+)
+
+LOCALE_PATHS = (BASE_DIR / "locale",)
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
