@@ -44,7 +44,6 @@ class TestArtcilesList(TestCase):
         cls.tag_technical = Tag.objects.create(name="Technical")
         cls.tag_safety = Tag.objects.create(name="Safety")
 
-        content_short = "a" * 200
         articles_data = [
             {
                 "name": "Monaco Grand Prix Race Review",
