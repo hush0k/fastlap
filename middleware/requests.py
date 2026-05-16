@@ -1,6 +1,6 @@
 import uuid
 from contextvars import ContextVar
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from typing import Callable
 
 from django.http import HttpRequest, HttpResponse

@@ -5,14 +5,14 @@ URL configuration for the FastLap API project.
 # Python modules
 from typing import Any
 
+# Third-party modules
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 # Django modules
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-
-# Third-party modules
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns: list[Any] = [
     path("admin/", admin.site.urls),

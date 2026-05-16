@@ -1,14 +1,15 @@
-from django.db import models
 from django_countries.fields import CountryField
 from timezone_field import TimeZoneField
 
-from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
-from apps.common.models import BaseModel
+from django.db import models
+
+from apps.common.mixins import CreatedAtMixin, NameMixin, UpdatedAtMixin
 from apps.common.utils import get_image_size_validator
 from apps.drivers.models import Driver
 from config.settings.base import MAP_IMAGE_MAX_SIZE_BYTES
 
 track_map_image_validator = get_image_size_validator(MAP_IMAGE_MAX_SIZE_BYTES)
+
 
 class Track(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
     country = CountryField()
@@ -24,7 +25,7 @@ class Track(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
         upload_to="tracks/maps/",
         null=True,
         blank=True,
-        validators=[track_map_image_validator]
+        validators=[track_map_image_validator],
     )
 
     class Meta:

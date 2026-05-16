@@ -12,7 +12,7 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema
 from django.shortcuts import get_object_or_404
 
 # Django REST Framework
-from rest_framework import filters, status, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request as DRFRequest
