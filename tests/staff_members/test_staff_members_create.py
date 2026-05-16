@@ -15,6 +15,7 @@ logger = getLogger(TEST_LOGGER_NAME)
 
 def create_staff_member(**kwargs) -> StaffMember:
     defaults = {
+        "name": "John Smith",
         "first_name": "John",
         "last_name": "Smith",
         "age": 35,

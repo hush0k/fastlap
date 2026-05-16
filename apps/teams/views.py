@@ -20,6 +20,7 @@ from drf_spectacular.utils import extend_schema
 # Project modules
 from apps.common.pagination import CustomPagination
 from apps.common.services.redis_service import RedisService
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.teams.models import Team
 from apps.teams.serializers import (
     TeamDetailSerializer,
