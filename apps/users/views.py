@@ -8,6 +8,8 @@ from typing import Any
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from django.utils.translation import gettext_lazy as _
+
 # Django REST Framework
 from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
@@ -22,7 +24,7 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
 
 @extend_schema(
     summary="User Registration",
-    description="Register a new user account with email, username, and password. Avatar is optional.",
+    description="Register a new user account with email, username, and password. Avatar is optional.",  # noqa: E501
     request={
         "multipart/form-data": {
             "type": "object",
@@ -43,10 +45,10 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
     },
     responses={
         201: OpenApiResponse(
-            description="User registered successfully.",
+            description=_("User registered successfully."),
         ),
         400: OpenApiResponse(
-            description="Invalid input data.",
+            description=_("Invalid input data."),
         ),
     },
 )
@@ -64,12 +66,12 @@ class RegisterView(generics.CreateAPIView):
 
 
 @extend_schema(
-    summary="User Login",
-    description="Authenticate user and return JWT tokens.",
+    summary=_("User Login"),
+    description=_("Authenticate user and return JWT tokens."),
     request=LoginSerializer,
     responses={
         200: OpenApiResponse(
-            description="Successful login returns access and refresh tokens.",
+            description=_("Successful login returns access and refresh tokens."),
             response={
                 "type": "object",
                 "properties": {
@@ -79,7 +81,7 @@ class RegisterView(generics.CreateAPIView):
             },
         ),
         400: OpenApiResponse(
-            description="Invalid credentials or missing data.",
+            description=_("Invalid credentials or missing data."),
         ),
     },
 )

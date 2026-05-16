@@ -4,6 +4,7 @@ Admin configuration for the race_tracks app.
 
 # Django modules
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 # Project modules
 from apps.race_tracks.models import Track
@@ -33,16 +34,16 @@ class TrackAdmin(admin.ModelAdmin):
     ordering = ("name", "country")
     fieldsets = (
         (
-            "Basic Information",
+            _("Basic Information"),
             {"fields": ("name", "slug", "country", "city", "timezone")},
         ),
         (
-            "Track Specifications",
+            _("Track Specifications"),
             {"fields": ("length_km", "number_of_turns", "map_image")},
         ),
         ("Records", {"fields": ("lap_record", "lap_record_holder")}),
         (
-            "Timestamps",
+            _("Timestamps"),
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
         ),
     )

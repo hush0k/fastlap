@@ -2,6 +2,7 @@ from logging import Logger, getLogger
 from typing import Any
 
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from apps.races.models import Series
@@ -75,14 +76,14 @@ class ArticleCreateSerializer(ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> Article:
         user: User = self.context["request"].user
-        logger.debug("create user=%s, data=%r", user, validated_data)
+        logger.debug(_("create user=%s, data=%r"), user, validated_data)
 
         tags: list[Tag] = validated_data.pop("tags", [])
         series: list[Series] = validated_data.pop("series", [])
 
         if validated_data["is_published"] is True:
             validated_data["published_at"] = timezone.now()
-            logger.debug("published_at was set")
+            logger.debug(_("published_at was set"))
 
         article: Article = Article.objects.create(author=user, **validated_data)
         article.tags.set(tags)
@@ -104,7 +105,7 @@ class ArticleUpdateSerializer(ModelSerializer):
 
         if validated_data.get("is_published") is True and instance.published_at is None:
             validated_data["published_at"] = timezone.now()
-            logger.debug("article %s: published_at assigned", instance.id)
+            logger.debug(_("article %s: published_at assigned"), instance.id)
 
         result: Article = super().update(instance, validated_data)
         logger.info("updated article: %s", result.id)

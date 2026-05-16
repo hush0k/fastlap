@@ -4,6 +4,7 @@ Admin configuration for the tournaments app.
 
 # Django modules
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 # Project modules
 from apps.tournaments.models import DriverStanding, TeamStanding, Tournament
@@ -36,18 +37,27 @@ class TournamentAdmin(admin.ModelAdmin):
     date_hierarchy = "start_date"
     fieldsets = (
         (
-            "Basic Information",
+            _("Basic Information"),
             {"fields": ("name", "slug", "series", "year", "status", "is_active")},
         ),
-        ("Media", {"fields": ("logo",), "classes": ("collapse",)}),
-        ("Dates & Rounds", {"fields": ("start_date", "end_date", "total_rounds")}),
-        ("Financial", {"fields": ("prize_fund", "currency")}),
         (
-            "Additional",
+            _("Media"),
+            {"fields": ("logo",), "classes": ("collapse",)},
+        ),
+        (
+            _("Dates & Rounds"),
+            {"fields": ("start_date", "end_date", "total_rounds")},
+        ),
+        (
+            _("Financial"),
+            {"fields": ("prize_fund", "currency")},
+        ),
+        (
+            _("Additional"),
             {"fields": ("description", "regulations_url"), "classes": ("collapse",)},
         ),
         (
-            "Timestamps",
+            _("Timestamps"),
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
         ),
     )

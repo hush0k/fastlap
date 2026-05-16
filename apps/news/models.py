@@ -15,6 +15,7 @@ from django.db.models import (
     PositiveIntegerField,
     TextField,
 )
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.mixins import NameMixin
 from apps.common.models import BaseModel
@@ -37,8 +38,8 @@ def article_cover_path(instance: "Article", filename: str) -> str:
 
 class Tag(NameMixin, BaseModel):
     class Meta:
-        verbose_name = "Tag"
-        verbose_name_plural = "Tags"
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.id}, {self.name})"
@@ -55,17 +56,17 @@ class Article(BaseModel):
         to="users.User",
         on_delete=CASCADE,
         related_name="articles",
-        verbose_name="Author",
+        verbose_name=_("Author"),
     )
     content: TextField = TextField(
-        verbose_name="Content",
+        verbose_name=_("Content"),
         validators=[MinLengthValidator(200), MaxLengthValidator(7500)],
     )
     cover_image: ImageField = ImageField(
         upload_to=article_cover_path,
         blank=True,
         null=True,
-        verbose_name="Cover Image",
+        verbose_name=_("Cover Image"),
         validators=[validate_image_size],
     )
     series: ManyToManyField = ManyToManyField(

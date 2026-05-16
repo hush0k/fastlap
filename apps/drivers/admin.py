@@ -4,6 +4,7 @@ Admin configuration for the drivers app.
 
 # Django modules
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 # Project modules
 from apps.drivers.models import Driver, DriverResult
@@ -31,7 +32,7 @@ class DriverAdmin(admin.ModelAdmin):
     ordering = ("last_name", "first_name")
     fieldsets = (
         (
-            "Personal Information",
+            _("Personal Information"),
             {
                 "fields": (
                     "first_name",
@@ -43,11 +44,11 @@ class DriverAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Racing Information",
+            _("Racing Information"),
             {"fields": ("number", "profile_image", "bio", "is_active")},
         ),
         (
-            "Timestamps",
+            _("Timestamps"),
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
         ),
     )

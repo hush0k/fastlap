@@ -4,6 +4,8 @@ ViewSet for user avatar management.
 
 # Python modules
 
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+
 # Django REST Framework
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 

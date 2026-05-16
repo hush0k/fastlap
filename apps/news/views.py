@@ -9,6 +9,8 @@ from typing import Any
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
+from django.shortcuts import get_object_or_404
+
 # Django REST Framework
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action

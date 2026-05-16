@@ -3,6 +3,7 @@ from django_countries.fields import CountryField
 
 from django.db import models
 from django.db.models import CharField
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin
 
@@ -26,8 +27,8 @@ class Team(CreatedAtMixin, UpdatedAtMixin, models.Model):
 
     class Meta:
         ordering = ["name"]
-        verbose_name = "Team"
-        verbose_name_plural = "Teams"
+        verbose_name = _("Team")
+        verbose_name_plural = _("Teams")
         indexes = [
             models.Index(fields=["short_name"]),
         ]
@@ -53,8 +54,8 @@ class TeamStandings(CreatedAtMixin, UpdatedAtMixin, models.Model):
     class Meta:
         unique_together = ("team", "tournament")
         ordering = ["position"]
-        verbose_name = "Team Standing"
-        verbose_name_plural = "Team Standings"
+        verbose_name = _("Team Standing")
+        verbose_name_plural = _("Team Standings")
 
     def __str__(self):
         return f"{self.team.short_name} - {self.tournament.name}: {self.points} pts"

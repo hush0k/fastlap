@@ -70,31 +70,11 @@ class FirestoreUserService:
             if not avatar_id:
                 return None
 
-            avatar_doc = (
-                self.db.collection(self.avatars_collection).document(avatar_id).get()
-            )
-
-            if not avatar_doc.exists:
-                logger.warning("Avatar %s not found for user %s", avatar_id, user_id)
-                return None
-
-            avatar_data: dict[str, Any] = avatar_doc.to_dict()
-            return avatar_data.get("avatar_base64")
-
-        except Exception as e:
-            logger.error(
-                "Error getting avatar from Firestore for user %s: %s", user_id, e
-            )
-            return None
-
-    def update_user_avatar(self, user_id: int, avatar_base64: str) -> bool:
-        try:
             user_doc_ref = self.db.collection(self.users_collection).document(
                 str(user_id)
             )
             user_doc = user_doc_ref.get()
 
-            user_data: dict[str, Any] = user_doc.to_dict() if user_doc.exists else {}
             current_version: int = user_data.get("version", 0) if user_data else 0
 
             if user_data and user_data.get("current_avatar_id"):

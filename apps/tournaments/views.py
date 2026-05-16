@@ -9,6 +9,8 @@ from typing import Any
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
+from django.utils.translation import gettext_lazy as _
+
 # Django REST Framework
 from rest_framework import filters, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -110,11 +112,13 @@ class TournamentViewSet(viewsets.ModelViewSet):
         RedisService.delete_pattern("tournament:slug:*")
 
     @extend_schema(
-        summary="List Tournaments",
-        description="Retrieve a paginated list of tournaments with optional filtering.",
+        summary=_("List Tournaments"),
+        description=_(
+            "Retrieve a paginated list of tournaments with optional filtering."
+        ),
         responses={
             200: OpenApiResponse(
-                description="Successful response with paginated tournament list.",
+                description=_("Successful response with paginated tournament list."),
                 response=TournamentListSerializer,
             ),
         },
@@ -137,19 +141,19 @@ class TournamentViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary="Create Tournament",
-        description="Create a new tournament. User must be in ContentManager group.",
+        summary=_("Create Tournament"),
+        description=_("Create a new tournament. User must be in ContentManager group."),
         request=TournamentCreateSerializer,
         responses={
             201: OpenApiResponse(
-                description="Tournament created successfully.",
+                description=_("Tournament created successfully."),
                 response=TournamentDetailSerializer,
             ),
             400: OpenApiResponse(
-                description="Invalid input data.",
+                description=_("Invalid input data."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to create tournaments.",
+                description=_("User is not authorized to create tournaments."),
             ),
         },
     )
@@ -163,15 +167,15 @@ class TournamentViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary="Retrieve Tournament",
-        description="Retrieve a specific tournament by slug.",
+        summary=_("Retrieve Tournament"),
+        description=_("Retrieve a specific tournament by slug."),
         responses={
             200: OpenApiResponse(
-                description="Successful response with tournament details.",
+                description=_("Successful response with tournament details."),
                 response=TournamentDetailSerializer,
             ),
             404: OpenApiResponse(
-                description="Tournament not found.",
+                description=_("Tournament not found."),
             ),
         },
     )
@@ -194,22 +198,24 @@ class TournamentViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary="Update Tournament",
-        description="Update an existing tournament. User must be in ContentManager group.",
+        summary=_("Update Tournament"),
+        description=_(
+            "Update an existing tournament. User must be in ContentManager group."
+        ),
         request=TournamentUpdateSerializer,
         responses={
             200: OpenApiResponse(
-                description="Tournament updated successfully.",
+                description=_("Tournament updated successfully."),
                 response=TournamentDetailSerializer,
             ),
             400: OpenApiResponse(
-                description="Invalid input data.",
+                description=_("Invalid input data."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to update tournaments.",
+                description=_("User is not authorized to update tournaments."),
             ),
             404: OpenApiResponse(
-                description="Tournament not found.",
+                description=_("Tournament not found."),
             ),
         },
     )
@@ -223,17 +229,17 @@ class TournamentViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary="Delete Tournament",
-        description="Delete a tournament. User must be in ContentManager group.",
+        summary=_("Delete Tournament"),
+        description=_("Delete a tournament. User must be in ContentManager group."),
         responses={
             204: OpenApiResponse(
-                description="Tournament deleted successfully.",
+                description=_("Tournament deleted successfully."),
             ),
             403: OpenApiResponse(
-                description="User is not authorized to delete tournaments.",
+                description=_("User is not authorized to delete tournaments."),
             ),
             404: OpenApiResponse(
-                description="Tournament not found.",
+                description=_("Tournament not found."),
             ),
         },
     )

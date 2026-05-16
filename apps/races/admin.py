@@ -4,6 +4,7 @@ Admin configuration for the races app.
 
 # Django modules
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 # Project modules
 from apps.races.models import Race, Series
@@ -22,10 +23,13 @@ class SeriesAdmin(admin.ModelAdmin):
     ordering = ["name"]
 
     fieldsets = (
-        ("Basic Information", {"fields": ("name", "slug", "category", "description")}),
-        ("Media", {"fields": ("logo",), "classes": ("collapse",)}),
         (
-            "Timestamps",
+            _("Basic Information"),
+            {"fields": ("name", "slug", "category", "description")},
+        ),
+        (_("Media"), {"fields": ("logo",), "classes": ("collapse",)}),
+        (
+            _("Timestamps"),
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
         ),
     )
@@ -55,14 +59,14 @@ class RaceAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (
-            "Basic Information",
+            _("Basic Information"),
             {"fields": ("name", "slug", "series", "round_number", "status")},
         ),
-        ("Schedule", {"fields": ("scheduled_at",)}),
-        ("Race Details", {"fields": ("laps_total",)}),
-        ("Broadcast", {"fields": ("watch_platform", "watch_url")}),
+        (_("Schedule"), {"fields": ("scheduled_at",)}),
+        (_("Race Details"), {"fields": ("laps_total",)}),
+        (_("Broadcast"), {"fields": ("watch_platform", "watch_url")}),
         (
-            "Timestamps",
+            _("Timestamps"),
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
         ),
     )

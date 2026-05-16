@@ -1,6 +1,7 @@
 from decimal import Decimal
 from logging import getLogger
 
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from apps.race_tracks.models import Track
@@ -62,6 +63,6 @@ class RaceTracksCreateSerializer(serializers.ModelSerializer):
 
     def validate_length_km(self, value: Decimal) -> Decimal:
         if value <= 0:
-            logger.info("Validation failed: length_km must be greater than 0")
-            raise serializers.ValidationError("Length km must be greater than 0")
+            logger.info(_("Validation failed: length_km must be greater than 0"))
+            raise serializers.ValidationError(_("Length km must be greater than 0"))
         return value

@@ -4,6 +4,7 @@ Admin configuration for the team_stuff app.
 
 # Django modules
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 # Project modules
 from apps.team_stuff.models import StaffMember, TeamRoster
@@ -31,12 +32,12 @@ class StaffMemberAdmin(admin.ModelAdmin):
     ordering = ("last_name", "first_name")
     fieldsets = (
         (
-            "Personal Information",
+            _("Personal Information"),
             {"fields": ("first_name", "last_name", "slug", "age", "country")},
         ),
-        ("Professional Information", {"fields": ("role", "description", "photo")}),
+        (_("Professional Information"), {"fields": ("role", "description", "photo")}),
         (
-            "Timestamps",
+            _("Timestamps"),
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
         ),
     )

@@ -82,7 +82,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not re.search(r"[^\w\s]", value):
             raise serializers.ValidationError(
                 _(
-                    "Password must contain at least one special character (e.g. @, &, /, !)."
+                    "Password must contain at least one special character (e.g. @, &, /, !)."  # noqa: E501
                 )
             )
 
