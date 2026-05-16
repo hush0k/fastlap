@@ -150,51 +150,43 @@ class TestRaceUpdate(TestCase):
             data = {k: v for k, v in self.valid_data.items() if k != field}
 
             assert_validation_error(
-                api_client=self.api_client,
+                self=self,
                 method="put",
                 url=self.race_url,
                 data=data,
                 field=field,
                 token=self.staff_token,
-                logger=logger,
-                test_name=self._testMethodName,
             )
 
     def test_update_with_empty_name(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={"name": "   "},
             field="name",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_update_with_invalid_status(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={"status": "invalid"},
             field="status",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_update_with_invalid_round_number(self) -> None:
         for value in [0, -1]:
             assert_validation_error(
-                api_client=self.api_client,
+                self=self,
                 method="patch",
                 url=self.race_url,
                 data={"round_number": value},
                 field="round_number",
                 token=self.staff_token,
-                logger=logger,
-                test_name=self._testMethodName,
             )
 
     def test_update_nonexistent_race(self) -> None:
@@ -213,19 +205,17 @@ class TestRaceUpdate(TestCase):
 
     def test_update_with_invalid_watch_url(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={"watch_url": "not-a-url"},
             field="watch_url",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_update_with_watch_url_too_long(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={
@@ -233,55 +223,45 @@ class TestRaceUpdate(TestCase):
             },
             field="watch_url",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_update_with_invalid_laps_total(self) -> None:
         for value in [0, -1]:
             assert_validation_error(
-                api_client=self.api_client,
+                self=self,
                 method="patch",
                 url=self.race_url,
                 data={"laps_total": value},
                 field="laps_total",
                 token=self.staff_token,
-                logger=logger,
-                test_name=self._testMethodName,
             )
 
     def test_update_with_invalid_scheduled_at(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={"scheduled_at": "not-a-datetime"},
             field="scheduled_at",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_update_with_nonexistent_series(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={"series": 999999},
             field="series",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_update_with_invalid_watch_platform(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="patch",
             url=self.race_url,
             data={"watch_platform": "invalid"},
             field="watch_platform",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )

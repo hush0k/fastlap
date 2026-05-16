@@ -118,98 +118,82 @@ class TestRaceCreate(TestCase):
             data = {k: v for k, v in self.valid_data.items() if k != field}
 
             assert_validation_error(
-                api_client=self.api_client,
+                self=self,
                 method="post",
                 url=self.races_url,
                 data=data,
                 field=field,
                 token=self.staff_token,
-                logger=logger,
-                test_name=self._testMethodName,
             )
 
     def test_create_with_empty_name(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="post",
             url=self.races_url,
             data=self.valid_data | {"name": "   "},
             field="name",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_create_with_invalid_status(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="post",
             url=self.races_url,
             data=self.valid_data | {"status": "invalid"},
             field="status",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_create_with_invalid_watch_platform(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="post",
             url=self.races_url,
             data=self.valid_data | {"watch_platform": "invalid"},
             field="watch_platform",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_create_with_invalid_round_number(self) -> None:
         for value in [0, -1]:
             assert_validation_error(
-                api_client=self.api_client,
+                self=self,
                 method="post",
                 url=self.races_url,
                 data=self.valid_data | {"round_number": value},
                 field="round_number",
                 token=self.staff_token,
-                logger=logger,
-                test_name=self._testMethodName,
             )
 
     def test_create_with_invalid_laps_total(self) -> None:
         for value in [0, -1]:
             assert_validation_error(
-                api_client=self.api_client,
+                self=self,
                 method="post",
                 url=self.races_url,
                 data=self.valid_data | {"laps_total": value},
                 field="laps_total",
                 token=self.staff_token,
-                logger=logger,
-                test_name=self._testMethodName,
             )
 
     def test_create_with_invalid_watch_url(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="post",
             url=self.races_url,
             data=self.valid_data | {"watch_url": "not-a-url"},
             field="watch_url",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
 
     def test_create_with_nonexistent_series(self) -> None:
         assert_validation_error(
-            api_client=self.api_client,
+            self=self,
             method="post",
             url=self.races_url,
             data=self.valid_data | {"series": 999999},
             field="series",
             token=self.staff_token,
-            logger=logger,
-            test_name=self._testMethodName,
         )
