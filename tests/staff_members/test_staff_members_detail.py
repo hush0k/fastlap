@@ -1,16 +1,11 @@
 from logging import getLogger
 
-from rest_framework_simplejwt.tokens import AccessToken
-
-from django.contrib.auth.models import Group
 from django.shortcuts import reverse
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from apps.team_stuff.models import StaffMember, TeamRoster
-from apps.teams.models import Team
-from tests.config import IMAGE_PATH, LARGE_PHOTO, TEST_LOGGER_NAME
-from tests.utils import assert_validation_error, get_simple_upload_file, get_user
+from apps.team_stuff.models import StaffMember
+from tests.config import TEST_LOGGER_NAME
 
 logger = getLogger(TEST_LOGGER_NAME)
 
