@@ -8,8 +8,11 @@ from typing import Any
 # Django modules
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
+<<<<<<< HEAD
 
 from django.utils.translation import gettext_lazy as _
+=======
+>>>>>>> 0e6107e1c089943cbfda7566fea209a804af52ae
 
 # Django REST Framework
 from rest_framework import filters, viewsets
@@ -20,9 +23,10 @@ from rest_framework.response import Response as DRFResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
+from apps.common.decorators.cache_decorators import cache_response, invalidate_cache
 from apps.drivers.filters import DriverFilter, DriverResultFilter
 from apps.drivers.models import Driver, DriverResult
-from apps.drivers.permissions import IsAdminOrReadOnly
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.drivers.serializers import (
     DriverDetailSerializer,
     DriverListSerializer,
@@ -37,7 +41,7 @@ class DriverViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Driver.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
+    permission_classes = (IsAuthenticated, IsStaffOrReadOnly)
     lookup_field = "slug"
     pagination_class = CustomPagination
     filter_backends = (
@@ -93,6 +97,10 @@ class DriverViewSet(viewsets.ModelViewSet):
         """
         return super().retrieve(request, *args, **kwargs)
 
+    @extend_schema(
+        operation_id="v1_drivers_driver_results_list",
+        responses=DriverResultSerializer(many=True),
+    )
     @action(
         methods=("GET",),
         detail=True,
@@ -108,6 +116,34 @@ class DriverViewSet(viewsets.ModelViewSet):
         results = DriverResult.objects.filter(driver=driver).select_related("race")
         serializer = DriverResultSerializer(results, many=True)
         return DRFResponse(serializer.data)
+    
+    @cache_response(timeout=300, key_prefix='drivers_list')
+    def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle GET requests to list all drivers with caching.
+        """
+        return super().list(request, *args, **kwargs)
+    
+    @invalidate_cache('drivers_list:*')
+    def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle POST requests to create a new driver (invalidates cache).
+        """
+        return super().create(request, *args, **kwargs)
+    
+    @invalidate_cache('drivers_list:*')
+    def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle PUT/PATCH requests to update a driver (invalidates cache).
+        """
+        return super().update(request, *args, **kwargs)
+    
+    @invalidate_cache('drivers_list:*')
+    def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
+        """
+        Handle DELETE requests to remove a driver (invalidates cache).
+        """
+        return super().destroy(request, *args, **kwargs)
 
 
 class DriverResultViewSet(viewsets.ModelViewSet):
@@ -116,7 +152,7 @@ class DriverResultViewSet(viewsets.ModelViewSet):
     """
 
     queryset = DriverResult.objects.select_related("driver", "race")
-    permission_classes = (IsAuthenticated, IsAdminOrReadOnly)
+    permission_classes = (IsAuthenticated, IsStaffOrReadOnly)
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = DriverResultFilter

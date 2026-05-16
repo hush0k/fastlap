@@ -1,11 +1,11 @@
 import uuid
 from contextvars import ContextVar
-from logging import getLogger
+from logging import getLogger, Logger
 from typing import Callable
 
 from django.http import HttpRequest, HttpResponse
 
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 request_id_var: ContextVar[str] = ContextVar("request_id", default="")
 

@@ -1,0 +1,6014 @@
+openapi: 3.0.3
+info:
+  title: FastLap API
+  version: 1.0.0
+  description: API for motorsport fans platform
+paths:
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/auth/avatar/delete_avatar/:
+    delete:
+      operationId: v1_auth_avatar_delete_avatar_destroy
+      description: Delete user's avatar from Firestore.
+      summary: Delete Avatar
+      tags:
+      - Auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: Avatar deleted successfully.
+        '500':
+          description: Failed to delete avatar.
+  /api/v1/auth/avatar/get_avatar/:
+    get:
+      operationId: v1_auth_avatar_get_avatar_retrieve
+      description: Get user's current avatar from Firestore.
+      summary: Get Avatar
+      tags:
+      - Auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatar:
+                    type: string
+          description: Avatar retrieved successfully.
+        '404':
+          description: Avatar not found.
+  /api/v1/auth/avatar/upload/:
+    post:
+      operationId: v1_auth_avatar_upload_create
+      description: Upload user avatar to Firestore.
+      summary: Upload Avatar
+      tags:
+      - Auth
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: Avatar image file (max 2MB)
+              required:
+              - avatar
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+          description: Avatar uploaded successfully.
+        '400':
+          description: Invalid avatar file.
+        '500':
+          description: Failed to upload avatar.
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: Authenticate user and return JWT tokens.
+      summary: User Login
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                  access:
+                    type: string
+          description: Successful login returns access and refresh tokens.
+        '400':
+          description: Invalid credentials or missing data.
+  /api/v1/auth/refresh/:
+    post:
+      operationId: v1_auth_refresh_create
+      description: View for refreshing JWT tokens.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: v1_auth_register_create
+      description: Register a new user account with email, username, and password.
+        Avatar is optional.
+      summary: User Registration
+      tags:
+      - v1
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                password:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                avatar:
+                  type: string
+                  format: binary
+                  description: Optional avatar image (max 2MB)
+              required:
+              - email
+              - username
+              - password
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          description: User registered successfully.
+        '400':
+          description: Invalid input data.
+  /api/v1/drivers/:
+    get:
+      operationId: v1_drivers_list
+      description: Retrieve a paginated list of all drivers with optional filtering.
+      summary: List Drivers
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: nationality
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - AD
+            - AE
+            - AF
+            - AG
+            - AI
+            - AL
+            - AM
+            - AO
+            - AQ
+            - AR
+            - AS
+            - AT
+            - AU
+            - AW
+            - AX
+            - AZ
+            - BA
+            - BB
+            - BD
+            - BE
+            - BF
+            - BG
+            - BH
+            - BI
+            - BJ
+            - BL
+            - BM
+            - BN
+            - BO
+            - BQ
+            - BR
+            - BS
+            - BT
+            - BV
+            - BW
+            - BY
+            - BZ
+            - CA
+            - CC
+            - CD
+            - CF
+            - CG
+            - CH
+            - CI
+            - CK
+            - CL
+            - CM
+            - CN
+            - CO
+            - CR
+            - CU
+            - CV
+            - CW
+            - CX
+            - CY
+            - CZ
+            - DE
+            - DJ
+            - DK
+            - DM
+            - DO
+            - DZ
+            - EC
+            - EE
+            - EG
+            - EH
+            - ER
+            - ES
+            - ET
+            - FI
+            - FJ
+            - FK
+            - FM
+            - FO
+            - FR
+            - GA
+            - GB
+            - GD
+            - GE
+            - GF
+            - GG
+            - GH
+            - GI
+            - GL
+            - GM
+            - GN
+            - GP
+            - GQ
+            - GR
+            - GS
+            - GT
+            - GU
+            - GW
+            - GY
+            - HK
+            - HM
+            - HN
+            - HR
+            - HT
+            - HU
+            - ID
+            - IE
+            - IL
+            - IM
+            - IN
+            - IO
+            - IQ
+            - IR
+            - IS
+            - IT
+            - JE
+            - JM
+            - JO
+            - JP
+            - KE
+            - KG
+            - KH
+            - KI
+            - KM
+            - KN
+            - KP
+            - KR
+            - KW
+            - KY
+            - KZ
+            - LA
+            - LB
+            - LC
+            - LI
+            - LK
+            - LR
+            - LS
+            - LT
+            - LU
+            - LV
+            - LY
+            - MA
+            - MC
+            - MD
+            - ME
+            - MF
+            - MG
+            - MH
+            - MK
+            - ML
+            - MM
+            - MN
+            - MO
+            - MP
+            - MQ
+            - MR
+            - MS
+            - MT
+            - MU
+            - MV
+            - MW
+            - MX
+            - MY
+            - MZ
+            - NA
+            - NC
+            - NE
+            - NF
+            - NG
+            - NI
+            - NL
+            - 'NO'
+            - NP
+            - NR
+            - NU
+            - NZ
+            - OM
+            - PA
+            - PE
+            - PF
+            - PG
+            - PH
+            - PK
+            - PL
+            - PM
+            - PN
+            - PR
+            - PS
+            - PT
+            - PW
+            - PY
+            - QA
+            - RE
+            - RO
+            - RS
+            - RU
+            - RW
+            - SA
+            - SB
+            - SC
+            - SD
+            - SE
+            - SG
+            - SH
+            - SI
+            - SJ
+            - SK
+            - SL
+            - SM
+            - SN
+            - SO
+            - SR
+            - SS
+            - ST
+            - SV
+            - SX
+            - SY
+            - SZ
+            - TC
+            - TD
+            - TF
+            - TG
+            - TH
+            - TJ
+            - TK
+            - TL
+            - TM
+            - TN
+            - TO
+            - TR
+            - TT
+            - TV
+            - TW
+            - TZ
+            - UA
+            - UG
+            - UM
+            - US
+            - UY
+            - UZ
+            - VA
+            - VC
+            - VE
+            - VG
+            - VI
+            - VN
+            - VU
+            - WF
+            - WS
+            - YE
+            - YT
+            - ZA
+            - ZM
+            - ZW
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: number
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: slug
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDriverListList'
+          description: Successful response with paginated driver list.
+    post:
+      operationId: v1_drivers_create
+      description: ViewSet for managing Driver resources.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverDetail'
+          description: ''
+  /api/v1/drivers/{slug}/:
+    get:
+      operationId: v1_drivers_retrieve
+      description: Retrieve detailed information about a specific driver by slug.
+      summary: Retrieve Driver Details
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverDetail'
+          description: Successful response with driver details.
+        '404':
+          description: Driver not found with the provided slug.
+    put:
+      operationId: v1_drivers_update
+      description: ViewSet for managing Driver resources.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverDetail'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverDetail'
+          description: ''
+    patch:
+      operationId: v1_drivers_partial_update
+      description: ViewSet for managing Driver resources.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverDetail'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverDetail'
+          description: ''
+    delete:
+      operationId: v1_drivers_destroy
+      description: ViewSet for managing Driver resources.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/drivers/{slug}/results/:
+    get:
+      operationId: v1_drivers_driver_results_list
+      description: Retrieve race results for a specific driver.
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: nationality
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - AD
+            - AE
+            - AF
+            - AG
+            - AI
+            - AL
+            - AM
+            - AO
+            - AQ
+            - AR
+            - AS
+            - AT
+            - AU
+            - AW
+            - AX
+            - AZ
+            - BA
+            - BB
+            - BD
+            - BE
+            - BF
+            - BG
+            - BH
+            - BI
+            - BJ
+            - BL
+            - BM
+            - BN
+            - BO
+            - BQ
+            - BR
+            - BS
+            - BT
+            - BV
+            - BW
+            - BY
+            - BZ
+            - CA
+            - CC
+            - CD
+            - CF
+            - CG
+            - CH
+            - CI
+            - CK
+            - CL
+            - CM
+            - CN
+            - CO
+            - CR
+            - CU
+            - CV
+            - CW
+            - CX
+            - CY
+            - CZ
+            - DE
+            - DJ
+            - DK
+            - DM
+            - DO
+            - DZ
+            - EC
+            - EE
+            - EG
+            - EH
+            - ER
+            - ES
+            - ET
+            - FI
+            - FJ
+            - FK
+            - FM
+            - FO
+            - FR
+            - GA
+            - GB
+            - GD
+            - GE
+            - GF
+            - GG
+            - GH
+            - GI
+            - GL
+            - GM
+            - GN
+            - GP
+            - GQ
+            - GR
+            - GS
+            - GT
+            - GU
+            - GW
+            - GY
+            - HK
+            - HM
+            - HN
+            - HR
+            - HT
+            - HU
+            - ID
+            - IE
+            - IL
+            - IM
+            - IN
+            - IO
+            - IQ
+            - IR
+            - IS
+            - IT
+            - JE
+            - JM
+            - JO
+            - JP
+            - KE
+            - KG
+            - KH
+            - KI
+            - KM
+            - KN
+            - KP
+            - KR
+            - KW
+            - KY
+            - KZ
+            - LA
+            - LB
+            - LC
+            - LI
+            - LK
+            - LR
+            - LS
+            - LT
+            - LU
+            - LV
+            - LY
+            - MA
+            - MC
+            - MD
+            - ME
+            - MF
+            - MG
+            - MH
+            - MK
+            - ML
+            - MM
+            - MN
+            - MO
+            - MP
+            - MQ
+            - MR
+            - MS
+            - MT
+            - MU
+            - MV
+            - MW
+            - MX
+            - MY
+            - MZ
+            - NA
+            - NC
+            - NE
+            - NF
+            - NG
+            - NI
+            - NL
+            - 'NO'
+            - NP
+            - NR
+            - NU
+            - NZ
+            - OM
+            - PA
+            - PE
+            - PF
+            - PG
+            - PH
+            - PK
+            - PL
+            - PM
+            - PN
+            - PR
+            - PS
+            - PT
+            - PW
+            - PY
+            - QA
+            - RE
+            - RO
+            - RS
+            - RU
+            - RW
+            - SA
+            - SB
+            - SC
+            - SD
+            - SE
+            - SG
+            - SH
+            - SI
+            - SJ
+            - SK
+            - SL
+            - SM
+            - SN
+            - SO
+            - SR
+            - SS
+            - ST
+            - SV
+            - SX
+            - SY
+            - SZ
+            - TC
+            - TD
+            - TF
+            - TG
+            - TH
+            - TJ
+            - TK
+            - TL
+            - TM
+            - TN
+            - TO
+            - TR
+            - TT
+            - TV
+            - TW
+            - TZ
+            - UA
+            - UG
+            - UM
+            - US
+            - UY
+            - UZ
+            - VA
+            - VC
+            - VE
+            - VG
+            - VI
+            - VN
+            - VU
+            - WF
+            - WS
+            - YE
+            - YT
+            - ZA
+            - ZM
+            - ZW
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: number
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: slug
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDriverResultList'
+          description: ''
+  /api/v1/drivers/results/:
+    get:
+      operationId: v1_drivers_results_list
+      description: ViewSet for managing DriverResult resources.
+      parameters:
+      - in: query
+        name: driver
+        schema:
+          type: integer
+      - in: query
+        name: fastest_lap
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: race
+        schema:
+          type: integer
+      - in: query
+        name: season
+        schema:
+          type: number
+      - in: query
+        name: series
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - dnf
+            - dns
+            - dsq
+            - finished
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDriverResultList'
+          description: ''
+    post:
+      operationId: v1_drivers_results_create
+      description: ViewSet for managing DriverResult resources.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResultCreate'
+          description: ''
+  /api/v1/drivers/results/{id}/:
+    get:
+      operationId: v1_drivers_results_retrieve
+      description: ViewSet for managing DriverResult resources.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Driver Result.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResult'
+          description: ''
+    put:
+      operationId: v1_drivers_results_update
+      description: ViewSet for managing DriverResult resources.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Driver Result.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverResultCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResultCreate'
+          description: ''
+    patch:
+      operationId: v1_drivers_results_partial_update
+      description: ViewSet for managing DriverResult resources.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Driver Result.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverResultCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverResultCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDriverResultCreate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResultCreate'
+          description: ''
+    delete:
+      operationId: v1_drivers_results_destroy
+      description: ViewSet for managing DriverResult resources.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Driver Result.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/news/:
+    get:
+      operationId: v1_news_list
+      description: Retrieve a paginated list of articles with optional filtering.
+      summary: List Articles
+      parameters:
+      - in: query
+        name: author_id
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: max_views
+        schema:
+          type: integer
+      - in: query
+        name: min_views
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: published_after
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: published_before
+        schema:
+          type: string
+          format: date
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: series
+        schema:
+          type: array
+          items:
+            type: string
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: slug
+        schema:
+          type: string
+      - in: query
+        name: tags
+        schema:
+          type: array
+          items:
+            type: string
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedArticleListList'
+          description: Successful response with paginated article list.
+    post:
+      operationId: v1_news_create
+      description: Create a new article. User must be in Author group.
+      summary: Create Article
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: Article created successfully.
+        '400':
+          description: Invalid input data.
+        '403':
+          description: User is not authorized to create articles.
+  /api/v1/news/{slug}/:
+    get:
+      operationId: v1_news_retrieve
+      description: Retrieve a specific article by slug.
+      summary: Retrieve Article
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: Successful response with article details.
+        '404':
+          description: Article not found.
+    put:
+      operationId: v1_news_update
+      description: Update an existing article. User must be the author.
+      summary: Update Article
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArticleUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: Article updated successfully.
+        '400':
+          description: Invalid input data.
+        '403':
+          description: User is not the author of this article.
+        '404':
+          description: Article not found.
+    patch:
+      operationId: v1_news_partial_update
+      description: ViewSet for managing Article resources.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleUpdate'
+          description: ''
+    delete:
+      operationId: v1_news_destroy
+      description: Delete an article. User must be the author.
+      summary: Delete Article
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Article deleted successfully.
+        '403':
+          description: User is not the author of this article.
+        '404':
+          description: Article not found.
+  /api/v1/news/my-articles/:
+    get:
+      operationId: v1_news_my_articles_retrieve
+      description: Retrieve articles authored by the authenticated user.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: ''
+  /api/v1/race-tracks/tracks/:
+    get:
+      operationId: v1_race_tracks_tracks_list
+      parameters:
+      - in: query
+        name: country
+        schema:
+          type: string
+          enum:
+          - AD
+          - AE
+          - AF
+          - AG
+          - AI
+          - AL
+          - AM
+          - AO
+          - AQ
+          - AR
+          - AS
+          - AT
+          - AU
+          - AW
+          - AX
+          - AZ
+          - BA
+          - BB
+          - BD
+          - BE
+          - BF
+          - BG
+          - BH
+          - BI
+          - BJ
+          - BL
+          - BM
+          - BN
+          - BO
+          - BQ
+          - BR
+          - BS
+          - BT
+          - BV
+          - BW
+          - BY
+          - BZ
+          - CA
+          - CC
+          - CD
+          - CF
+          - CG
+          - CH
+          - CI
+          - CK
+          - CL
+          - CM
+          - CN
+          - CO
+          - CR
+          - CU
+          - CV
+          - CW
+          - CX
+          - CY
+          - CZ
+          - DE
+          - DJ
+          - DK
+          - DM
+          - DO
+          - DZ
+          - EC
+          - EE
+          - EG
+          - EH
+          - ER
+          - ES
+          - ET
+          - FI
+          - FJ
+          - FK
+          - FM
+          - FO
+          - FR
+          - GA
+          - GB
+          - GD
+          - GE
+          - GF
+          - GG
+          - GH
+          - GI
+          - GL
+          - GM
+          - GN
+          - GP
+          - GQ
+          - GR
+          - GS
+          - GT
+          - GU
+          - GW
+          - GY
+          - HK
+          - HM
+          - HN
+          - HR
+          - HT
+          - HU
+          - ID
+          - IE
+          - IL
+          - IM
+          - IN
+          - IO
+          - IQ
+          - IR
+          - IS
+          - IT
+          - JE
+          - JM
+          - JO
+          - JP
+          - KE
+          - KG
+          - KH
+          - KI
+          - KM
+          - KN
+          - KP
+          - KR
+          - KW
+          - KY
+          - KZ
+          - LA
+          - LB
+          - LC
+          - LI
+          - LK
+          - LR
+          - LS
+          - LT
+          - LU
+          - LV
+          - LY
+          - MA
+          - MC
+          - MD
+          - ME
+          - MF
+          - MG
+          - MH
+          - MK
+          - ML
+          - MM
+          - MN
+          - MO
+          - MP
+          - MQ
+          - MR
+          - MS
+          - MT
+          - MU
+          - MV
+          - MW
+          - MX
+          - MY
+          - MZ
+          - NA
+          - NC
+          - NE
+          - NF
+          - NG
+          - NI
+          - NL
+          - 'NO'
+          - NP
+          - NR
+          - NU
+          - NZ
+          - OM
+          - PA
+          - PE
+          - PF
+          - PG
+          - PH
+          - PK
+          - PL
+          - PM
+          - PN
+          - PR
+          - PS
+          - PT
+          - PW
+          - PY
+          - QA
+          - RE
+          - RO
+          - RS
+          - RU
+          - RW
+          - SA
+          - SB
+          - SC
+          - SD
+          - SE
+          - SG
+          - SH
+          - SI
+          - SJ
+          - SK
+          - SL
+          - SM
+          - SN
+          - SO
+          - SR
+          - SS
+          - ST
+          - SV
+          - SX
+          - SY
+          - SZ
+          - TC
+          - TD
+          - TF
+          - TG
+          - TH
+          - TJ
+          - TK
+          - TL
+          - TM
+          - TN
+          - TO
+          - TR
+          - TT
+          - TV
+          - TW
+          - TZ
+          - UA
+          - UG
+          - UM
+          - US
+          - UY
+          - UZ
+          - VA
+          - VC
+          - VE
+          - VG
+          - VI
+          - VN
+          - VU
+          - WF
+          - WS
+          - YE
+          - YT
+          - ZA
+          - ZM
+          - ZW
+        description: |-
+          * `AF` - Afghanistan
+          * `AX` - Åland Islands
+          * `AL` - Albania
+          * `DZ` - Algeria
+          * `AS` - American Samoa
+          * `AD` - Andorra
+          * `AO` - Angola
+          * `AI` - Anguilla
+          * `AQ` - Antarctica
+          * `AG` - Antigua and Barbuda
+          * `AR` - Argentina
+          * `AM` - Armenia
+          * `AW` - Aruba
+          * `AU` - Australia
+          * `AT` - Austria
+          * `AZ` - Azerbaijan
+          * `BS` - Bahamas (The)
+          * `BH` - Bahrain
+          * `BD` - Bangladesh
+          * `BB` - Barbados
+          * `BY` - Belarus
+          * `BE` - Belgium
+          * `BZ` - Belize
+          * `BJ` - Benin
+          * `BM` - Bermuda
+          * `BT` - Bhutan
+          * `BO` - Bolivia
+          * `BQ` - Bonaire, Sint Eustatius and Saba
+          * `BA` - Bosnia and Herzegovina
+          * `BW` - Botswana
+          * `BV` - Bouvet Island
+          * `BR` - Brazil
+          * `IO` - British Indian Ocean Territory
+          * `BN` - Brunei
+          * `BG` - Bulgaria
+          * `BF` - Burkina Faso
+          * `BI` - Burundi
+          * `CV` - Cabo Verde
+          * `KH` - Cambodia
+          * `CM` - Cameroon
+          * `CA` - Canada
+          * `KY` - Cayman Islands
+          * `CF` - Central African Republic
+          * `TD` - Chad
+          * `CL` - Chile
+          * `CN` - China
+          * `CX` - Christmas Island
+          * `CC` - Cocos (Keeling) Islands
+          * `CO` - Colombia
+          * `KM` - Comoros
+          * `CG` - Congo
+          * `CK` - Cook Islands
+          * `CR` - Costa Rica
+          * `CI` - Côte d'Ivoire
+          * `HR` - Croatia
+          * `CU` - Cuba
+          * `CW` - Curaçao
+          * `CY` - Cyprus
+          * `CZ` - Czechia
+          * `CD` - Democratic Republic of the Congo
+          * `DK` - Denmark
+          * `DJ` - Djibouti
+          * `DM` - Dominica
+          * `DO` - Dominican Republic
+          * `EC` - Ecuador
+          * `EG` - Egypt
+          * `SV` - El Salvador
+          * `GQ` - Equatorial Guinea
+          * `ER` - Eritrea
+          * `EE` - Estonia
+          * `SZ` - Eswatini
+          * `ET` - Ethiopia
+          * `FK` - Falkland Islands (Malvinas)
+          * `FO` - Faroe Islands
+          * `FJ` - Fiji
+          * `FI` - Finland
+          * `FR` - France
+          * `GF` - French Guiana
+          * `PF` - French Polynesia
+          * `TF` - French Southern Territories
+          * `GA` - Gabon
+          * `GM` - Gambia
+          * `GE` - Georgia
+          * `DE` - Germany
+          * `GH` - Ghana
+          * `GI` - Gibraltar
+          * `GR` - Greece
+          * `GL` - Greenland
+          * `GD` - Grenada
+          * `GP` - Guadeloupe
+          * `GU` - Guam
+          * `GT` - Guatemala
+          * `GG` - Guernsey
+          * `GN` - Guinea
+          * `GW` - Guinea-Bissau
+          * `GY` - Guyana
+          * `HT` - Haiti
+          * `HM` - Heard Island and McDonald Islands
+          * `HN` - Honduras
+          * `HK` - Hong Kong
+          * `HU` - Hungary
+          * `IS` - Iceland
+          * `IN` - India
+          * `ID` - Indonesia
+          * `IR` - Iran
+          * `IQ` - Iraq
+          * `IE` - Ireland
+          * `IM` - Isle of Man
+          * `IL` - Israel
+          * `IT` - Italy
+          * `JM` - Jamaica
+          * `JP` - Japan
+          * `JE` - Jersey
+          * `JO` - Jordan
+          * `KZ` - Kazakhstan
+          * `KE` - Kenya
+          * `KI` - Kiribati
+          * `KW` - Kuwait
+          * `KG` - Kyrgyzstan
+          * `LA` - Laos
+          * `LV` - Latvia
+          * `LB` - Lebanon
+          * `LS` - Lesotho
+          * `LR` - Liberia
+          * `LY` - Libya
+          * `LI` - Liechtenstein
+          * `LT` - Lithuania
+          * `LU` - Luxembourg
+          * `MO` - Macao
+          * `MG` - Madagascar
+          * `MW` - Malawi
+          * `MY` - Malaysia
+          * `MV` - Maldives
+          * `ML` - Mali
+          * `MT` - Malta
+          * `MH` - Marshall Islands
+          * `MQ` - Martinique
+          * `MR` - Mauritania
+          * `MU` - Mauritius
+          * `YT` - Mayotte
+          * `MX` - Mexico
+          * `FM` - Micronesia
+          * `MD` - Moldova
+          * `MC` - Monaco
+          * `MN` - Mongolia
+          * `ME` - Montenegro
+          * `MS` - Montserrat
+          * `MA` - Morocco
+          * `MZ` - Mozambique
+          * `MM` - Myanmar
+          * `NA` - Namibia
+          * `NR` - Nauru
+          * `NP` - Nepal
+          * `NL` - Netherlands
+          * `NC` - New Caledonia
+          * `NZ` - New Zealand
+          * `NI` - Nicaragua
+          * `NE` - Niger
+          * `NG` - Nigeria
+          * `NU` - Niue
+          * `NF` - Norfolk Island
+          * `KP` - North Korea
+          * `MK` - North Macedonia
+          * `MP` - Northern Mariana Islands
+          * `NO` - Norway
+          * `OM` - Oman
+          * `PK` - Pakistan
+          * `PW` - Palau
+          * `PS` - Palestine
+          * `PA` - Panama
+          * `PG` - Papua New Guinea
+          * `PY` - Paraguay
+          * `PE` - Peru
+          * `PH` - Philippines
+          * `PN` - Pitcairn
+          * `PL` - Poland
+          * `PT` - Portugal
+          * `PR` - Puerto Rico
+          * `QA` - Qatar
+          * `RE` - Réunion
+          * `RO` - Romania
+          * `RU` - Russia
+          * `RW` - Rwanda
+          * `BL` - Saint Barthélemy
+          * `SH` - Saint Helena
+          * `KN` - Saint Kitts and Nevis
+          * `LC` - Saint Lucia
+          * `MF` - Saint Martin (French part)
+          * `PM` - Saint Pierre and Miquelon
+          * `VC` - Saint Vincent and the Grenadines
+          * `WS` - Samoa
+          * `SM` - San Marino
+          * `ST` - Sao Tome and Principe
+          * `SA` - Saudi Arabia
+          * `SN` - Senegal
+          * `RS` - Serbia
+          * `SC` - Seychelles
+          * `SL` - Sierra Leone
+          * `SG` - Singapore
+          * `SX` - Sint Maarten (Dutch part)
+          * `SK` - Slovakia
+          * `SI` - Slovenia
+          * `SB` - Solomon Islands
+          * `SO` - Somalia
+          * `ZA` - South Africa
+          * `GS` - South Georgia
+          * `KR` - South Korea
+          * `SS` - South Sudan
+          * `ES` - Spain
+          * `LK` - Sri Lanka
+          * `SD` - Sudan
+          * `SR` - Suriname
+          * `SJ` - Svalbard and Jan Mayen
+          * `SE` - Sweden
+          * `CH` - Switzerland
+          * `SY` - Syria
+          * `TW` - Taiwan
+          * `TJ` - Tajikistan
+          * `TZ` - Tanzania
+          * `TH` - Thailand
+          * `TL` - Timor-Leste
+          * `TG` - Togo
+          * `TK` - Tokelau
+          * `TO` - Tonga
+          * `TT` - Trinidad and Tobago
+          * `TN` - Tunisia
+          * `TR` - Türkiye
+          * `TM` - Turkmenistan
+          * `TC` - Turks and Caicos Islands
+          * `TV` - Tuvalu
+          * `UG` - Uganda
+          * `UA` - Ukraine
+          * `AE` - United Arab Emirates
+          * `GB` - United Kingdom
+          * `UM` - United States Minor Outlying Islands
+          * `US` - United States of America
+          * `UY` - Uruguay
+          * `UZ` - Uzbekistan
+          * `VU` - Vanuatu
+          * `VA` - Vatican City
+          * `VE` - Venezuela
+          * `VN` - Vietnam
+          * `VG` - Virgin Islands (British)
+          * `VI` - Virgin Islands (U.S.)
+          * `WF` - Wallis and Futuna
+          * `EH` - Western Sahara
+          * `YE` - Yemen
+          * `ZM` - Zambia
+          * `ZW` - Zimbabwe
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRaceTrackList'
+          description: ''
+    post:
+      operationId: v1_race_tracks_tracks_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaceTracksCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RaceTracksCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RaceTracksCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceTracksCreate'
+          description: ''
+  /api/v1/race-tracks/tracks/{slug}/:
+    get:
+      operationId: v1_race_tracks_tracks_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceTrackDetail'
+          description: ''
+    put:
+      operationId: v1_race_tracks_tracks_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaceTracksCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RaceTracksCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RaceTracksCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceTracksCreate'
+          description: ''
+    patch:
+      operationId: v1_race_tracks_tracks_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRaceTracksCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRaceTracksCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRaceTracksCreate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceTracksCreate'
+          description: ''
+    delete:
+      operationId: v1_race_tracks_tracks_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/team-stuff/staff/:
+    get:
+      operationId: v1_team_stuff_staff_list
+      parameters:
+      - in: query
+        name: country
+        schema:
+          type: string
+          enum:
+          - AD
+          - AE
+          - AF
+          - AG
+          - AI
+          - AL
+          - AM
+          - AO
+          - AQ
+          - AR
+          - AS
+          - AT
+          - AU
+          - AW
+          - AX
+          - AZ
+          - BA
+          - BB
+          - BD
+          - BE
+          - BF
+          - BG
+          - BH
+          - BI
+          - BJ
+          - BL
+          - BM
+          - BN
+          - BO
+          - BQ
+          - BR
+          - BS
+          - BT
+          - BV
+          - BW
+          - BY
+          - BZ
+          - CA
+          - CC
+          - CD
+          - CF
+          - CG
+          - CH
+          - CI
+          - CK
+          - CL
+          - CM
+          - CN
+          - CO
+          - CR
+          - CU
+          - CV
+          - CW
+          - CX
+          - CY
+          - CZ
+          - DE
+          - DJ
+          - DK
+          - DM
+          - DO
+          - DZ
+          - EC
+          - EE
+          - EG
+          - EH
+          - ER
+          - ES
+          - ET
+          - FI
+          - FJ
+          - FK
+          - FM
+          - FO
+          - FR
+          - GA
+          - GB
+          - GD
+          - GE
+          - GF
+          - GG
+          - GH
+          - GI
+          - GL
+          - GM
+          - GN
+          - GP
+          - GQ
+          - GR
+          - GS
+          - GT
+          - GU
+          - GW
+          - GY
+          - HK
+          - HM
+          - HN
+          - HR
+          - HT
+          - HU
+          - ID
+          - IE
+          - IL
+          - IM
+          - IN
+          - IO
+          - IQ
+          - IR
+          - IS
+          - IT
+          - JE
+          - JM
+          - JO
+          - JP
+          - KE
+          - KG
+          - KH
+          - KI
+          - KM
+          - KN
+          - KP
+          - KR
+          - KW
+          - KY
+          - KZ
+          - LA
+          - LB
+          - LC
+          - LI
+          - LK
+          - LR
+          - LS
+          - LT
+          - LU
+          - LV
+          - LY
+          - MA
+          - MC
+          - MD
+          - ME
+          - MF
+          - MG
+          - MH
+          - MK
+          - ML
+          - MM
+          - MN
+          - MO
+          - MP
+          - MQ
+          - MR
+          - MS
+          - MT
+          - MU
+          - MV
+          - MW
+          - MX
+          - MY
+          - MZ
+          - NA
+          - NC
+          - NE
+          - NF
+          - NG
+          - NI
+          - NL
+          - 'NO'
+          - NP
+          - NR
+          - NU
+          - NZ
+          - OM
+          - PA
+          - PE
+          - PF
+          - PG
+          - PH
+          - PK
+          - PL
+          - PM
+          - PN
+          - PR
+          - PS
+          - PT
+          - PW
+          - PY
+          - QA
+          - RE
+          - RO
+          - RS
+          - RU
+          - RW
+          - SA
+          - SB
+          - SC
+          - SD
+          - SE
+          - SG
+          - SH
+          - SI
+          - SJ
+          - SK
+          - SL
+          - SM
+          - SN
+          - SO
+          - SR
+          - SS
+          - ST
+          - SV
+          - SX
+          - SY
+          - SZ
+          - TC
+          - TD
+          - TF
+          - TG
+          - TH
+          - TJ
+          - TK
+          - TL
+          - TM
+          - TN
+          - TO
+          - TR
+          - TT
+          - TV
+          - TW
+          - TZ
+          - UA
+          - UG
+          - UM
+          - US
+          - UY
+          - UZ
+          - VA
+          - VC
+          - VE
+          - VG
+          - VI
+          - VN
+          - VU
+          - WF
+          - WS
+          - YE
+          - YT
+          - ZA
+          - ZM
+          - ZW
+        description: |-
+          * `AF` - Afghanistan
+          * `AX` - Åland Islands
+          * `AL` - Albania
+          * `DZ` - Algeria
+          * `AS` - American Samoa
+          * `AD` - Andorra
+          * `AO` - Angola
+          * `AI` - Anguilla
+          * `AQ` - Antarctica
+          * `AG` - Antigua and Barbuda
+          * `AR` - Argentina
+          * `AM` - Armenia
+          * `AW` - Aruba
+          * `AU` - Australia
+          * `AT` - Austria
+          * `AZ` - Azerbaijan
+          * `BS` - Bahamas (The)
+          * `BH` - Bahrain
+          * `BD` - Bangladesh
+          * `BB` - Barbados
+          * `BY` - Belarus
+          * `BE` - Belgium
+          * `BZ` - Belize
+          * `BJ` - Benin
+          * `BM` - Bermuda
+          * `BT` - Bhutan
+          * `BO` - Bolivia
+          * `BQ` - Bonaire, Sint Eustatius and Saba
+          * `BA` - Bosnia and Herzegovina
+          * `BW` - Botswana
+          * `BV` - Bouvet Island
+          * `BR` - Brazil
+          * `IO` - British Indian Ocean Territory
+          * `BN` - Brunei
+          * `BG` - Bulgaria
+          * `BF` - Burkina Faso
+          * `BI` - Burundi
+          * `CV` - Cabo Verde
+          * `KH` - Cambodia
+          * `CM` - Cameroon
+          * `CA` - Canada
+          * `KY` - Cayman Islands
+          * `CF` - Central African Republic
+          * `TD` - Chad
+          * `CL` - Chile
+          * `CN` - China
+          * `CX` - Christmas Island
+          * `CC` - Cocos (Keeling) Islands
+          * `CO` - Colombia
+          * `KM` - Comoros
+          * `CG` - Congo
+          * `CK` - Cook Islands
+          * `CR` - Costa Rica
+          * `CI` - Côte d'Ivoire
+          * `HR` - Croatia
+          * `CU` - Cuba
+          * `CW` - Curaçao
+          * `CY` - Cyprus
+          * `CZ` - Czechia
+          * `CD` - Democratic Republic of the Congo
+          * `DK` - Denmark
+          * `DJ` - Djibouti
+          * `DM` - Dominica
+          * `DO` - Dominican Republic
+          * `EC` - Ecuador
+          * `EG` - Egypt
+          * `SV` - El Salvador
+          * `GQ` - Equatorial Guinea
+          * `ER` - Eritrea
+          * `EE` - Estonia
+          * `SZ` - Eswatini
+          * `ET` - Ethiopia
+          * `FK` - Falkland Islands (Malvinas)
+          * `FO` - Faroe Islands
+          * `FJ` - Fiji
+          * `FI` - Finland
+          * `FR` - France
+          * `GF` - French Guiana
+          * `PF` - French Polynesia
+          * `TF` - French Southern Territories
+          * `GA` - Gabon
+          * `GM` - Gambia
+          * `GE` - Georgia
+          * `DE` - Germany
+          * `GH` - Ghana
+          * `GI` - Gibraltar
+          * `GR` - Greece
+          * `GL` - Greenland
+          * `GD` - Grenada
+          * `GP` - Guadeloupe
+          * `GU` - Guam
+          * `GT` - Guatemala
+          * `GG` - Guernsey
+          * `GN` - Guinea
+          * `GW` - Guinea-Bissau
+          * `GY` - Guyana
+          * `HT` - Haiti
+          * `HM` - Heard Island and McDonald Islands
+          * `HN` - Honduras
+          * `HK` - Hong Kong
+          * `HU` - Hungary
+          * `IS` - Iceland
+          * `IN` - India
+          * `ID` - Indonesia
+          * `IR` - Iran
+          * `IQ` - Iraq
+          * `IE` - Ireland
+          * `IM` - Isle of Man
+          * `IL` - Israel
+          * `IT` - Italy
+          * `JM` - Jamaica
+          * `JP` - Japan
+          * `JE` - Jersey
+          * `JO` - Jordan
+          * `KZ` - Kazakhstan
+          * `KE` - Kenya
+          * `KI` - Kiribati
+          * `KW` - Kuwait
+          * `KG` - Kyrgyzstan
+          * `LA` - Laos
+          * `LV` - Latvia
+          * `LB` - Lebanon
+          * `LS` - Lesotho
+          * `LR` - Liberia
+          * `LY` - Libya
+          * `LI` - Liechtenstein
+          * `LT` - Lithuania
+          * `LU` - Luxembourg
+          * `MO` - Macao
+          * `MG` - Madagascar
+          * `MW` - Malawi
+          * `MY` - Malaysia
+          * `MV` - Maldives
+          * `ML` - Mali
+          * `MT` - Malta
+          * `MH` - Marshall Islands
+          * `MQ` - Martinique
+          * `MR` - Mauritania
+          * `MU` - Mauritius
+          * `YT` - Mayotte
+          * `MX` - Mexico
+          * `FM` - Micronesia
+          * `MD` - Moldova
+          * `MC` - Monaco
+          * `MN` - Mongolia
+          * `ME` - Montenegro
+          * `MS` - Montserrat
+          * `MA` - Morocco
+          * `MZ` - Mozambique
+          * `MM` - Myanmar
+          * `NA` - Namibia
+          * `NR` - Nauru
+          * `NP` - Nepal
+          * `NL` - Netherlands
+          * `NC` - New Caledonia
+          * `NZ` - New Zealand
+          * `NI` - Nicaragua
+          * `NE` - Niger
+          * `NG` - Nigeria
+          * `NU` - Niue
+          * `NF` - Norfolk Island
+          * `KP` - North Korea
+          * `MK` - North Macedonia
+          * `MP` - Northern Mariana Islands
+          * `NO` - Norway
+          * `OM` - Oman
+          * `PK` - Pakistan
+          * `PW` - Palau
+          * `PS` - Palestine
+          * `PA` - Panama
+          * `PG` - Papua New Guinea
+          * `PY` - Paraguay
+          * `PE` - Peru
+          * `PH` - Philippines
+          * `PN` - Pitcairn
+          * `PL` - Poland
+          * `PT` - Portugal
+          * `PR` - Puerto Rico
+          * `QA` - Qatar
+          * `RE` - Réunion
+          * `RO` - Romania
+          * `RU` - Russia
+          * `RW` - Rwanda
+          * `BL` - Saint Barthélemy
+          * `SH` - Saint Helena
+          * `KN` - Saint Kitts and Nevis
+          * `LC` - Saint Lucia
+          * `MF` - Saint Martin (French part)
+          * `PM` - Saint Pierre and Miquelon
+          * `VC` - Saint Vincent and the Grenadines
+          * `WS` - Samoa
+          * `SM` - San Marino
+          * `ST` - Sao Tome and Principe
+          * `SA` - Saudi Arabia
+          * `SN` - Senegal
+          * `RS` - Serbia
+          * `SC` - Seychelles
+          * `SL` - Sierra Leone
+          * `SG` - Singapore
+          * `SX` - Sint Maarten (Dutch part)
+          * `SK` - Slovakia
+          * `SI` - Slovenia
+          * `SB` - Solomon Islands
+          * `SO` - Somalia
+          * `ZA` - South Africa
+          * `GS` - South Georgia
+          * `KR` - South Korea
+          * `SS` - South Sudan
+          * `ES` - Spain
+          * `LK` - Sri Lanka
+          * `SD` - Sudan
+          * `SR` - Suriname
+          * `SJ` - Svalbard and Jan Mayen
+          * `SE` - Sweden
+          * `CH` - Switzerland
+          * `SY` - Syria
+          * `TW` - Taiwan
+          * `TJ` - Tajikistan
+          * `TZ` - Tanzania
+          * `TH` - Thailand
+          * `TL` - Timor-Leste
+          * `TG` - Togo
+          * `TK` - Tokelau
+          * `TO` - Tonga
+          * `TT` - Trinidad and Tobago
+          * `TN` - Tunisia
+          * `TR` - Türkiye
+          * `TM` - Turkmenistan
+          * `TC` - Turks and Caicos Islands
+          * `TV` - Tuvalu
+          * `UG` - Uganda
+          * `UA` - Ukraine
+          * `AE` - United Arab Emirates
+          * `GB` - United Kingdom
+          * `UM` - United States Minor Outlying Islands
+          * `US` - United States of America
+          * `UY` - Uruguay
+          * `UZ` - Uzbekistan
+          * `VU` - Vanuatu
+          * `VA` - Vatican City
+          * `VE` - Venezuela
+          * `VN` - Vietnam
+          * `VG` - Virgin Islands (British)
+          * `VI` - Virgin Islands (U.S.)
+          * `WF` - Wallis and Futuna
+          * `EH` - Western Sahara
+          * `YE` - Yemen
+          * `ZM` - Zambia
+          * `ZW` - Zimbabwe
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Team Staff
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffMemberListList'
+          description: ''
+    post:
+      operationId: v1_team_stuff_staff_create
+      tags:
+      - Team Staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffMemberWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffMemberWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffMemberWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMemberWrite'
+          description: ''
+  /api/v1/team-stuff/staff/{slug}/:
+    get:
+      operationId: v1_team_stuff_staff_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Team Staff
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMemberDetail'
+          description: ''
+    put:
+      operationId: v1_team_stuff_staff_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Team Staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffMemberWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffMemberWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffMemberWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMemberWrite'
+          description: ''
+    patch:
+      operationId: v1_team_stuff_staff_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Team Staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffMemberWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffMemberWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffMemberWrite'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMemberWrite'
+          description: ''
+    delete:
+      operationId: v1_team_stuff_staff_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Team Staff
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/team-stuff/staff/{slug}/current-team/:
+    get:
+      operationId: v1_team_stuff_staff_current_team_retrieve
+      description: Current active team for a staff member.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Team Staff
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMemberDetail'
+          description: ''
+  /api/v1/team-stuff/staff/{slug}/history/:
+    get:
+      operationId: v1_team_stuff_staff_history_retrieve
+      description: Team history for a staff member.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Team Staff
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMemberDetail'
+          description: ''
+  /api/v1/teams/:
+    get:
+      operationId: v1_teams_list
+      parameters:
+      - in: query
+        name: country
+        schema:
+          type: string
+          enum:
+          - AD
+          - AE
+          - AF
+          - AG
+          - AI
+          - AL
+          - AM
+          - AO
+          - AQ
+          - AR
+          - AS
+          - AT
+          - AU
+          - AW
+          - AX
+          - AZ
+          - BA
+          - BB
+          - BD
+          - BE
+          - BF
+          - BG
+          - BH
+          - BI
+          - BJ
+          - BL
+          - BM
+          - BN
+          - BO
+          - BQ
+          - BR
+          - BS
+          - BT
+          - BV
+          - BW
+          - BY
+          - BZ
+          - CA
+          - CC
+          - CD
+          - CF
+          - CG
+          - CH
+          - CI
+          - CK
+          - CL
+          - CM
+          - CN
+          - CO
+          - CR
+          - CU
+          - CV
+          - CW
+          - CX
+          - CY
+          - CZ
+          - DE
+          - DJ
+          - DK
+          - DM
+          - DO
+          - DZ
+          - EC
+          - EE
+          - EG
+          - EH
+          - ER
+          - ES
+          - ET
+          - FI
+          - FJ
+          - FK
+          - FM
+          - FO
+          - FR
+          - GA
+          - GB
+          - GD
+          - GE
+          - GF
+          - GG
+          - GH
+          - GI
+          - GL
+          - GM
+          - GN
+          - GP
+          - GQ
+          - GR
+          - GS
+          - GT
+          - GU
+          - GW
+          - GY
+          - HK
+          - HM
+          - HN
+          - HR
+          - HT
+          - HU
+          - ID
+          - IE
+          - IL
+          - IM
+          - IN
+          - IO
+          - IQ
+          - IR
+          - IS
+          - IT
+          - JE
+          - JM
+          - JO
+          - JP
+          - KE
+          - KG
+          - KH
+          - KI
+          - KM
+          - KN
+          - KP
+          - KR
+          - KW
+          - KY
+          - KZ
+          - LA
+          - LB
+          - LC
+          - LI
+          - LK
+          - LR
+          - LS
+          - LT
+          - LU
+          - LV
+          - LY
+          - MA
+          - MC
+          - MD
+          - ME
+          - MF
+          - MG
+          - MH
+          - MK
+          - ML
+          - MM
+          - MN
+          - MO
+          - MP
+          - MQ
+          - MR
+          - MS
+          - MT
+          - MU
+          - MV
+          - MW
+          - MX
+          - MY
+          - MZ
+          - NA
+          - NC
+          - NE
+          - NF
+          - NG
+          - NI
+          - NL
+          - 'NO'
+          - NP
+          - NR
+          - NU
+          - NZ
+          - OM
+          - PA
+          - PE
+          - PF
+          - PG
+          - PH
+          - PK
+          - PL
+          - PM
+          - PN
+          - PR
+          - PS
+          - PT
+          - PW
+          - PY
+          - QA
+          - RE
+          - RO
+          - RS
+          - RU
+          - RW
+          - SA
+          - SB
+          - SC
+          - SD
+          - SE
+          - SG
+          - SH
+          - SI
+          - SJ
+          - SK
+          - SL
+          - SM
+          - SN
+          - SO
+          - SR
+          - SS
+          - ST
+          - SV
+          - SX
+          - SY
+          - SZ
+          - TC
+          - TD
+          - TF
+          - TG
+          - TH
+          - TJ
+          - TK
+          - TL
+          - TM
+          - TN
+          - TO
+          - TR
+          - TT
+          - TV
+          - TW
+          - TZ
+          - UA
+          - UG
+          - UM
+          - US
+          - UY
+          - UZ
+          - VA
+          - VC
+          - VE
+          - VG
+          - VI
+          - VN
+          - VU
+          - WF
+          - WS
+          - YE
+          - YT
+          - ZA
+          - ZM
+          - ZW
+        description: |-
+          * `AF` - Afghanistan
+          * `AX` - Åland Islands
+          * `AL` - Albania
+          * `DZ` - Algeria
+          * `AS` - American Samoa
+          * `AD` - Andorra
+          * `AO` - Angola
+          * `AI` - Anguilla
+          * `AQ` - Antarctica
+          * `AG` - Antigua and Barbuda
+          * `AR` - Argentina
+          * `AM` - Armenia
+          * `AW` - Aruba
+          * `AU` - Australia
+          * `AT` - Austria
+          * `AZ` - Azerbaijan
+          * `BS` - Bahamas (The)
+          * `BH` - Bahrain
+          * `BD` - Bangladesh
+          * `BB` - Barbados
+          * `BY` - Belarus
+          * `BE` - Belgium
+          * `BZ` - Belize
+          * `BJ` - Benin
+          * `BM` - Bermuda
+          * `BT` - Bhutan
+          * `BO` - Bolivia
+          * `BQ` - Bonaire, Sint Eustatius and Saba
+          * `BA` - Bosnia and Herzegovina
+          * `BW` - Botswana
+          * `BV` - Bouvet Island
+          * `BR` - Brazil
+          * `IO` - British Indian Ocean Territory
+          * `BN` - Brunei
+          * `BG` - Bulgaria
+          * `BF` - Burkina Faso
+          * `BI` - Burundi
+          * `CV` - Cabo Verde
+          * `KH` - Cambodia
+          * `CM` - Cameroon
+          * `CA` - Canada
+          * `KY` - Cayman Islands
+          * `CF` - Central African Republic
+          * `TD` - Chad
+          * `CL` - Chile
+          * `CN` - China
+          * `CX` - Christmas Island
+          * `CC` - Cocos (Keeling) Islands
+          * `CO` - Colombia
+          * `KM` - Comoros
+          * `CG` - Congo
+          * `CK` - Cook Islands
+          * `CR` - Costa Rica
+          * `CI` - Côte d'Ivoire
+          * `HR` - Croatia
+          * `CU` - Cuba
+          * `CW` - Curaçao
+          * `CY` - Cyprus
+          * `CZ` - Czechia
+          * `CD` - Democratic Republic of the Congo
+          * `DK` - Denmark
+          * `DJ` - Djibouti
+          * `DM` - Dominica
+          * `DO` - Dominican Republic
+          * `EC` - Ecuador
+          * `EG` - Egypt
+          * `SV` - El Salvador
+          * `GQ` - Equatorial Guinea
+          * `ER` - Eritrea
+          * `EE` - Estonia
+          * `SZ` - Eswatini
+          * `ET` - Ethiopia
+          * `FK` - Falkland Islands (Malvinas)
+          * `FO` - Faroe Islands
+          * `FJ` - Fiji
+          * `FI` - Finland
+          * `FR` - France
+          * `GF` - French Guiana
+          * `PF` - French Polynesia
+          * `TF` - French Southern Territories
+          * `GA` - Gabon
+          * `GM` - Gambia
+          * `GE` - Georgia
+          * `DE` - Germany
+          * `GH` - Ghana
+          * `GI` - Gibraltar
+          * `GR` - Greece
+          * `GL` - Greenland
+          * `GD` - Grenada
+          * `GP` - Guadeloupe
+          * `GU` - Guam
+          * `GT` - Guatemala
+          * `GG` - Guernsey
+          * `GN` - Guinea
+          * `GW` - Guinea-Bissau
+          * `GY` - Guyana
+          * `HT` - Haiti
+          * `HM` - Heard Island and McDonald Islands
+          * `HN` - Honduras
+          * `HK` - Hong Kong
+          * `HU` - Hungary
+          * `IS` - Iceland
+          * `IN` - India
+          * `ID` - Indonesia
+          * `IR` - Iran
+          * `IQ` - Iraq
+          * `IE` - Ireland
+          * `IM` - Isle of Man
+          * `IL` - Israel
+          * `IT` - Italy
+          * `JM` - Jamaica
+          * `JP` - Japan
+          * `JE` - Jersey
+          * `JO` - Jordan
+          * `KZ` - Kazakhstan
+          * `KE` - Kenya
+          * `KI` - Kiribati
+          * `KW` - Kuwait
+          * `KG` - Kyrgyzstan
+          * `LA` - Laos
+          * `LV` - Latvia
+          * `LB` - Lebanon
+          * `LS` - Lesotho
+          * `LR` - Liberia
+          * `LY` - Libya
+          * `LI` - Liechtenstein
+          * `LT` - Lithuania
+          * `LU` - Luxembourg
+          * `MO` - Macao
+          * `MG` - Madagascar
+          * `MW` - Malawi
+          * `MY` - Malaysia
+          * `MV` - Maldives
+          * `ML` - Mali
+          * `MT` - Malta
+          * `MH` - Marshall Islands
+          * `MQ` - Martinique
+          * `MR` - Mauritania
+          * `MU` - Mauritius
+          * `YT` - Mayotte
+          * `MX` - Mexico
+          * `FM` - Micronesia
+          * `MD` - Moldova
+          * `MC` - Monaco
+          * `MN` - Mongolia
+          * `ME` - Montenegro
+          * `MS` - Montserrat
+          * `MA` - Morocco
+          * `MZ` - Mozambique
+          * `MM` - Myanmar
+          * `NA` - Namibia
+          * `NR` - Nauru
+          * `NP` - Nepal
+          * `NL` - Netherlands
+          * `NC` - New Caledonia
+          * `NZ` - New Zealand
+          * `NI` - Nicaragua
+          * `NE` - Niger
+          * `NG` - Nigeria
+          * `NU` - Niue
+          * `NF` - Norfolk Island
+          * `KP` - North Korea
+          * `MK` - North Macedonia
+          * `MP` - Northern Mariana Islands
+          * `NO` - Norway
+          * `OM` - Oman
+          * `PK` - Pakistan
+          * `PW` - Palau
+          * `PS` - Palestine
+          * `PA` - Panama
+          * `PG` - Papua New Guinea
+          * `PY` - Paraguay
+          * `PE` - Peru
+          * `PH` - Philippines
+          * `PN` - Pitcairn
+          * `PL` - Poland
+          * `PT` - Portugal
+          * `PR` - Puerto Rico
+          * `QA` - Qatar
+          * `RE` - Réunion
+          * `RO` - Romania
+          * `RU` - Russia
+          * `RW` - Rwanda
+          * `BL` - Saint Barthélemy
+          * `SH` - Saint Helena
+          * `KN` - Saint Kitts and Nevis
+          * `LC` - Saint Lucia
+          * `MF` - Saint Martin (French part)
+          * `PM` - Saint Pierre and Miquelon
+          * `VC` - Saint Vincent and the Grenadines
+          * `WS` - Samoa
+          * `SM` - San Marino
+          * `ST` - Sao Tome and Principe
+          * `SA` - Saudi Arabia
+          * `SN` - Senegal
+          * `RS` - Serbia
+          * `SC` - Seychelles
+          * `SL` - Sierra Leone
+          * `SG` - Singapore
+          * `SX` - Sint Maarten (Dutch part)
+          * `SK` - Slovakia
+          * `SI` - Slovenia
+          * `SB` - Solomon Islands
+          * `SO` - Somalia
+          * `ZA` - South Africa
+          * `GS` - South Georgia
+          * `KR` - South Korea
+          * `SS` - South Sudan
+          * `ES` - Spain
+          * `LK` - Sri Lanka
+          * `SD` - Sudan
+          * `SR` - Suriname
+          * `SJ` - Svalbard and Jan Mayen
+          * `SE` - Sweden
+          * `CH` - Switzerland
+          * `SY` - Syria
+          * `TW` - Taiwan
+          * `TJ` - Tajikistan
+          * `TZ` - Tanzania
+          * `TH` - Thailand
+          * `TL` - Timor-Leste
+          * `TG` - Togo
+          * `TK` - Tokelau
+          * `TO` - Tonga
+          * `TT` - Trinidad and Tobago
+          * `TN` - Tunisia
+          * `TR` - Türkiye
+          * `TM` - Turkmenistan
+          * `TC` - Turks and Caicos Islands
+          * `TV` - Tuvalu
+          * `UG` - Uganda
+          * `UA` - Ukraine
+          * `AE` - United Arab Emirates
+          * `GB` - United Kingdom
+          * `UM` - United States Minor Outlying Islands
+          * `US` - United States of America
+          * `UY` - Uruguay
+          * `UZ` - Uzbekistan
+          * `VU` - Vanuatu
+          * `VA` - Vatican City
+          * `VE` - Venezuela
+          * `VN` - Vietnam
+          * `VG` - Virgin Islands (British)
+          * `VI` - Virgin Islands (U.S.)
+          * `WF` - Wallis and Futuna
+          * `EH` - Western Sahara
+          * `YE` - Yemen
+          * `ZM` - Zambia
+          * `ZW` - Zimbabwe
+      - in: query
+        name: founded_year
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeamListList'
+          description: ''
+    post:
+      operationId: v1_teams_create
+      tags:
+      - Teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeamWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamWrite'
+          description: ''
+  /api/v1/teams/{slug}/:
+    get:
+      operationId: v1_teams_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamDetail'
+          description: ''
+    put:
+      operationId: v1_teams_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeamWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamWrite'
+          description: ''
+    patch:
+      operationId: v1_teams_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeamWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTeamWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTeamWrite'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamWrite'
+          description: ''
+    delete:
+      operationId: v1_teams_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Teams
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/teams/{slug}/standings/:
+    get:
+      operationId: v1_teams_standings_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamDetail'
+          description: ''
+  /api/v1/tournaments/:
+    get:
+      operationId: v1_tournaments_list
+      description: Retrieve a paginated list of tournaments with optional filtering.
+      summary: List Tournaments
+      parameters:
+      - in: query
+        name: after
+        schema:
+          type: integer
+      - in: query
+        name: after_date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: before
+        schema:
+          type: integer
+      - in: query
+        name: before_date
+        schema:
+          type: string
+          format: date
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: max_prize
+        schema:
+          type: number
+      - in: query
+        name: max_rounds
+        schema:
+          type: integer
+      - in: query
+        name: min_prize
+        schema:
+          type: number
+      - in: query
+        name: min_rounds
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: series
+        schema:
+          type: string
+      - in: query
+        name: slug
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - cancelled
+            - finished
+            - live
+            - upcoming
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: year
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTournamentListList'
+          description: Successful response with paginated tournament list.
+    post:
+      operationId: v1_tournaments_create
+      description: Create a new tournament. User must be in ContentManager group.
+      summary: Create Tournament
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TournamentCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TournamentCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TournamentCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: Tournament created successfully.
+        '400':
+          description: Invalid input data.
+        '403':
+          description: User is not authorized to create tournaments.
+  /api/v1/tournaments/{slug}/:
+    get:
+      operationId: v1_tournaments_retrieve
+      description: Retrieve a specific tournament by slug.
+      summary: Retrieve Tournament
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: Successful response with tournament details.
+        '404':
+          description: Tournament not found.
+    put:
+      operationId: v1_tournaments_update
+      description: Update an existing tournament. User must be in ContentManager group.
+      summary: Update Tournament
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TournamentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TournamentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TournamentUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: Tournament updated successfully.
+        '400':
+          description: Invalid input data.
+        '403':
+          description: User is not authorized to update tournaments.
+        '404':
+          description: Tournament not found.
+    patch:
+      operationId: v1_tournaments_partial_update
+      description: ViewSet for managing Tournament resources.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTournamentUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTournamentUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTournamentUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentUpdate'
+          description: ''
+    delete:
+      operationId: v1_tournaments_destroy
+      description: Delete a tournament. User must be in ContentManager group.
+      summary: Delete Tournament
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Tournament deleted successfully.
+        '403':
+          description: User is not authorized to delete tournaments.
+        '404':
+          description: Tournament not found.
+components:
+  schemas:
+    ArticleCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        author:
+          type: integer
+          readOnly: true
+        series:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+      required:
+      - author
+      - content
+      - id
+      - name
+      - published_at
+      - slug
+      - tags
+      - views_count
+    ArticleDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        author:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        series:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              oneOf:
+              - type: integer
+              - type: string
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - author
+      - content
+      - id
+      - name
+      - series
+      - slug
+      - tags
+    ArticleList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        author:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        series:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              oneOf:
+              - type: integer
+              - type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - author
+      - content
+      - id
+      - name
+      - series
+      - slug
+      - tags
+    ArticleUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        author:
+          type: integer
+          readOnly: true
+        series:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+      required:
+      - author
+      - content
+      - id
+      - name
+      - published_at
+      - slug
+      - tags
+      - views_count
+    BlankEnum:
+      enum:
+      - ''
+    CategoryEnum:
+      enum:
+      - car
+      - moto
+      - endurance
+      type: string
+      description: |-
+        * `car` - car
+        * `moto` - moto
+        * `endurance` - endurance
+    CountryEnum:
+      enum:
+      - AF
+      - AX
+      - AL
+      - DZ
+      - AS
+      - AD
+      - AO
+      - AI
+      - AQ
+      - AG
+      - AR
+      - AM
+      - AW
+      - AU
+      - AT
+      - AZ
+      - BS
+      - BH
+      - BD
+      - BB
+      - BY
+      - BE
+      - BZ
+      - BJ
+      - BM
+      - BT
+      - BO
+      - BQ
+      - BA
+      - BW
+      - BV
+      - BR
+      - IO
+      - BN
+      - BG
+      - BF
+      - BI
+      - CV
+      - KH
+      - CM
+      - CA
+      - KY
+      - CF
+      - TD
+      - CL
+      - CN
+      - CX
+      - CC
+      - CO
+      - KM
+      - CG
+      - CK
+      - CR
+      - CI
+      - HR
+      - CU
+      - CW
+      - CY
+      - CZ
+      - CD
+      - DK
+      - DJ
+      - DM
+      - DO
+      - EC
+      - EG
+      - SV
+      - GQ
+      - ER
+      - EE
+      - SZ
+      - ET
+      - FK
+      - FO
+      - FJ
+      - FI
+      - FR
+      - GF
+      - PF
+      - TF
+      - GA
+      - GM
+      - GE
+      - DE
+      - GH
+      - GI
+      - GR
+      - GL
+      - GD
+      - GP
+      - GU
+      - GT
+      - GG
+      - GN
+      - GW
+      - GY
+      - HT
+      - HM
+      - HN
+      - HK
+      - HU
+      - IS
+      - IN
+      - ID
+      - IR
+      - IQ
+      - IE
+      - IM
+      - IL
+      - IT
+      - JM
+      - JP
+      - JE
+      - JO
+      - KZ
+      - KE
+      - KI
+      - KW
+      - KG
+      - LA
+      - LV
+      - LB
+      - LS
+      - LR
+      - LY
+      - LI
+      - LT
+      - LU
+      - MO
+      - MG
+      - MW
+      - MY
+      - MV
+      - ML
+      - MT
+      - MH
+      - MQ
+      - MR
+      - MU
+      - YT
+      - MX
+      - FM
+      - MD
+      - MC
+      - MN
+      - ME
+      - MS
+      - MA
+      - MZ
+      - MM
+      - NA
+      - NR
+      - NP
+      - NL
+      - NC
+      - NZ
+      - NI
+      - NE
+      - NG
+      - NU
+      - NF
+      - KP
+      - MK
+      - MP
+      - 'NO'
+      - OM
+      - PK
+      - PW
+      - PS
+      - PA
+      - PG
+      - PY
+      - PE
+      - PH
+      - PN
+      - PL
+      - PT
+      - PR
+      - QA
+      - RE
+      - RO
+      - RU
+      - RW
+      - BL
+      - SH
+      - KN
+      - LC
+      - MF
+      - PM
+      - VC
+      - WS
+      - SM
+      - ST
+      - SA
+      - SN
+      - RS
+      - SC
+      - SL
+      - SG
+      - SX
+      - SK
+      - SI
+      - SB
+      - SO
+      - ZA
+      - GS
+      - KR
+      - SS
+      - ES
+      - LK
+      - SD
+      - SR
+      - SJ
+      - SE
+      - CH
+      - SY
+      - TW
+      - TJ
+      - TZ
+      - TH
+      - TL
+      - TG
+      - TK
+      - TO
+      - TT
+      - TN
+      - TR
+      - TM
+      - TC
+      - TV
+      - UG
+      - UA
+      - AE
+      - GB
+      - UM
+      - US
+      - UY
+      - UZ
+      - VU
+      - VA
+      - VE
+      - VN
+      - VG
+      - VI
+      - WF
+      - EH
+      - YE
+      - ZM
+      - ZW
+      type: string
+      description: |-
+        * `AF` - Afghanistan
+        * `AX` - Åland Islands
+        * `AL` - Albania
+        * `DZ` - Algeria
+        * `AS` - American Samoa
+        * `AD` - Andorra
+        * `AO` - Angola
+        * `AI` - Anguilla
+        * `AQ` - Antarctica
+        * `AG` - Antigua and Barbuda
+        * `AR` - Argentina
+        * `AM` - Armenia
+        * `AW` - Aruba
+        * `AU` - Australia
+        * `AT` - Austria
+        * `AZ` - Azerbaijan
+        * `BS` - Bahamas (The)
+        * `BH` - Bahrain
+        * `BD` - Bangladesh
+        * `BB` - Barbados
+        * `BY` - Belarus
+        * `BE` - Belgium
+        * `BZ` - Belize
+        * `BJ` - Benin
+        * `BM` - Bermuda
+        * `BT` - Bhutan
+        * `BO` - Bolivia
+        * `BQ` - Bonaire, Sint Eustatius and Saba
+        * `BA` - Bosnia and Herzegovina
+        * `BW` - Botswana
+        * `BV` - Bouvet Island
+        * `BR` - Brazil
+        * `IO` - British Indian Ocean Territory
+        * `BN` - Brunei
+        * `BG` - Bulgaria
+        * `BF` - Burkina Faso
+        * `BI` - Burundi
+        * `CV` - Cabo Verde
+        * `KH` - Cambodia
+        * `CM` - Cameroon
+        * `CA` - Canada
+        * `KY` - Cayman Islands
+        * `CF` - Central African Republic
+        * `TD` - Chad
+        * `CL` - Chile
+        * `CN` - China
+        * `CX` - Christmas Island
+        * `CC` - Cocos (Keeling) Islands
+        * `CO` - Colombia
+        * `KM` - Comoros
+        * `CG` - Congo
+        * `CK` - Cook Islands
+        * `CR` - Costa Rica
+        * `CI` - Côte d'Ivoire
+        * `HR` - Croatia
+        * `CU` - Cuba
+        * `CW` - Curaçao
+        * `CY` - Cyprus
+        * `CZ` - Czechia
+        * `CD` - Democratic Republic of the Congo
+        * `DK` - Denmark
+        * `DJ` - Djibouti
+        * `DM` - Dominica
+        * `DO` - Dominican Republic
+        * `EC` - Ecuador
+        * `EG` - Egypt
+        * `SV` - El Salvador
+        * `GQ` - Equatorial Guinea
+        * `ER` - Eritrea
+        * `EE` - Estonia
+        * `SZ` - Eswatini
+        * `ET` - Ethiopia
+        * `FK` - Falkland Islands (Malvinas)
+        * `FO` - Faroe Islands
+        * `FJ` - Fiji
+        * `FI` - Finland
+        * `FR` - France
+        * `GF` - French Guiana
+        * `PF` - French Polynesia
+        * `TF` - French Southern Territories
+        * `GA` - Gabon
+        * `GM` - Gambia
+        * `GE` - Georgia
+        * `DE` - Germany
+        * `GH` - Ghana
+        * `GI` - Gibraltar
+        * `GR` - Greece
+        * `GL` - Greenland
+        * `GD` - Grenada
+        * `GP` - Guadeloupe
+        * `GU` - Guam
+        * `GT` - Guatemala
+        * `GG` - Guernsey
+        * `GN` - Guinea
+        * `GW` - Guinea-Bissau
+        * `GY` - Guyana
+        * `HT` - Haiti
+        * `HM` - Heard Island and McDonald Islands
+        * `HN` - Honduras
+        * `HK` - Hong Kong
+        * `HU` - Hungary
+        * `IS` - Iceland
+        * `IN` - India
+        * `ID` - Indonesia
+        * `IR` - Iran
+        * `IQ` - Iraq
+        * `IE` - Ireland
+        * `IM` - Isle of Man
+        * `IL` - Israel
+        * `IT` - Italy
+        * `JM` - Jamaica
+        * `JP` - Japan
+        * `JE` - Jersey
+        * `JO` - Jordan
+        * `KZ` - Kazakhstan
+        * `KE` - Kenya
+        * `KI` - Kiribati
+        * `KW` - Kuwait
+        * `KG` - Kyrgyzstan
+        * `LA` - Laos
+        * `LV` - Latvia
+        * `LB` - Lebanon
+        * `LS` - Lesotho
+        * `LR` - Liberia
+        * `LY` - Libya
+        * `LI` - Liechtenstein
+        * `LT` - Lithuania
+        * `LU` - Luxembourg
+        * `MO` - Macao
+        * `MG` - Madagascar
+        * `MW` - Malawi
+        * `MY` - Malaysia
+        * `MV` - Maldives
+        * `ML` - Mali
+        * `MT` - Malta
+        * `MH` - Marshall Islands
+        * `MQ` - Martinique
+        * `MR` - Mauritania
+        * `MU` - Mauritius
+        * `YT` - Mayotte
+        * `MX` - Mexico
+        * `FM` - Micronesia
+        * `MD` - Moldova
+        * `MC` - Monaco
+        * `MN` - Mongolia
+        * `ME` - Montenegro
+        * `MS` - Montserrat
+        * `MA` - Morocco
+        * `MZ` - Mozambique
+        * `MM` - Myanmar
+        * `NA` - Namibia
+        * `NR` - Nauru
+        * `NP` - Nepal
+        * `NL` - Netherlands
+        * `NC` - New Caledonia
+        * `NZ` - New Zealand
+        * `NI` - Nicaragua
+        * `NE` - Niger
+        * `NG` - Nigeria
+        * `NU` - Niue
+        * `NF` - Norfolk Island
+        * `KP` - North Korea
+        * `MK` - North Macedonia
+        * `MP` - Northern Mariana Islands
+        * `NO` - Norway
+        * `OM` - Oman
+        * `PK` - Pakistan
+        * `PW` - Palau
+        * `PS` - Palestine
+        * `PA` - Panama
+        * `PG` - Papua New Guinea
+        * `PY` - Paraguay
+        * `PE` - Peru
+        * `PH` - Philippines
+        * `PN` - Pitcairn
+        * `PL` - Poland
+        * `PT` - Portugal
+        * `PR` - Puerto Rico
+        * `QA` - Qatar
+        * `RE` - Réunion
+        * `RO` - Romania
+        * `RU` - Russia
+        * `RW` - Rwanda
+        * `BL` - Saint Barthélemy
+        * `SH` - Saint Helena
+        * `KN` - Saint Kitts and Nevis
+        * `LC` - Saint Lucia
+        * `MF` - Saint Martin (French part)
+        * `PM` - Saint Pierre and Miquelon
+        * `VC` - Saint Vincent and the Grenadines
+        * `WS` - Samoa
+        * `SM` - San Marino
+        * `ST` - Sao Tome and Principe
+        * `SA` - Saudi Arabia
+        * `SN` - Senegal
+        * `RS` - Serbia
+        * `SC` - Seychelles
+        * `SL` - Sierra Leone
+        * `SG` - Singapore
+        * `SX` - Sint Maarten (Dutch part)
+        * `SK` - Slovakia
+        * `SI` - Slovenia
+        * `SB` - Solomon Islands
+        * `SO` - Somalia
+        * `ZA` - South Africa
+        * `GS` - South Georgia
+        * `KR` - South Korea
+        * `SS` - South Sudan
+        * `ES` - Spain
+        * `LK` - Sri Lanka
+        * `SD` - Sudan
+        * `SR` - Suriname
+        * `SJ` - Svalbard and Jan Mayen
+        * `SE` - Sweden
+        * `CH` - Switzerland
+        * `SY` - Syria
+        * `TW` - Taiwan
+        * `TJ` - Tajikistan
+        * `TZ` - Tanzania
+        * `TH` - Thailand
+        * `TL` - Timor-Leste
+        * `TG` - Togo
+        * `TK` - Tokelau
+        * `TO` - Tonga
+        * `TT` - Trinidad and Tobago
+        * `TN` - Tunisia
+        * `TR` - Türkiye
+        * `TM` - Turkmenistan
+        * `TC` - Turks and Caicos Islands
+        * `TV` - Tuvalu
+        * `UG` - Uganda
+        * `UA` - Ukraine
+        * `AE` - United Arab Emirates
+        * `GB` - United Kingdom
+        * `UM` - United States Minor Outlying Islands
+        * `US` - United States of America
+        * `UY` - Uruguay
+        * `UZ` - Uzbekistan
+        * `VU` - Vanuatu
+        * `VA` - Vatican City
+        * `VE` - Venezuela
+        * `VN` - Vietnam
+        * `VG` - Virgin Islands (British)
+        * `VI` - Virgin Islands (U.S.)
+        * `WF` - Wallis and Futuna
+        * `EH` - Western Sahara
+        * `YE` - Yemen
+        * `ZM` - Zambia
+        * `ZW` - Zimbabwe
+    CurrencyEnum:
+      enum:
+      - USD
+      - EUR
+      - GBP
+      - JPY
+      - CNY
+      - KRW
+      - RUB
+      - KZT
+      - CAD
+      - AUD
+      - CHF
+      - SEK
+      - BRL
+      - INR
+      - SGD
+      type: string
+      description: |-
+        * `USD` - US Dollar
+        * `EUR` - Euro
+        * `GBP` - British Pound
+        * `JPY` - Japanese Yen
+        * `CNY` - Chinese Yuan
+        * `KRW` - South Korean Won
+        * `RUB` - Russian Ruble
+        * `KZT` - Kazakhstani Tenge
+        * `CAD` - Canadian Dollar
+        * `AUD` - Australian Dollar
+        * `CHF` - Swiss Franc
+        * `SEK` - Swedish Krona
+        * `BRL` - Brazilian Real
+        * `INR` - Indian Rupee
+        * `SGD` - Singapore Dollar
+    DriverDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nationality_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        nationality:
+          $ref: '#/components/schemas/CountryEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        number:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Racing Number
+        profile_image:
+          type: string
+          format: uri
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - created_at
+      - first_name
+      - id
+      - last_name
+      - nationality
+      - nationality_name
+      - slug
+      - updated_at
+    DriverList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        nationality:
+          $ref: '#/components/schemas/CountryEnum'
+        nationality_name:
+          type: string
+          readOnly: true
+        number:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Racing Number
+        profile_image:
+          type: string
+          format: uri
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - first_name
+      - id
+      - last_name
+      - nationality
+      - nationality_name
+      - slug
+    DriverResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        driver:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        race:
+          type: object
+          additionalProperties:
+            oneOf:
+            - type: integer
+            - type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Finish Position
+        grid_position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/DriverResultStatusEnum'
+        fastest_lap:
+          type: boolean
+        laps_completed:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+      required:
+      - created_at
+      - driver
+      - id
+      - points
+      - race
+      - status
+      - updated_at
+    DriverResultCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Finish Position
+        grid_position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/DriverResultStatusEnum'
+        fastest_lap:
+          type: boolean
+        laps_completed:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        driver:
+          type: integer
+        race:
+          type: integer
+      required:
+      - created_at
+      - driver
+      - id
+      - points
+      - race
+      - status
+      - updated_at
+    DriverResultStatusEnum:
+      enum:
+      - finished
+      - dnf
+      - dns
+      - dsq
+      type: string
+      description: |-
+        * `finished` - finished
+        * `dnf` - dnf
+        * `dns` - dns
+        * `dsq` - dsq
+    Login:
+      type: object
+      description: Serializer for user login.
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    PaginatedArticleListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleList'
+    PaginatedDriverListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverList'
+    PaginatedDriverResultList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverResult'
+    PaginatedRaceTrackList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaceTrack'
+    PaginatedStaffMemberListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffMemberList'
+    PaginatedTeamListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamList'
+    PaginatedTournamentListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TournamentList'
+    PatchedArticleUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          minLength: 5
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 200
+          maxLength: 7500
+        cover_image:
+          type: string
+          format: uri
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_published:
+          type: boolean
+        views_count:
+          type: integer
+          readOnly: true
+        author:
+          type: integer
+          readOnly: true
+        series:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+    PatchedDriverDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nationality_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        nationality:
+          $ref: '#/components/schemas/CountryEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        number:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Racing Number
+        profile_image:
+          type: string
+          format: uri
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+    PatchedDriverResultCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          title: Finish Position
+        grid_position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        points:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,2})?$
+        status:
+          $ref: '#/components/schemas/DriverResultStatusEnum'
+        fastest_lap:
+          type: boolean
+        laps_completed:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        driver:
+          type: integer
+        race:
+          type: integer
+    PatchedRaceTracksCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        country:
+          $ref: '#/components/schemas/CountryEnum'
+        city:
+          type: string
+          maxLength: 100
+        length_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        lap_record:
+          type: string
+          nullable: true
+        number_of_turns:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        map_image:
+          type: string
+          format: uri
+          nullable: true
+    PatchedStaffMemberWrite:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        age:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        country:
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        role:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        photo:
+          type: string
+          format: uri
+          nullable: true
+    PatchedTeamWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        short_name:
+          type: string
+          maxLength: 10
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        banner:
+          type: string
+          format: uri
+          nullable: true
+        country:
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        founded_year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        description:
+          type: string
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          nullable: true
+        budget_currency:
+          type: string
+          maxLength: 3
+        main_sponsor:
+          type: string
+          maxLength: 255
+        secondary_sponsor:
+          type: string
+          maxLength: 255
+    PatchedTournamentUpdate:
+      type: object
+      description: Serializer for updating Tournaments.
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        series:
+          type: integer
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        logo:
+          type: string
+          format: uri
+          nullable: true
+    RaceStatusEnum:
+      enum:
+      - upcoming
+      - live
+      - finished
+      - cancelled
+      type: string
+      description: |-
+        * `upcoming` - upcoming
+        * `live` - live
+        * `finished` - finished
+        * `cancelled` - cancelled
+    RaceTrack:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        country_name:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          maxLength: 100
+        length_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        number_of_turns:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - city
+      - country_name
+      - id
+      - length_km
+      - name
+      - slug
+    RaceTrackDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        country_name:
+          type: string
+          readOnly: true
+        country_code:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          maxLength: 100
+        length_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        lap_record:
+          type: string
+          nullable: true
+        number_of_turns:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        map_image:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - city
+      - country_code
+      - country_name
+      - created_at
+      - id
+      - length_km
+      - name
+      - slug
+      - updated_at
+    RaceTracksCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        country:
+          $ref: '#/components/schemas/CountryEnum'
+        city:
+          type: string
+          maxLength: 100
+        length_km:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        lap_record:
+          type: string
+          nullable: true
+        number_of_turns:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        map_image:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - city
+      - country
+      - length_km
+      - name
+    SeriesList:
+      type: object
+      description: Serializer for listing Series.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - category
+      - created_at
+      - id
+      - name
+      - slug
+    StaffMemberDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        age:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        country:
+          type: string
+        country_code:
+          type: string
+        role:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        photo:
+          type: string
+          format: uri
+          nullable: true
+        rosters:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamRoster'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - country
+      - country_code
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - last_name
+      - rosters
+      - updated_at
+    StaffMemberList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+        photo:
+          type: string
+          format: uri
+          nullable: true
+        current_team:
+          type: string
+          nullable: true
+          readOnly: true
+      required:
+      - country
+      - current_team
+      - full_name
+      - id
+    StaffMemberWrite:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        age:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        country:
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        role:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        photo:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - first_name
+      - last_name
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - id
+      - name
+      - slug
+    TeamDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        short_name:
+          type: string
+          maxLength: 10
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        banner:
+          type: string
+          format: uri
+          nullable: true
+        country:
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        country_name:
+          type: string
+          readOnly: true
+        founded_year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        description:
+          type: string
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          nullable: true
+        budget_currency:
+          type: string
+          maxLength: 3
+        main_sponsor:
+          type: string
+          maxLength: 255
+        secondary_sponsor:
+          type: string
+          maxLength: 255
+        standings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamStandings'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - country_name
+      - created_at
+      - id
+      - name
+      - short_name
+      - slug
+      - standings
+      - updated_at
+    TeamList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        short_name:
+          type: string
+          maxLength: 10
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        banner:
+          type: string
+          format: uri
+          nullable: true
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        country:
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        country_name:
+          type: string
+          readOnly: true
+      required:
+      - country_name
+      - id
+      - name
+      - short_name
+      - slug
+    TeamRoster:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        team_name:
+          type: string
+          readOnly: true
+        team_short:
+          type: string
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - id
+      - team_name
+      - team_short
+    TeamStandings:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        team:
+          type: integer
+        tournament:
+          type: integer
+        tournament_name:
+          type: string
+          readOnly: true
+        tournament_slug:
+          type: string
+          readOnly: true
+        points:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        position:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+      required:
+      - id
+      - team
+      - tournament
+      - tournament_name
+      - tournament_slug
+    TeamWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        short_name:
+          type: string
+          maxLength: 10
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        banner:
+          type: string
+          format: uri
+          nullable: true
+        country:
+          oneOf:
+          - $ref: '#/components/schemas/CountryEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        founded_year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        description:
+          type: string
+        budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,13}(?:\.\d{0,2})?$
+          nullable: true
+        budget_currency:
+          type: string
+          maxLength: 3
+        main_sponsor:
+          type: string
+          maxLength: 255
+        secondary_sponsor:
+          type: string
+          maxLength: 255
+      required:
+      - name
+      - short_name
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TournamentCreate:
+      type: object
+      description: Serializer for creating Tournaments.
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        series:
+          type: integer
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        logo:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - end_date
+      - name
+      - series
+      - start_date
+      - total_rounds
+      - year
+    TournamentDetail:
+      type: object
+      description: Serializer for detailed Tournament view.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        series:
+          $ref: '#/components/schemas/SeriesList'
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        prize_fund:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        currency:
+          oneOf:
+          - $ref: '#/components/schemas/CurrencyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        regulations_url:
+          type: string
+          format: uri
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - end_date
+      - id
+      - name
+      - series
+      - slug
+      - start_date
+      - total_rounds
+      - updated_at
+      - year
+    TournamentList:
+      type: object
+      description: Serializer for listing Tournaments.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          readOnly: true
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        series:
+          $ref: '#/components/schemas/SeriesList'
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        prize_fund:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        currency:
+          oneOf:
+          - $ref: '#/components/schemas/CurrencyEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+      required:
+      - end_date
+      - id
+      - name
+      - series
+      - slug
+      - start_date
+      - total_rounds
+      - year
+    TournamentUpdate:
+      type: object
+      description: Serializer for updating Tournaments.
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        series:
+          type: integer
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/RaceStatusEnum'
+        is_active:
+          type: boolean
+        year:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        total_rounds:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        logo:
+          type: string
+          format: uri
+          nullable: true
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -16,6 +16,11 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/pyth
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY . .
 
+RUN apt-get update && apt-get install -y dos2unix && \
+    dos2unix entrypoint.sh && \
+    chmod +x entrypoint.sh && \
+    apt-get remove -y dos2unix && apt-get autoremove -y
+
 RUN adduser --system appuser && chown -R appuser /app
 USER appuser
 

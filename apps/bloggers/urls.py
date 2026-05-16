@@ -4,7 +4,6 @@ URL configuration for the bloggers app.
 """
 
 # Django modules
-from django.urls import path
 
 # Project modules
 # from apps.bloggers.views import BloggerViewSet

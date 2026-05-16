@@ -3,9 +3,10 @@ from logging import getLogger
 from pathlib import Path
 
 from decouple import config
+from django_countries.fields import countries
 from dotenv import load_dotenv
 
-from django.utils.translation import gettext_lazy as _
+from apps.common.enums import RaceStatusEnum
 
 logger = getLogger(__name__)
 
@@ -29,16 +30,17 @@ INSTALLED_APPS = [
     # Third party
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "django_filters",
     "corsheaders",
     "axes",
     # Apps
     "apps.users",
+    "apps.common",
     "apps.drivers",
     "apps.teams",
     "apps.news",
-    "apps.bloggers",
     "apps.race_tracks",
     "apps.tournaments",
     "apps.team_stuff",
@@ -74,7 +76,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
-    "django.contrib.auth.backends.ModelBackend",
+    "django.contrib.auth.backends.AllowAllUsersModelBackend",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -109,6 +111,64 @@ DATABASES = {
     }
 }
 
+# Redis Configuration
+REDIS_HOST = config('REDIS_HOST', default='localhost')
+REDIS_PORT = config('REDIS_PORT', default=6379)
+REDIS_DB = config('REDIS_DB', default=0)
+REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 50,
+                'timeout': 20,
+            },
+            'MAX_CONNECTIONS': 1000,
+            'PICKLE_VERSION': -1,
+            'SOCKET_TIMEOUT': 5,
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'RETRY_ON_TIMEOUT': True,
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+        },
+        'KEY_PREFIX': 'fastlap',
+        'TIMEOUT': 300,
+    }
+}
+
+# Session Configuration (optional - use Redis for sessions)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Channel Layers for WebSockets (if using channels)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(REDIS_HOST, REDIS_PORT)],
+            'capacity': 1500,
+            'expiry': 10,
+            'group_expiry': 86400,
+            'channel_capacity': {
+                'http.request': 200,
+                'websocket.send': 100,
+            },
+        },
+    },
+}
+
+# Rate Limiting with Redis
+AXES_CACHE = 'default'
+AXES_LOCK_OUT_AT_FAILURE = True
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 0.5
+AXES_RESET_ON_SUCCESS = True
+
 AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
@@ -125,12 +185,24 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "FastLap API",
     "DESCRIPTION": "API for motorsport fans platform",
     "VERSION": "1.0.0",
+    "ENUM_NAME_OVERRIDES": {
+        "CountryEnum": countries,
+        "DriverResultStatusEnum": [
+            ("finished", "finished"),
+            ("dnf", "dnf"),
+            ("dns", "dns"),
+            ("dsq", "dsq"),
+        ],
+        "RaceStatusEnum": [(status.value, status.value) for status in RaceStatusEnum],
+    },
 }
 
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
 
 LANGUAGE_CODE = "en-us"
@@ -147,6 +219,9 @@ LOCALE_PATHS = (BASE_DIR / "locale",)
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -167,14 +242,17 @@ class MEDIA_LOCATION:
     ARTICLE_COVERS: Path = Path("articles/covers/")
     DRIVER_PROFILE_IMAGE: Path = Path("drivers/profile_images")
 
-
+DRIVER_IMAGE_MAX_SIZE_MB = 4
+DRIVER_IMAGE_MAX_SIZE_BYTES = DRIVER_IMAGE_MAX_SIZE_MB * 1024 * 1024
 ARTICLE_IMAGE_MAX_SIZE_MB = 10
 ARTICLE_IMAGE_MAX_SIZE_BYTES = ARTICLE_IMAGE_MAX_SIZE_MB * 1024 * 1024
 TOURNAMENT_LOGO_MAX_SIZE_MB = 20
 TOURNAMENT_LOGO_MAX_SIZE_BYTES = TOURNAMENT_LOGO_MAX_SIZE_MB * 1024 * 1024
+MAP_IMAGE_MAX_SIZE_BYTES = 10 * 1024 * 1024
+SERIES_LOGO_MAX_SIZE_BYTES = 5 * 1024 * 1024
 
 LOG_LEVEL = config("LOG_LEVEL", default="INFO")
-
+APP_LOGGER_NAME = 'app'
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -225,6 +303,11 @@ LOGGING = {
         "django.request": {
             "handlers": ["console"],
             "level": "WARNING",
+            "propagate": False,
+        },
+        "test": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
     },

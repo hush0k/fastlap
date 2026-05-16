@@ -1,4 +1,3 @@
-# apps/users/views.py
 """
 Views for the users app.
 """
@@ -24,10 +23,8 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
 
 
 @extend_schema(
-    summary=_("User Registration"),
-    description=_(
-        "Register a new user account with email, username, password, and avatar."
-    ),
+    summary="User Registration",
+    description="Register a new user account with email, username, and password. Avatar is optional.",
     request={
         "multipart/form-data": {
             "type": "object",
@@ -37,9 +34,9 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
                 "password": {"type": "string"},
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
-                "avatar": {"type": "string", "format": "binary"},
+                "avatar": {"type": "string", "format": "binary", "description": "Optional avatar image (max 2MB)"},
             },
-            "required": ["email", "username", "password", "avatar"],
+            "required": ["email", "username", "password"],
         }
     },
     responses={
@@ -54,6 +51,9 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
 class RegisterView(generics.CreateAPIView):
     """
     View for user registration.
+    
+    Creates a new user account. Avatar is optional - users can register
+    without uploading an avatar and add it later.
     """
 
     permission_classes = [AllowAny]

@@ -4,8 +4,11 @@ from timezone_field import TimeZoneField
 
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin, NameMixin
 from apps.common.models import BaseModel
+from apps.common.utils import get_image_size_validator
 from apps.drivers.models import Driver
+from config.settings.base import MAP_IMAGE_MAX_SIZE_BYTES
 
+track_map_image_validator = get_image_size_validator(MAP_IMAGE_MAX_SIZE_BYTES)
 
 class Track(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
     country = CountryField()
@@ -17,10 +20,15 @@ class Track(CreatedAtMixin, UpdatedAtMixin, NameMixin, models.Model):
         Driver, on_delete=models.SET_NULL, null=True, related_name="track_record"
     )
     number_of_turns = models.PositiveIntegerField(default=0)
-    map_image = models.ImageField(upload_to="tracks/maps/", null=True, blank=True)
+    map_image = models.ImageField(
+        upload_to="tracks/maps/",
+        null=True,
+        blank=True,
+        validators=[track_map_image_validator]
+    )
 
     class Meta:
         ordering = ["name", "country"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} - {self.country}"

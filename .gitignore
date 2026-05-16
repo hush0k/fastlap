@@ -27,9 +27,13 @@ share/python-wheels/
 MANIFEST
 media/
 media/avatars/
+staticfiles/
+staticfiles/*
 **/.idea/
 .idea/
 Makefile
+
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -142,6 +146,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.prod
 .envrc
 .venv
 env/
@@ -149,6 +154,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.env.prod
+.env.*
+secrets/
 
 # Spyder project settings
 .spyderproject
