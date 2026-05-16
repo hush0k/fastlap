@@ -19,6 +19,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.common.pagination import CustomPagination
+from apps.common.services.redis_service import RedisService
 from apps.news.filters import ArticleFilter
 from apps.news.models import Article
 from apps.news.permissions import IsAuthor
@@ -32,7 +33,7 @@ from apps.news.serializers import (
 
 class ArticleViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for managing Article resources.
+    ViewSet for managing Article resources with Redis caching.
     """
 
     queryset = Article.objects.prefetch_related("tags", "series").select_related("author")
@@ -76,6 +77,34 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def _get_list_cache_key(self, request: DRFRequest) -> str:
+        """Generate cache key for article list."""
+        key_parts = ["news", "list"]
+        
+        if request.user and request.user.is_authenticated:
+            key_parts.append(f"user_{request.user.id}")
+        
+        query_params = request.GET.dict()
+        if query_params:
+            import json
+            import hashlib
+            params_hash = hashlib.md5(
+                json.dumps(query_params, sort_keys=True).encode()
+            ).hexdigest()[:8]
+            key_parts.append(params_hash)
+        
+        offset = request.GET.get('offset', '0')
+        limit = request.GET.get('limit', '20')
+        key_parts.append(f"offset_{offset}")
+        key_parts.append(f"limit_{limit}")
+        
+        return ":".join(key_parts)
+
+    def _invalidate_news_cache(self):
+        """Invalidate all news-related cache."""
+        RedisService.delete_pattern("news:*")
+        RedisService.delete_pattern("article:slug:*")
+
     @extend_schema(
         summary="List Articles",
         description="Retrieve a paginated list of articles with optional filtering.",
@@ -88,9 +117,20 @@ class ArticleViewSet(viewsets.ModelViewSet):
     )
     def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle GET requests to list all accessible articles.
+        Handle GET requests to list all accessible articles with caching.
         """
-        return super().list(request, *args, **kwargs)
+        cache_key = self._get_list_cache_key(request)
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().list(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=300)
+        
+        return response
 
     @extend_schema(
         summary="Create Article",
@@ -111,9 +151,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
     )
     def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle POST requests to create a new article.
+        Handle POST requests to create a new article and invalidate cache.
         """
-        return super().create(request, *args, **kwargs)
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            self._invalidate_news_cache()
+        return response
 
     @extend_schema(
         summary="Retrieve Article",
@@ -130,13 +173,25 @@ class ArticleViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle GET requests to retrieve a specific article.
+        Handle GET requests to retrieve a specific article with caching.
         """
+        slug = kwargs.get('slug', '')
+        cache_key = f"article:slug:{slug}"
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
         article: Article = self.get_object()
         article.views_count += 1
         article.save(update_fields=["views_count"])
+        
         serializer = self.get_serializer(article)
-        return DRFResponse(serializer.data)
+        response = DRFResponse(serializer.data)
+        
+        RedisService.set(cache_key, response, timeout=600)
+        
+        return response
 
     @extend_schema(
         summary="Update Article",
@@ -160,9 +215,14 @@ class ArticleViewSet(viewsets.ModelViewSet):
     )
     def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle PUT/PATCH requests to update an article.
+        Handle PUT/PATCH requests to update an article and invalidate cache.
         """
-        return super().update(request, *args, **kwargs)
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            self._invalidate_news_cache()
+            slug = kwargs.get('slug', '')
+            RedisService.delete(f"article:slug:{slug}")
+        return response
 
     @extend_schema(
         summary="Delete Article",
@@ -181,10 +241,23 @@ class ArticleViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Handle DELETE requests to remove an article.
+        Handle DELETE requests to remove an article and invalidate cache.
         """
-        return super().destroy(request, *args, **kwargs)
+        response = super().destroy(request, *args, **kwargs)
+        if response.status_code == 204:
+            self._invalidate_news_cache()
+        return response
 
+    @extend_schema(
+        summary="My Articles",
+        description="Retrieve articles authored by the authenticated user.",
+        responses={
+            200: OpenApiResponse(
+                description="Successful response with user's articles.",
+                response=ArticleListSerializer,
+            ),
+        },
+    )
     @action(
         methods=("GET",),
         detail=False,
@@ -194,14 +267,26 @@ class ArticleViewSet(viewsets.ModelViewSet):
     )
     def my_articles(self, request: DRFRequest, *args: Any, **kwargs: Any) -> DRFResponse:
         """
-        Retrieve articles authored by the authenticated user.
+        Retrieve articles authored by the authenticated user with caching.
         """
+        cache_key = f"news:my_articles:user_{request.user.id}"
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
         articles = Article.objects.filter(author=request.user).prefetch_related(
             "tags", "series"
         ).select_related("author")
         page = self.paginate_queryset(articles)
+        
         if page is not None:
             serializer = ArticleListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        serializer = ArticleListSerializer(articles, many=True)
-        return DRFResponse(serializer.data)
+            response = self.get_paginated_response(serializer.data)
+        else:
+            serializer = ArticleListSerializer(articles, many=True)
+            response = DRFResponse(serializer.data)
+        
+        RedisService.set(cache_key, response, timeout=60)
+        
+        return response
