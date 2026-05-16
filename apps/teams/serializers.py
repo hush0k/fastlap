@@ -34,6 +34,7 @@ class TeamListSerializer(serializers.ModelSerializer):
             "slug",
             "country",
             "country_name",
+            "founded_year",
         ]
 
 
