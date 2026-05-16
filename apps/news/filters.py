@@ -9,8 +9,12 @@ class ArticleFilter(FilterSet):
     series: BaseInFilter = BaseInFilter(field_name="series__name")
     tags: BaseInFilter = BaseInFilter(field_name="tags__name")
     search: CharFilter = CharFilter(method="filter_search")
-    published_before: DateFilter = DateFilter(field_name="published_at", lookup_expr="lte")
-    published_after: DateFilter = DateFilter(field_name="published_at", lookup_expr="gte")
+    published_before: DateFilter = DateFilter(
+        field_name="published_at", lookup_expr="lte"
+    )
+    published_after: DateFilter = DateFilter(
+        field_name="published_at", lookup_expr="gte"
+    )
     min_views: NumberFilter = NumberFilter(field_name="views_count", lookup_expr="gte")
     max_views: NumberFilter = NumberFilter(field_name="views_count", lookup_expr="lte")
 

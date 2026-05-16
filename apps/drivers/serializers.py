@@ -1,4 +1,4 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 

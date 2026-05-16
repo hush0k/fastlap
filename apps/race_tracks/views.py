@@ -3,7 +3,6 @@ ViewSet for the race_tracks app.
 """
 
 # Python modules
-from typing import Any
 
 # Django modules
 from asgiref.sync import async_to_sync

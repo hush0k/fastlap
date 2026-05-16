@@ -114,58 +114,58 @@ DATABASES = {
 }
 
 # Redis Configuration
-REDIS_HOST = config('REDIS_HOST', default='localhost')
-REDIS_PORT = config('REDIS_PORT', default=6379)
-REDIS_DB = config('REDIS_DB', default=0)
-REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+REDIS_HOST = config("REDIS_HOST", default="localhost")
+REDIS_PORT = config("REDIS_PORT", default=6379)
+REDIS_DB = config("REDIS_DB", default=0)
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 
 # Cache Configuration
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': REDIS_URL,
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
-            'CONNECTION_POOL_CLASS_KWARGS': {
-                'max_connections': 50,
-                'timeout': 20,
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_CLASS": "redis.BlockingConnectionPool",
+            "CONNECTION_POOL_CLASS_KWARGS": {
+                "max_connections": 50,
+                "timeout": 20,
             },
-            'MAX_CONNECTIONS': 1000,
-            'PICKLE_VERSION': -1,
-            'SOCKET_TIMEOUT': 5,
-            'SOCKET_CONNECT_TIMEOUT': 5,
-            'RETRY_ON_TIMEOUT': True,
-            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+            "MAX_CONNECTIONS": 1000,
+            "PICKLE_VERSION": -1,
+            "SOCKET_TIMEOUT": 5,
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "RETRY_ON_TIMEOUT": True,
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
         },
-        'KEY_PREFIX': 'fastlap',
-        'TIMEOUT': 300,
+        "KEY_PREFIX": "fastlap",
+        "TIMEOUT": 300,
     }
 }
 
 # Session Configuration (optional - use Redis for sessions)
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 # Channel Layers for WebSockets (if using channels)
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [(REDIS_HOST, REDIS_PORT)],
-            'capacity': 1500,
-            'expiry': 10,
-            'group_expiry': 86400,
-            'channel_capacity': {
-                'http.request': 200,
-                'websocket.send': 100,
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+            "capacity": 1500,
+            "expiry": 10,
+            "group_expiry": 86400,
+            "channel_capacity": {
+                "http.request": 200,
+                "websocket.send": 100,
             },
         },
     },
 }
 
 # Rate Limiting with Redis
-AXES_CACHE = 'default'
+AXES_CACHE = "default"
 AXES_LOCK_OUT_AT_FAILURE = True
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 0.5
@@ -244,6 +244,7 @@ class MEDIA_LOCATION:
     ARTICLE_COVERS: Path = Path("articles/covers/")
     DRIVER_PROFILE_IMAGE: Path = Path("drivers/profile_images")
 
+
 DRIVER_IMAGE_MAX_SIZE_MB = 4
 DRIVER_IMAGE_MAX_SIZE_BYTES = DRIVER_IMAGE_MAX_SIZE_MB * 1024 * 1024
 ARTICLE_IMAGE_MAX_SIZE_MB = 10
@@ -255,7 +256,7 @@ SERIES_LOGO_MAX_SIZE_BYTES = 5 * 1024 * 1024
 STAFF_MEMBER_PHOTO_VALIDATOR_BYTES = 5 * 1024 * 1024
 
 LOG_LEVEL = config("LOG_LEVEL", default="INFO")
-APP_LOGGER_NAME = 'app'
+APP_LOGGER_NAME = "app"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -328,3 +329,19 @@ if not FIREBASE_CREDENTIALS_PATH.is_absolute():
 AVATAR_MAX_SIZE_MB = 2
 AVATAR_MAX_SIZE_BYTES = AVATAR_MAX_SIZE_MB * 1024 * 1024
 ALLOWED_AVATAR_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Asia/Almaty"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = "redis://localhost:6379/1"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = config("SMTP_SERVER_EMAIL")
+EMAIL_HOST_PASSWORD = config("SMTP_SERVER_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+ADMIN_EMAIL = config("ADMIN_EMAIL")

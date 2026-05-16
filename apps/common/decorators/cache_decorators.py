@@ -6,7 +6,7 @@ Caching decorators for views and methods.
 import hashlib
 import json
 from functools import wraps
-from typing import Any, Callable, Optional
+from typing import Callable
 
 # Django modules
 from asgiref.sync import async_to_sync

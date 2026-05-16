@@ -10,7 +10,6 @@ from typing import Any, Optional
 
 # Django modules
 from django.core.cache import cache
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 

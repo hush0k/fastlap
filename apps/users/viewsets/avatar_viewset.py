@@ -3,7 +3,6 @@ ViewSet for user avatar management.
 """
 
 # Python modules
-from typing import Any
 
 # Django modules
 from asgiref.sync import async_to_sync
@@ -11,6 +10,8 @@ from asgiref.sync import async_to_sync
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
 # Django REST Framework
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated

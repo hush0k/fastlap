@@ -3,7 +3,6 @@ ViewSet for the teams app.
 """
 
 # Python modules
-from typing import Any, Optional
 
 # Django modules
 from asgiref.sync import async_to_sync
@@ -19,7 +18,6 @@ from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 
 # Project modules
-from apps.common.pagination import CustomPagination
 from apps.common.services.redis_service import RedisService
 from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.teams.models import Team
