@@ -3,9 +3,9 @@ from django.core.management import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Seed database'
+    help = "Seed database"
 
-    def handle(self, *args, **kwargs) ->None:
+    def handle(self, *args, **kwargs) -> None:
         self.stdout.write("Seeding races and series...")
         management.call_command("seed_races")
 
@@ -27,4 +27,4 @@ class Command(BaseCommand):
         self.stdout.write("Seeding news...")
         management.call_command("seed_news")
 
-        self.stdout.write(self.style.SUCCESS('Seed database'))
+        self.stdout.write(self.style.SUCCESS("Seed database"))

@@ -1,4 +1,4 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from typing import Any
 
 from django.utils import timezone

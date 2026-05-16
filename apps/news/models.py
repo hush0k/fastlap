@@ -1,10 +1,8 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from pathlib import Path
 
 from autoslug import AutoSlugField
 
-from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import UploadedFile
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db.models import (
     CASCADE,
@@ -18,12 +16,11 @@ from django.db.models import (
     TextField,
 )
 
-from apps.common.utils import get_image_size_validator
 from apps.common.mixins import NameMixin
 from apps.common.models import BaseModel
+from apps.common.utils import get_image_size_validator
 from config.settings.base import (
     ARTICLE_IMAGE_MAX_SIZE_BYTES,
-    ARTICLE_IMAGE_MAX_SIZE_MB,
     MEDIA_LOCATION,
 )
 
@@ -37,6 +34,7 @@ def article_cover_path(instance: "Article", filename: str) -> str:
     result: Path = MEDIA_LOCATION.ARTICLE_COVERS / (str(instance.slug) + extension)
     return str(result)
 
+
 class Tag(NameMixin, BaseModel):
     class Meta:
         verbose_name = "Tag"
@@ -45,7 +43,10 @@ class Tag(NameMixin, BaseModel):
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.id}, {self.name})"
 
+
 validate_image_size = get_image_size_validator(ARTICLE_IMAGE_MAX_SIZE_BYTES)
+
+
 class Article(BaseModel):
     name: CharField = CharField(max_length=255, validators=[MinLengthValidator(5)])
     slug: AutoSlugField = AutoSlugField(populate_from="name", unique=True)  # type: ignore[assignment]
@@ -73,9 +74,15 @@ class Article(BaseModel):
     tags: ManyToManyField = ManyToManyField(
         to="news.Tag", related_name="articles", verbose_name="Tags"
     )
-    published_at: DateTimeField = DateTimeField(blank=True, null=True, verbose_name="Published At")
-    is_published: BooleanField = BooleanField(default=False, verbose_name="Is Published")
-    views_count: PositiveIntegerField = PositiveIntegerField(default=0, verbose_name="Views Count")
+    published_at: DateTimeField = DateTimeField(
+        blank=True, null=True, verbose_name="Published At"
+    )
+    is_published: BooleanField = BooleanField(
+        default=False, verbose_name="Is Published"
+    )
+    views_count: PositiveIntegerField = PositiveIntegerField(
+        default=0, verbose_name="Views Count"
+    )
 
     author_id: int
 

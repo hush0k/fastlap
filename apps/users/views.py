@@ -5,6 +5,9 @@ Views for the users app.
 # Python modules
 from typing import Any
 
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+from rest_framework_simplejwt.views import TokenRefreshView
+
 # Django REST Framework
 from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
@@ -12,8 +15,6 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request as DRFRequest
 from rest_framework.response import Response as DRFResponse
-from rest_framework_simplejwt.views import TokenRefreshView
-from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 # Project modules
 from apps.users.serializers import LoginSerializer, RegisterSerializer
@@ -31,7 +32,11 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
                 "password": {"type": "string"},
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
-                "avatar": {"type": "string", "format": "binary", "description": "Optional avatar image (max 2MB)"},
+                "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional avatar image (max 2MB)",
+                },
             },
             "required": ["email", "username", "password"],
         }
@@ -48,7 +53,7 @@ from apps.users.serializers import LoginSerializer, RegisterSerializer
 class RegisterView(generics.CreateAPIView):
     """
     View for user registration.
-    
+
     Creates a new user account. Avatar is optional - users can register
     without uploading an avatar and add it later.
     """
@@ -87,10 +92,7 @@ class LoginView(GenericAPIView):
     serializer_class = LoginSerializer
 
     def post(
-        self,
-        request: DRFRequest,
-        *args: Any,
-        **kwargs: dict[str, Any]
+        self, request: DRFRequest, *args: Any, **kwargs: dict[str, Any]
     ) -> DRFResponse:
         """
         Handle POST request for user login.

@@ -1,10 +1,11 @@
+from logging import getLogger
 from pathlib import Path
 
 from autoslug import AutoSlugField
-from django.core.files.uploadedfile import UploadedFile
-from django.core.validators import MaxLengthValidator
 from django_countries.fields import CountryField
 
+from django.core.files.uploadedfile import UploadedFile
+from django.core.validators import MaxLengthValidator
 from django.db.models import (
     PROTECT,
     BooleanField,
@@ -21,10 +22,15 @@ from rest_framework.exceptions import ValidationError
 from apps.common.mixins import CreatedAtMixin, UpdatedAtMixin
 from apps.common.models import BaseModel
 from apps.drivers.enums import DriverResultStatusEnum
-from config.settings.base import MEDIA_LOCATION, APP_LOGGER_NAME, DRIVER_IMAGE_MAX_SIZE_BYTES, DRIVER_IMAGE_MAX_SIZE_MB
-from logging import getLogger
+from config.settings.base import (
+    APP_LOGGER_NAME,
+    DRIVER_IMAGE_MAX_SIZE_BYTES,
+    DRIVER_IMAGE_MAX_SIZE_MB,
+    MEDIA_LOCATION,
+)
 
 logger = getLogger(APP_LOGGER_NAME)
+
 
 def profile_image_upload_path(instance: "Driver", filename: str) -> str:
     extension: str = Path(filename).suffix
@@ -35,19 +41,25 @@ def profile_image_upload_path(instance: "Driver", filename: str) -> str:
 def driver_slug(instance: "Driver") -> str:
     return f"{instance.first_name}-{instance.last_name}"
 
+
 def validate_profile_image_size(value: UploadedFile) -> None:
     """:raises ValidationError: if file exceeds the max allowed size."""
     logger.debug("image size: %s", value.size)
     if value.size > DRIVER_IMAGE_MAX_SIZE_BYTES:
         raise ValidationError(f"Max image size is {DRIVER_IMAGE_MAX_SIZE_MB} MB")
 
+
 class Driver(CreatedAtMixin, UpdatedAtMixin, BaseModel):
     first_name: CharField = CharField(max_length=100, verbose_name="First Name")
     last_name: CharField = CharField(max_length=100, verbose_name="Last Name")
     slug: AutoSlugField = AutoSlugField(populate_from=driver_slug, unique=True)  # type: ignore[assignment]
     nationality: CountryField = CountryField(verbose_name="Nationality")
-    date_of_birth: DateField = DateField(blank=True, null=True, verbose_name="Date of Birth")
-    number: PositiveIntegerField = PositiveIntegerField(blank=True, null=True, verbose_name="Racing Number")
+    date_of_birth: DateField = DateField(
+        blank=True, null=True, verbose_name="Date of Birth"
+    )
+    number: PositiveIntegerField = PositiveIntegerField(
+        blank=True, null=True, verbose_name="Racing Number"
+    )
     profile_image: ImageField = ImageField(
         validators=[validate_profile_image_size],
         upload_to=profile_image_upload_path,
@@ -55,7 +67,12 @@ class Driver(CreatedAtMixin, UpdatedAtMixin, BaseModel):
         null=True,
         verbose_name="Profile Image",
     )
-    bio: TextField = TextField(blank=True, null=True, verbose_name="Bio", validators=[MaxLengthValidator(15_000)])
+    bio: TextField = TextField(
+        blank=True,
+        null=True,
+        verbose_name="Bio",
+        validators=[MaxLengthValidator(15_000)],
+    )
     is_active: BooleanField = BooleanField(default=True, verbose_name="Is Active")
 
     class Meta:
@@ -85,7 +102,9 @@ class DriverResult(CreatedAtMixin, UpdatedAtMixin, BaseModel):
     grid_position: PositiveIntegerField = PositiveIntegerField(
         blank=True, null=True, verbose_name="Grid Position"
     )
-    points: DecimalField = DecimalField(max_digits=6, decimal_places=2, verbose_name="Points")
+    points: DecimalField = DecimalField(
+        max_digits=6, decimal_places=2, verbose_name="Points"
+    )
     status: CharField = CharField(
         max_length=10,
         choices=[(i.value, i.value) for i in DriverResultStatusEnum],

@@ -1,17 +1,20 @@
-from django.core.mail import send_mail
-from celery import shared_task
-from config.settings.base import ADMIN_EMAIL, EMAIL_HOST
-import psutil
 from typing import Any
+
+import psutil
+from celery import shared_task
+
+from django.core.mail import send_mail
+
+from config.settings.base import ADMIN_EMAIL, EMAIL_HOST
 
 
 def bytes_to_gb(b):
-    return round(b / (1024 ** 3), 2)
+    return round(b / (1024**3), 2)
 
 
 @shared_task
 def send_stat_to_admin(*args: Any) -> None:
-    disk = psutil.disk_usage('/')
+    disk = psutil.disk_usage("/")
     memory = psutil.virtual_memory()
     cpu = psutil.cpu_percent(interval=1)
 

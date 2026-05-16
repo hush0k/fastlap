@@ -4,12 +4,12 @@ from io import BytesIO
 from pathlib import Path
 from typing import Optional, Tuple
 
-from django.conf import settings
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 
-logger = logging.getLogger(__name__)
+from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
+logger = logging.getLogger(__name__)
 
 
 class AvatarProcessor:
@@ -39,14 +39,11 @@ class AvatarProcessor:
 
             file.seek(0)
 
-
         except Exception as e:
             logger.error("Error validating image with Pillow: %s", e)
             return False, "Invalid image file - could not be opened as an image"
 
-
         return True, ""
-
 
     @staticmethod
     def resize_avatar(
@@ -75,19 +72,16 @@ class AvatarProcessor:
             image.save(output, format="JPEG", quality=85, optimize=True)
             output.seek(0)
 
-
             return output
 
         except Exception as e:
             logger.error("Error resizing avatar: %s", e)
             raise
 
-
     @staticmethod
     def image_to_base64(image_bytes: BytesIO) -> str:
         image_base64: str = base64.b64encode(image_bytes.getvalue()).decode("utf-8")
         return f"data:image/jpeg;base64,{image_base64}"
-
 
     @staticmethod
     def process_avatar(
@@ -97,7 +91,6 @@ class AvatarProcessor:
         is_valid, error = AvatarProcessor.validate_image(file)
         if not is_valid:
             return None, error
-
 
         try:
             resized_image: BytesIO = AvatarProcessor.resize_avatar(file)

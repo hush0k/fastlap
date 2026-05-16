@@ -37,8 +37,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     username: models.CharField = models.CharField(max_length=100, unique=True)
     first_name: models.CharField = models.CharField(max_length=100, blank=True)
     last_name: models.CharField = models.CharField(max_length=100, blank=True)
-    avatar: models.ImageField = models.ImageField(upload_to="avatars/", blank=True, null=True)
-    firestore_avatar_id: models.CharField = models.CharField(max_length=255, blank=True, null=True)
+    avatar: models.ImageField = models.ImageField(
+        upload_to="avatars/", blank=True, null=True
+    )
+    firestore_avatar_id: models.CharField = models.CharField(
+        max_length=255, blank=True, null=True
+    )
     use_firestore_avatar: models.BooleanField = models.BooleanField(default=False)
     is_active: models.BooleanField = models.BooleanField(default=True)
     is_staff: models.BooleanField = models.BooleanField(default=False)
