@@ -9,6 +9,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 
+from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.teams.models import Team
 from apps.teams.serializers import (
     TeamDetailSerializer,
@@ -22,7 +23,7 @@ from apps.teams.serializers import (
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all().prefetch_related("standings__tournament")
     lookup_field = "slug"
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsStaffOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     ordering_fields = ["name", "founded_year"]
