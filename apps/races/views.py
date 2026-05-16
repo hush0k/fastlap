@@ -16,6 +16,7 @@ from rest_framework.request import Request as DRFRequest
 
 # Project modules
 from apps.common.pagination import CustomPagination
+from apps.common.services.redis_service import RedisService
 from apps.drivers.permissions import IsStaffOrReadOnly
 from apps.races.models import Race, Series
 from apps.races.serializers import (
@@ -31,7 +32,7 @@ from apps.races.serializers import (
 @extend_schema(tags=["Races"])
 class SeriesViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for managing Series resources.
+    ViewSet for managing Series resources with Redis caching.
 
     Provides CRUD operations for racing series (Formula 1, MotoGP, etc.)
     """
@@ -60,6 +61,11 @@ class SeriesViewSet(viewsets.ModelViewSet):
             return SeriesWriteSerializer
         return SeriesDetailSerializer
 
+    def _invalidate_series_cache(self):
+        """Invalidate all series-related cache."""
+        RedisService.delete_pattern("series:*")
+        RedisService.delete_pattern("series:slug:*")
+
     @extend_schema(
         summary="List Series",
         description="Retrieve a paginated list of all racing series.",
@@ -72,9 +78,20 @@ class SeriesViewSet(viewsets.ModelViewSet):
     )
     def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle GET requests to list all series.
+        Handle GET requests to list all series with caching.
         """
-        return super().list(request, *args, **kwargs)
+        cache_key = "series:list"
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().list(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=3600)
+        
+        return response
 
     @extend_schema(
         summary="Create Series",
@@ -92,9 +109,12 @@ class SeriesViewSet(viewsets.ModelViewSet):
     )
     def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle POST requests to create a new series.
+        Handle POST requests to create a new series and invalidate cache.
         """
-        return super().create(request, *args, **kwargs)
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            self._invalidate_series_cache()
+        return response
 
     @extend_schema(
         summary="Retrieve Series",
@@ -111,9 +131,21 @@ class SeriesViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle GET requests to retrieve a specific series.
+        Handle GET requests to retrieve a specific series with caching.
         """
-        return super().retrieve(request, *args, **kwargs)
+        slug = kwargs.get('slug', '')
+        cache_key = f"series:slug:{slug}"
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().retrieve(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=3600)
+        
+        return response
 
     @extend_schema(
         summary="Update Series",
@@ -134,9 +166,14 @@ class SeriesViewSet(viewsets.ModelViewSet):
     )
     def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle PUT/PATCH requests to update a series.
+        Handle PUT/PATCH requests to update a series and invalidate cache.
         """
-        return super().update(request, *args, **kwargs)
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            self._invalidate_series_cache()
+            slug = kwargs.get('slug', '')
+            RedisService.delete(f"series:slug:{slug}")
+        return response
 
     @extend_schema(
         summary="Delete Series",
@@ -152,15 +189,18 @@ class SeriesViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle DELETE requests to remove a series.
+        Handle DELETE requests to remove a series and invalidate cache.
         """
-        return super().destroy(request, *args, **kwargs)
+        response = super().destroy(request, *args, **kwargs)
+        if response.status_code == 204:
+            self._invalidate_series_cache()
+        return response
 
 
 @extend_schema(tags=["Races"])
 class RaceViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for managing Race resources.
+    ViewSet for managing Race resources with Redis caching.
 
     Provides CRUD operations for individual races within a series.
     """
@@ -189,6 +229,34 @@ class RaceViewSet(viewsets.ModelViewSet):
             return RaceWriteSerializer
         return RaceDetailSerializer
 
+    def _get_cache_key(self, request: DRFRequest, suffix: str = "") -> str:
+        """Generate cache key for race requests."""
+        key_parts = ["races"]
+        
+        query_params = request.GET.dict()
+        if query_params:
+            import json
+            import hashlib
+            params_hash = hashlib.md5(
+                json.dumps(query_params, sort_keys=True).encode()
+            ).hexdigest()[:8]
+            key_parts.append(params_hash)
+        
+        offset = request.GET.get('offset', '0')
+        limit = request.GET.get('limit', '20')
+        key_parts.append(f"offset_{offset}")
+        key_parts.append(f"limit_{limit}")
+        
+        if suffix:
+            key_parts.append(suffix)
+        
+        return ":".join(key_parts)
+
+    def _invalidate_race_cache(self):
+        """Invalidate all race-related cache."""
+        RedisService.delete_pattern("races:*")
+        RedisService.delete_pattern("race:slug:*")
+
     @extend_schema(
         summary="List Races",
         description="Retrieve a paginated list of all races with optional filtering.",
@@ -201,9 +269,20 @@ class RaceViewSet(viewsets.ModelViewSet):
     )
     def list(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle GET requests to list all races.
+        Handle GET requests to list all races with caching.
         """
-        return super().list(request, *args, **kwargs)
+        cache_key = self._get_cache_key(request, "list")
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().list(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=300)
+        
+        return response
 
     @extend_schema(
         summary="Create Race",
@@ -221,9 +300,12 @@ class RaceViewSet(viewsets.ModelViewSet):
     )
     def create(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle POST requests to create a new race.
+        Handle POST requests to create a new race and invalidate cache.
         """
-        return super().create(request, *args, **kwargs)
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            self._invalidate_race_cache()
+        return response
 
     @extend_schema(
         summary="Retrieve Race",
@@ -240,9 +322,21 @@ class RaceViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle GET requests to retrieve a specific race.
+        Handle GET requests to retrieve a specific race with caching.
         """
-        return super().retrieve(request, *args, **kwargs)
+        slug = kwargs.get('slug', '')
+        cache_key = f"race:slug:{slug}"
+        
+        cached_response = RedisService.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        response = super().retrieve(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            RedisService.set(cache_key, response, timeout=600)
+        
+        return response
 
     @extend_schema(
         summary="Update Race",
@@ -263,9 +357,14 @@ class RaceViewSet(viewsets.ModelViewSet):
     )
     def update(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle PUT/PATCH requests to update a race.
+        Handle PUT/PATCH requests to update a race and invalidate cache.
         """
-        return super().update(request, *args, **kwargs)
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            self._invalidate_race_cache()
+            slug = kwargs.get('slug', '')
+            RedisService.delete(f"race:slug:{slug}")
+        return response
 
     @extend_schema(
         summary="Delete Race",
@@ -281,6 +380,9 @@ class RaceViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request: DRFRequest, *args: Any, **kwargs: Any) -> Any:
         """
-        Handle DELETE requests to remove a race.
+        Handle DELETE requests to remove a race and invalidate cache.
         """
-        return super().destroy(request, *args, **kwargs)
+        response = super().destroy(request, *args, **kwargs)
+        if response.status_code == 204:
+            self._invalidate_race_cache()
+        return response
