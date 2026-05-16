@@ -55,8 +55,8 @@ class Currency(TextChoices):
 
     @property
     def code(self) -> str:
-        return self.value[0]
+        return str(self.value)
 
     @property
     def verbose(self) -> str:
-        return self.value[1]
+        return str(self.label)

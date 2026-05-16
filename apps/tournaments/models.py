@@ -75,7 +75,7 @@ class Tournament(NameMixin, CreatedAtMixin, UpdatedAtMixin, BaseModel):
         max_length=3,
         blank=True,
         choices=[(i.code, i.verbose) for i in Currency],
-        default=Currency.USD.code,
+        default=Currency.USD,
     )
     regulations_url = URLField(blank=True)
 
