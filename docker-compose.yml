@@ -34,9 +34,7 @@ services:
     restart: unless-stopped
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: fastlap:latest
     container_name: web
     ports:
       - '8000:8000'
