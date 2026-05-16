@@ -53,7 +53,6 @@ class TestTeamUpdate(TestCase):
     # ...
 
     def test_partial_updates(self) -> None:
-        # (field_name, value, expected, format)
         cases = [
             ("name", "New Name", "New Name", "json"),
             ("short_name", "NEW", "NEW", "json"),

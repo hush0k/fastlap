@@ -6,9 +6,9 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from apps.teams.models import Team, TeamStandings
+from apps.teams.models import Team
 from tests.config import TEST_LOGGER_NAME
-from tests.utils import assert_validation_error, get_simple_upload_file, get_user
+from tests.utils import get_user
 
 logger = getLogger(TEST_LOGGER_NAME)
 
