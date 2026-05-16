@@ -6,6 +6,7 @@ ViewSet for the news app.
 from typing import Any
 
 # Django modules
+from asgiref.sync import async_to_sync
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 
@@ -113,8 +114,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     def _invalidate_news_cache(self):
         """Invalidate all news-related cache."""
-        RedisService.delete_pattern("news:*")
-        RedisService.delete_pattern("article:slug:*")
+        async_to_sync(RedisService.delete_pattern)("news:*")
+        async_to_sync(RedisService.delete_pattern)("article:slug:*")
 
     @extend_schema(
         summary="List Articles",
@@ -132,14 +133,14 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """
         cache_key = self._get_list_cache_key(request)
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().list(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=300)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response
 
@@ -189,7 +190,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         slug = kwargs.get("slug", "")
         cache_key = f"article:slug:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
@@ -200,7 +201,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(article)
         response = DRFResponse(serializer.data)
 
-        RedisService.set(cache_key, response, timeout=600)
+        async_to_sync(RedisService.set)(cache_key, response, timeout=600)
 
         return response
 
@@ -232,7 +233,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         if response.status_code == 200:
             self._invalidate_news_cache()
             slug = kwargs.get("slug", "")
-            RedisService.delete(f"article:slug:{slug}")
+            async_to_sync(RedisService.delete)(f"article:slug:{slug}")
         return response
 
     @extend_schema(
@@ -284,7 +285,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """
         cache_key = f"news:my_articles:user_{request.user.id}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
@@ -302,6 +303,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
             serializer = ArticleListSerializer(articles, many=True)
             response = DRFResponse(serializer.data)
 
-        RedisService.set(cache_key, response, timeout=60)
+        async_to_sync(RedisService.set)(cache_key, response, timeout=60)
 
         return response

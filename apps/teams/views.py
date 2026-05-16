@@ -5,6 +5,7 @@ ViewSet for the teams app.
 # Python modules
 
 # Django modules
+from asgiref.sync import async_to_sync
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 
@@ -84,22 +85,22 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def _invalidate_team_cache(self):
         """Invalidate all team-related cache."""
-        RedisService.delete_pattern("teams:*")
-        RedisService.delete_pattern("team:slug:*")
-        RedisService.delete_pattern("team:standings:*")
+        async_to_sync(RedisService.delete_pattern)("teams:*")
+        async_to_sync(RedisService.delete_pattern)("team:slug:*")
+        async_to_sync(RedisService.delete_pattern)("team:standings:*")
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         """List teams with caching."""
         cache_key = self._get_cache_key(request, "list")
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().list(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=600)
 
         return response
 
@@ -108,14 +109,14 @@ class TeamViewSet(viewsets.ModelViewSet):
         slug = kwargs.get("slug", "")
         cache_key = f"team:slug:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
         response = super().retrieve(request, *args, **kwargs)
 
         if response.status_code == 200:
-            RedisService.set(cache_key, response, timeout=600)
+            async_to_sync(RedisService.set)(cache_key, response, timeout=600)
 
         return response
 
@@ -142,7 +143,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         """Get team standings with caching."""
         cache_key = f"team:standings:{slug}"
 
-        cached_response = RedisService.get(cache_key)
+        cached_response = async_to_sync(RedisService.get)(cache_key)
         if cached_response:
             return cached_response
 
@@ -151,6 +152,6 @@ class TeamViewSet(viewsets.ModelViewSet):
         serializer = TeamStandingsSerializer(standings, many=True)
 
         response = Response(serializer.data)
-        RedisService.set(cache_key, response, timeout=300)
+        async_to_sync(RedisService.set)(cache_key, response, timeout=300)
 
         return response
